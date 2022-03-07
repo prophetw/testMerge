@@ -1,19 +1,19 @@
-import FSHADER_SOURCE from './RotatedTriangle_Matrix4.frag.glsl'
-import VSHADER_SOURCE from './RotatedTriangle_Matrix4.vert.glsl'
+// import FSHADER_SOURCE from './RotatedTriangle_Matrix4.frag.glsl'
+// import VSHADER_SOURCE from './RotatedTriangle_Matrix4.vert.glsl'
 // RotatedTriangle_Matrix4.js (c) 2012 matsuda
 // Vertex shader program
-// var VSHADER_SOURCE =
-//   'attribute vec4 a_Position;\n' +
-//   'uniform mat4 u_xformMatrix;\n' +
-//   'void main() {\n' +
-//   '  gl_Position = u_xformMatrix * a_Position;\n' +
-//   '}\n';
+var VSHADER_SOURCE =
+  'attribute vec4 a_Position;\n' +
+  'uniform mat4 u_xformMatrix;\n' +
+  'void main() {\n' +
+  '  gl_Position = u_xformMatrix * a_Position;\n' +
+  '}\n';
 
-// // Fragment shader program
-// var FSHADER_SOURCE =
-//   'void main() {\n' +
-//   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-//   '}\n';
+// Fragment shader program
+var FSHADER_SOURCE =
+  'void main() {\n' +
+  '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+  '}\n';
 
 function main() {
   // Retrieve <canvas> element

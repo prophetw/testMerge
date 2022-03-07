@@ -18,8 +18,28 @@ import VSHADER_SOURCE from './RotatingTriangle_withButtons.vert.glsl'
 // Rotation angle (degrees/second)
 var ANGLE_STEP = 45.0;
 
+
+function up() {
+  ANGLE_STEP += 10;
+}
+
+function down() {
+  ANGLE_STEP -= 10;
+}
+
 function main() {
   // Retrieve <canvas> element
+
+  const pEle = document.createElement('p')
+  pEle.innerHTML = `
+      <button id="up" type="button">UP</button>
+      <button id="down" type="button">DOWN</button>
+  `
+  document.body.appendChild(pEle)
+  document.getElementById('up').addEventListener('click', up)
+  document.getElementById('down').addEventListener('click', down)
+
+
   var canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
@@ -123,14 +143,6 @@ function animate(angle) {
   // Update the current rotation angle (adjusted by the elapsed time)
   var newAngle = angle + (ANGLE_STEP * elapsed) / 1000.0;
   return newAngle %= 360;
-}
-
-function up() {
-  ANGLE_STEP += 10;
-}
-
-function down() {
-  ANGLE_STEP -= 10;
 }
 
 export default main

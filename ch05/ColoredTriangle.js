@@ -58,8 +58,8 @@ function main() {
 function initVertexBuffers(gl) {
   var verticesColors = new Float32Array([
     // Vertex coordinates and color
-    0.0, 0.5, 1.0, 0.0, 0.0,
-    -0.5, -0.5, 0.0, 1.0, 0.0,
+    0.0, 0.5, 0.0, 1.0, 0.0,
+    -0.5, -0.5, 1.0, 0.0, 0.0,
     0.5, -0.5, 0.0, 0.0, 1.0,
   ]);
   var n = 3;
@@ -82,6 +82,7 @@ function initVertexBuffers(gl) {
     console.log('Failed to get the storage location of a_Position');
     return -1;
   }
+
   gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, FSIZE * 5, 0);
   gl.enableVertexAttribArray(a_Position);  // Enable the assignment of the buffer object
 
