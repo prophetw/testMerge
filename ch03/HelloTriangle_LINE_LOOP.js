@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './HelloTriangle_LINE_LOOP.vert.glsl'
+import FSHADER_SOURCE from './HelloTriangle_LINE_LOOP.frag.glsl'
 import VSHADER_SOURCE from './HelloTriangle_LINE_LOOP.vert.glsl'
 // HelloTriangle_LINE_LOOP.js (c) 2012 matsuda
 // Vertex shader program

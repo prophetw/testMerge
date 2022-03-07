@@ -5,6 +5,7 @@ import FSHADER_SOURCE from './ColoredPoints.frag.glsl'
 
 function main() {
   // Retrieve <canvas> element
+  document.title = 'ColoredPoints '
   var canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL

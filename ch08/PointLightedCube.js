@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './PointLightedCube.vert.glsl'
+import FSHADER_SOURCE from './PointLightedCube.frag.glsl'
 import VSHADER_SOURCE from './PointLightedCube.vert.glsl'
 // PointLightedCube.js (c) 2012 matsuda
 // Vertex shader program

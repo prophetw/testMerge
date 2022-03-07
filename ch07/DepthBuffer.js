@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './DepthBuffer.vert.glsl'
+import FSHADER_SOURCE from './DepthBuffer.frag.glsl'
 import VSHADER_SOURCE from './DepthBuffer.vert.glsl'
 // DepthBuffer.js (c) 2012 matsuda
 // Vertex shader program

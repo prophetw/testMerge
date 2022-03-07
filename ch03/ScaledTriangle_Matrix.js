@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './ScaledTriangle_Matrix.vert.glsl'
+import FSHADER_SOURCE from './ScaledTriangle_Matrix.frag.glsl'
 import VSHADER_SOURCE from './ScaledTriangle_Matrix.vert.glsl'
 // ScaledTriangle_Matrix.js (c) 2012 matsuda
 // Vertex shader program

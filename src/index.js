@@ -19,5 +19,5 @@ import {
 
 
 
-const ExampleFn = HelloPoint2
+const ExampleFn = HelloQuad
 window.onload = ExampleFn

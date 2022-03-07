@@ -17,7 +17,7 @@ import FSHADER_SOURCE from './HelloPoint2.frag.glsl'
 //   '}\n';
 
 function main() {
-  document.title = '变量设置shader'
+  document.title = 'HelloPoint2 变量设置shader'
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
 

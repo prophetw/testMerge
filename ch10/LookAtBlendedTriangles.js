@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './LookAtBlendedTriangles.vert.glsl'
+import FSHADER_SOURCE from './LookAtBlendedTriangles.frag.glsl'
 import VSHADER_SOURCE from './LookAtBlendedTriangles.vert.glsl'
 // LookAtBlendedTriangles.js (c) 2012 matsuda and ohnishi
 // LookAtTrianglesWithKey_ViewVolume.js is the original

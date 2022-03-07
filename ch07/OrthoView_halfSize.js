@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './OrthoView_halfSize.vert.glsl'
+import FSHADER_SOURCE from './OrthoView_halfSize.frag.glsl'
 import VSHADER_SOURCE from './OrthoView_halfSize.vert.glsl'
 // OrthoView_halfSize.js (c) 2012 matsuda
 // Vertex shader program

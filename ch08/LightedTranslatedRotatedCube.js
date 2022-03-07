@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './LightedTranslatedRotatedCube.vert.glsl'
+import FSHADER_SOURCE from './LightedTranslatedRotatedCube.frag.glsl'
 import VSHADER_SOURCE from './LightedTranslatedRotatedCube.vert.glsl'
 // LightedTranslatedRotatedCube.js (c) 2012 matsuda
 // Vertex shader program

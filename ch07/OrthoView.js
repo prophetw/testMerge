@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './OrthoView.vert.glsl'
+import FSHADER_SOURCE from './OrthoView.frag.glsl'
 import VSHADER_SOURCE from './OrthoView.vert.glsl'
 // OrthoView.js (c) 2012 matsuda
 // Vertex shader program

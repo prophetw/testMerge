@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './TexturedQuad_Repeat.vert.glsl'
+import FSHADER_SOURCE from './TexturedQuad_Repeat.frag.glsl'
 import VSHADER_SOURCE from './TexturedQuad_Repeat.vert.glsl'
 // TexturedQuad_Repeat.js (c) 2012 matsuda
 // Vertex shader program

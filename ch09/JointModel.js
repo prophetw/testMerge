@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './JointModel.vert.glsl'
+import FSHADER_SOURCE from './JointModel.frag.glsl'
 import VSHADER_SOURCE from './JointModel.vert.glsl'
 // JointModel.js (c) 2012 matsuda
 // Vertex shader program

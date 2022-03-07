@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './HelloTriangle.vert.glsl'
+import FSHADER_SOURCE from './HelloTriangle.frag.glsl'
 import VSHADER_SOURCE from './HelloTriangle.vert.glsl'
 // HelloTriangle.js (c) 2012 matsuda
 // Vertex shader program

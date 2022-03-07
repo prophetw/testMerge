@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './LookAtTrianglesWithKeys_ViewVolume.vert.glsl'
+import FSHADER_SOURCE from './LookAtTrianglesWithKeys_ViewVolume.frag.glsl'
 import VSHADER_SOURCE from './LookAtTrianglesWithKeys_ViewVolume.vert.glsl'
 // LookAtTrianglesWithKey_ViewVolume.js (c) 2012 matsuda
 // Vertex shader program

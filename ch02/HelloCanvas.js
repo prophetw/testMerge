@@ -1,6 +1,7 @@
 // HelloCanvas.js (c) 2012 matsuda
 function main() {
   // Retrieve <canvas> element
+  document.title = 'HelloCanvas'
   var canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL

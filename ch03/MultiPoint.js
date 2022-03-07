@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './MultiPoint.vert.glsl'
+import FSHADER_SOURCE from './MultiPoint.frag.glsl'
 import VSHADER_SOURCE from './MultiPoint.vert.glsl'
 // MultiPoint.js (c) 2012 matsuda
 // Vertex shader program

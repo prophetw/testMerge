@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './RotatingTriangle_contextLost.vert.glsl'
+import FSHADER_SOURCE from './RotatingTriangle_contextLost.frag.glsl'
 import VSHADER_SOURCE from './RotatingTriangle_contextLost.vert.glsl'
 // RotatingTriangle_contextLost.js (c) 2012 matsuda
 // Vertex shader program

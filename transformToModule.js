@@ -46,7 +46,7 @@ const extractGLSL = (rootFolderName) => {
           newContent = str + '\n' + newContent
         }
         if (content.indexOf('FSHADER_SOURCE') > -1 && content.indexOf('import FSHADER_SOURCE') === -1) {
-          const str = `import FSHADER_SOURCE from './${fileNameWithExt}.vert.glsl'`
+          const str = `import FSHADER_SOURCE from './${fileNameWithExt}.frag.glsl'`
           newContent = str + '\n' + newContent
         }
         if (content.indexOf('export default') === -1) {
@@ -59,5 +59,33 @@ const extractGLSL = (rootFolderName) => {
     }
   })
 }
-extractGLSL('./ch10')
-gIndexJs('./ch10')
+const fixImportFrag = (rootFolderName) => {
+  const rootPath = path.resolve(rootFolderName)
+  const dirAry = fs.readdirSync(rootPath);
+  dirAry.map((fileName) => {
+    const relativePath = path.join(rootFolderName, fileName)
+    const absolutePath = path.resolve(relativePath)
+    const stat = fs.statSync(absolutePath)
+    if (stat.isDirectory()) {
+      //
+      return extractGLSL(absolutePath)
+    } else {
+      if (fileName.indexOf('.js') > -1) {
+        const content = fs.readFileSync(absolutePath, {
+          encoding: 'utf8'
+        })
+        const reg = /(import\sFSHADER_SOURCE[\s\w'./]*?\.)(vert)(\.glsl)/g
+        const newContent = content.replace(reg, (total, $0, $1, $2) => {
+          return $0 + 'frag' + $2
+        })
+        // console.log(1);
+        fs.writeFileSync(absolutePath, newContent, {
+          encoding: 'utf8'
+        })
+      }
+    }
+  })
+}
+// extractGLSL('./ch10')
+// gIndexJs('./ch10')
+fixImportFrag('./ch05')

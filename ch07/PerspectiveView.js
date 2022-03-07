@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './PerspectiveView.vert.glsl'
+import FSHADER_SOURCE from './PerspectiveView.frag.glsl'
 import VSHADER_SOURCE from './PerspectiveView.vert.glsl'
 // PerspectiveView.js (c) 2012 matsuda
 // Vertex shader program

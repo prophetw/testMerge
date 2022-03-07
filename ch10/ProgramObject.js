@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './ProgramObject.vert.glsl'
+import FSHADER_SOURCE from './ProgramObject.frag.glsl'
 import VSHADER_SOURCE from './ProgramObject.vert.glsl'
 // ProgramObject.js (c) 2012 matsuda and kanda
 // Vertex shader for single color drawing

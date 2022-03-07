@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './HelloCube.vert.glsl'
+import FSHADER_SOURCE from './HelloCube.frag.glsl'
 import VSHADER_SOURCE from './HelloCube.vert.glsl'
 // HelloCube.js (c) 2012 matsuda
 // Vertex shader program

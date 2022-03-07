@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './TexturedQuad_Clamp_Mirror.vert.glsl'
+import FSHADER_SOURCE from './TexturedQuad_Clamp_Mirror.frag.glsl'
 import VSHADER_SOURCE from './TexturedQuad_Clamp_Mirror.vert.glsl'
 // TexturedQuad_Clamp_Mirror.js (c) 2012 matsuda
 // Vertex shader program

@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './OBJViewer.vert.glsl'
+import FSHADER_SOURCE from './OBJViewer.frag.glsl'
 import VSHADER_SOURCE from './OBJViewer.vert.glsl'
 // OBJViewer.js (c) 2012 matsuda and itami
 // Vertex shader program

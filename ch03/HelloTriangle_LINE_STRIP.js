@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './HelloTriangle_LINE_STRIP.vert.glsl'
+import FSHADER_SOURCE from './HelloTriangle_LINE_STRIP.frag.glsl'
 import VSHADER_SOURCE from './HelloTriangle_LINE_STRIP.vert.glsl'
 // HelloTriangle_LINE_STRIP.js (c) 2012 matsuda
 // Vertex shader program

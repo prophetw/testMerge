@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './Fog_w.vert.glsl'
+import FSHADER_SOURCE from './Fog_w.frag.glsl'
 import VSHADER_SOURCE from './Fog_w.vert.glsl'
 // Fog_w.js (c) 2012 matsuda and ohnishi
 // Vertex shader program

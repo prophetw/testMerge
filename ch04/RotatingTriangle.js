@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './RotatingTriangle.vert.glsl'
+import FSHADER_SOURCE from './RotatingTriangle.frag.glsl'
 import VSHADER_SOURCE from './RotatingTriangle.vert.glsl'
 // RotatingTriangle.js (c) 2012 matsuda
 // Vertex shader program

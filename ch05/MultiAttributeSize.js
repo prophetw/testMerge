@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './MultiAttributeSize.vert.glsl'
+import FSHADER_SOURCE from './MultiAttributeSize.frag.glsl'
 import VSHADER_SOURCE from './MultiAttributeSize.vert.glsl'
 // MultiAttributeSize.js (c) 2012 matsuda
 // Vertex shader program

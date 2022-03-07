@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './FramebufferObject.vert.glsl'
+import FSHADER_SOURCE from './FramebufferObject.frag.glsl'
 import VSHADER_SOURCE from './FramebufferObject.vert.glsl'
 // FramebufferObject.js (c) matsuda and kanda
 // Vertex shader program

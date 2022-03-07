@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './PickObject.vert.glsl'
+import FSHADER_SOURCE from './PickObject.frag.glsl'
 import VSHADER_SOURCE from './PickObject.vert.glsl'
 // PickObject.js (c) 2012 matsuda and kanda
 // Vertex shader program

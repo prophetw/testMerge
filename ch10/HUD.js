@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './HUD.vert.glsl'
+import FSHADER_SOURCE from './HUD.frag.glsl'
 import VSHADER_SOURCE from './HUD.vert.glsl'
 // HUD.js (c) 2012 matsuda
 // Vertex shader program

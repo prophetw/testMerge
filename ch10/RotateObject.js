@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './RotateObject.vert.glsl'
+import FSHADER_SOURCE from './RotateObject.frag.glsl'
 import VSHADER_SOURCE from './RotateObject.vert.glsl'
 // RotateObject.js (c) 2012 matsuda and kanda
 // Vertex shader program

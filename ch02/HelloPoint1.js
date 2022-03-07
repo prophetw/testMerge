@@ -17,6 +17,7 @@ import FSHADER_SOURCE from './HelloPoint1.frag.glsl'
 
 function main() {
   // Retrieve <canvas> element
+  document.title = 'HelloPoint1'
   var canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL

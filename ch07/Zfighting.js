@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './Zfighting.vert.glsl'
+import FSHADER_SOURCE from './Zfighting.frag.glsl'
 import VSHADER_SOURCE from './Zfighting.vert.glsl'
 // Zfighting.js (c) 2012 matsuda
 // Vertex shader program

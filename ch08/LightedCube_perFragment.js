@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './LightedCube_perFragment.vert.glsl'
+import FSHADER_SOURCE from './LightedCube_perFragment.frag.glsl'
 import VSHADER_SOURCE from './LightedCube_perFragment.vert.glsl'
 // LightedCube_perFragment.js (c) 2012 matsuda
 // Vertex shader program

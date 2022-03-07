@@ -1,4 +1,4 @@
-// import FSHADER_SOURCE from './Shadow.vert.glsl'
+// import FSHADER_SOURCE from './Shadow.frag.glsl'
 // import VSHADER_SOURCE from './Shadow.vert.glsl'
 // Shadow.js (c) 2012 matsuda and tanaka
 // Vertex shader program for generating a shadow map

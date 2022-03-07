@@ -5,6 +5,7 @@ import FSHADER_SOURCE from './ClickedPoints.frag.glsl'
 
 function main() {
   // Retrieve <canvas> element
+  document.title = 'ClickedPoints '
   var canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL

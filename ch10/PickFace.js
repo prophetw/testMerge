@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './PickFace.vert.glsl'
+import FSHADER_SOURCE from './PickFace.frag.glsl'
 import VSHADER_SOURCE from './PickFace.vert.glsl'
 // PickFace.js (c) 2012 matsuda and kanda
 // Vertex shader program

@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './ColoredTriangle.vert.glsl'
+import FSHADER_SOURCE from './ColoredTriangle.frag.glsl'
 import VSHADER_SOURCE from './ColoredTriangle.vert.glsl'
 // ColoredTriangle.js (c) 2012 matsuda
 // Vertex shader program

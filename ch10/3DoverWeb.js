@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './3DoverWeb.vert.glsl'
+import FSHADER_SOURCE from './3DoverWeb.frag.glsl'
 import VSHADER_SOURCE from './3DoverWeb.vert.glsl'
 // 3DoverWeb.js (c) 2012 matsuda
 // Vertex shader program

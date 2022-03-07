@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './LightedCube_animation.vert.glsl'
+import FSHADER_SOURCE from './LightedCube_animation.frag.glsl'
 import VSHADER_SOURCE from './LightedCube_animation.vert.glsl'
 // LightedCube_animation.js (c) 2012 matsuda
 // Vertex shader program

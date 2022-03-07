@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './MultiJointModel_segment.vert.glsl'
+import FSHADER_SOURCE from './MultiJointModel_segment.frag.glsl'
 import VSHADER_SOURCE from './MultiJointModel_segment.vert.glsl'
 // MultiJointModel_segment.js (c) 2012 matsuda
 // Vertex shader program

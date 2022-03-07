@@ -1,4 +1,4 @@
-// import FSHADER_SOURCE from './Shadow_highp_sphere.vert.glsl'
+// import FSHADER_SOURCE from './Shadow_highp_sphere.frag.glsl'
 // import VSHADER_SOURCE from './Shadow_highp_sphere.vert.glsl'
 // Shadow_highp.js (c) 2012 matsuda and tanaka
 // Vertex shader program for generating a shadow map

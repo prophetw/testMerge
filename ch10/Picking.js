@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './Picking.vert.glsl'
+import FSHADER_SOURCE from './Picking.frag.glsl'
 import VSHADER_SOURCE from './Picking.vert.glsl'
 // Picking.js
 // Vertex shader program

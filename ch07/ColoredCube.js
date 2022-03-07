@@ -1,4 +1,4 @@
-import FSHADER_SOURCE from './ColoredCube.vert.glsl'
+import FSHADER_SOURCE from './ColoredCube.frag.glsl'
 import VSHADER_SOURCE from './ColoredCube.vert.glsl'
 // ColoredCube.js (c) 2012 matsuda
 // Vertex shader program
