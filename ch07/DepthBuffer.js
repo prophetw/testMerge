@@ -1,3 +1,5 @@
+import FSHADER_SOURCE from './DepthBuffer.vert.glsl'
+import VSHADER_SOURCE from './DepthBuffer.vert.glsl'
 // DepthBuffer.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -136,3 +138,5 @@ function initVertexBuffers(gl) {
 
   return n;
 }
+
+export default main

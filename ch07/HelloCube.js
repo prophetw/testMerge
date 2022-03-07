@@ -1,3 +1,5 @@
+import FSHADER_SOURCE from './HelloCube.vert.glsl'
+import VSHADER_SOURCE from './HelloCube.vert.glsl'
 // HelloCube.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -136,3 +138,5 @@ function initVertexBuffers(gl) {
 
   return indices.length;
 }
+
+export default main

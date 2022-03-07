@@ -1,16 +1,18 @@
+import FSHADER_SOURCE from './HelloTriangle_LINES.vert.glsl'
+import VSHADER_SOURCE from './HelloTriangle_LINES.vert.glsl'
 // HelloTriangle_LINES.js (c) 2012 matsuda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'void main() {\n' +
-  '  gl_Position = a_Position;\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = a_Position;\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  'void main() {\n' +
-  '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   'void main() {\n' +
+//   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -48,7 +50,7 @@ function main() {
 
 function initVertexBuffers(gl) {
   var vertices = new Float32Array([
-    0, 0.5,   -0.5, -0.5,   0.5, -0.5
+    0, 0.5, -0.5, -0.5, 0.5, -0.5
   ]);
   var n = 3; // The number of vertices
 
@@ -59,9 +61,9 @@ function initVertexBuffers(gl) {
     return -1;
   }
 
-　// Bind the buffer object to target
+  // Bind the buffer object to target
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-　// Write date into the buffer object
+  // Write date into the buffer object
   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
   var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
@@ -77,3 +79,5 @@ function initVertexBuffers(gl) {
 
   return n;
 }
+
+export default main

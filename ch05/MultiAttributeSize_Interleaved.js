@@ -1,18 +1,20 @@
+import FSHADER_SOURCE from './MultiAttributeSize_Interleaved.vert.glsl'
+import VSHADER_SOURCE from './MultiAttributeSize_Interleaved.vert.glsl'
 // MultiAttributeSize_Interleaved.js (c) 2012 matsuda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute float a_PointSize;\n' +
-  'void main() {\n' +
-  '  gl_Position = a_Position;\n' +
-  '  gl_PointSize = a_PointSize;\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'attribute float a_PointSize;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = a_Position;\n' +
+//   '  gl_PointSize = a_PointSize;\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  'void main() {\n' +
-  '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   'void main() {\n' +
+//   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -51,14 +53,14 @@ function main() {
 function initVertexBuffers(gl) {
   var verticesSizes = new Float32Array([
     // Coordinate and size of points
-     0.0,  0.5,  10.0,  // the 1st point
-    -0.5, -0.5,  20.0,  // the 2nd point
-     0.5, -0.5,  30.0   // the 3rd point
+    0.0, 0.5, 10.0,  // the 1st point
+    -0.5, -0.5, 20.0,  // the 2nd point
+    0.5, -0.5, 30.0   // the 3rd point
   ]);
   var n = 3; // The number of vertices
 
   // Create a buffer object
-  var vertexSizeBuffer = gl.createBuffer();  
+  var vertexSizeBuffer = gl.createBuffer();
   if (!vertexSizeBuffer) {
     console.log('Failed to create the buffer object');
     return -1;
@@ -80,7 +82,7 @@ function initVertexBuffers(gl) {
 
   // Get the storage location of a_PointSize
   var a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
-  if(a_PointSize < 0) {
+  if (a_PointSize < 0) {
     console.log('Failed to get the storage location of a_PointSize');
     return -1;
   }
@@ -92,3 +94,5 @@ function initVertexBuffers(gl) {
 
   return n;
 }
+
+export default main

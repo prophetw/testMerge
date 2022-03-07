@@ -1,3 +1,5 @@
+import FSHADER_SOURCE from './PerspectiveView_mvpMatrix.vert.glsl'
+import VSHADER_SOURCE from './PerspectiveView_mvpMatrix.vert.glsl'
 // PerspectiveView_mvpMatrix.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -130,3 +132,5 @@ function initVertexBuffers(gl) {
 
   return n;
 }
+
+export default main

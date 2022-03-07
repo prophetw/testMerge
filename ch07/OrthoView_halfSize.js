@@ -1,3 +1,5 @@
+import FSHADER_SOURCE from './OrthoView_halfSize.vert.glsl'
+import VSHADER_SOURCE from './OrthoView_halfSize.vert.glsl'
 // OrthoView_halfSize.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -143,3 +145,5 @@ function draw(gl, n, u_ProjMatrix, projMatrix, nf) {
   nf.innerHTML = 'near: ' + Math.round(g_near * 100)/100 + ', far: ' + Math.round(g_far*100)/100;
   gl.drawArrays(gl.TRIANGLES, 0, n);   // Draw the triangles
 }
+
+export default main

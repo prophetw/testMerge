@@ -1,3 +1,5 @@
+import FSHADER_SOURCE from './OrthoView_halfWidth.vert.glsl'
+import VSHADER_SOURCE from './OrthoView_halfWidth.vert.glsl'
 // OrthoView_halfWidth.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -144,3 +146,5 @@ function draw(gl, n, u_ProjMatrix, projMatrix, nf) {
 
   gl.drawArrays(gl.TRIANGLES, 0, n);   // Draw the triangles
 }
+
+export default main

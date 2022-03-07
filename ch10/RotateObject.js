@@ -1,25 +1,27 @@
+import FSHADER_SOURCE from './RotateObject.vert.glsl'
+import VSHADER_SOURCE from './RotateObject.vert.glsl'
 // RotateObject.js (c) 2012 matsuda and kanda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute vec2 a_TexCoord;\n' +
-  'uniform mat4 u_MvpMatrix;\n' +
-  'varying vec2 v_TexCoord;\n' +
-  'void main() {\n' +
-  '  gl_Position = u_MvpMatrix * a_Position;\n' +
-  '  v_TexCoord = a_TexCoord;\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'attribute vec2 a_TexCoord;\n' +
+//   'uniform mat4 u_MvpMatrix;\n' +
+//   'varying vec2 v_TexCoord;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = u_MvpMatrix * a_Position;\n' +
+//   '  v_TexCoord = a_TexCoord;\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'uniform sampler2D u_Sampler;\n' +
-  'varying vec2 v_TexCoord;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   '#ifdef GL_ES\n' +
+//   'precision mediump float;\n' +
+//   '#endif\n' +
+//   'uniform sampler2D u_Sampler;\n' +
+//   'varying vec2 v_TexCoord;\n' +
+//   'void main() {\n' +
+//   '  gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -51,7 +53,7 @@ function main() {
 
   // Get the storage locations of uniform variables
   var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
-  if (!u_MvpMatrix) { 
+  if (!u_MvpMatrix) {
     console.log('Failed to get the storage location of uniform variable');
     return;
   }
@@ -71,7 +73,7 @@ function main() {
     return;
   }
 
-  var tick = function() {   // Start drawing
+  var tick = function () {   // Start drawing
     draw(gl, n, viewProjMatrix, u_MvpMatrix, currentAngle);
     requestAnimationFrame(tick, canvas);
   };
@@ -88,31 +90,31 @@ function initVertexBuffers(gl) {
   //  |/      |/
   //  v2------v3
   var vertices = new Float32Array([   // Vertex coordinates
-     1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0,    // v0-v1-v2-v3 front
-     1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,   1.0, 1.0,-1.0,    // v0-v3-v4-v5 right
-     1.0, 1.0, 1.0,   1.0, 1.0,-1.0,  -1.0, 1.0,-1.0,  -1.0, 1.0, 1.0,    // v0-v5-v6-v1 up
-    -1.0, 1.0, 1.0,  -1.0, 1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0,-1.0, 1.0,    // v1-v6-v7-v2 left
-    -1.0,-1.0,-1.0,   1.0,-1.0,-1.0,   1.0,-1.0, 1.0,  -1.0,-1.0, 1.0,    // v7-v4-v3-v2 down
-     1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0     // v4-v7-v6-v5 back
+    1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,    // v0-v1-v2-v3 front
+    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,    // v0-v3-v4-v5 right
+    1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,    // v0-v5-v6-v1 up
+    -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,    // v1-v6-v7-v2 left
+    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,    // v7-v4-v3-v2 down
+    1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0     // v4-v7-v6-v5 back
   ]);
 
   var texCoords = new Float32Array([   // Texture coordinates
-      1.0, 1.0,   0.0, 1.0,   0.0, 0.0,   1.0, 0.0,    // v0-v1-v2-v3 front
-      0.0, 1.0,   0.0, 0.0,   1.0, 0.0,   1.0, 1.0,    // v0-v3-v4-v5 right
-      1.0, 0.0,   1.0, 1.0,   0.0, 1.0,   0.0, 0.0,    // v0-v5-v6-v1 up
-      1.0, 1.0,   0.0, 1.0,   0.0, 0.0,   1.0, 0.0,    // v1-v6-v7-v2 left
-      0.0, 0.0,   1.0, 0.0,   1.0, 1.0,   0.0, 1.0,    // v7-v4-v3-v2 down
-      0.0, 0.0,   1.0, 0.0,   1.0, 1.0,   0.0, 1.0     // v4-v7-v6-v5 back
+    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,    // v0-v1-v2-v3 front
+    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0,    // v0-v3-v4-v5 right
+    1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0,    // v0-v5-v6-v1 up
+    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,    // v1-v6-v7-v2 left
+    0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,    // v7-v4-v3-v2 down
+    0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0     // v4-v7-v6-v5 back
   ]);
 
   // Indices of the vertices
   var indices = new Uint8Array([
-     0, 1, 2,   0, 2, 3,    // front
-     4, 5, 6,   4, 6, 7,    // right
-     8, 9,10,   8,10,11,    // up
-    12,13,14,  12,14,15,    // left
-    16,17,18,  16,18,19,    // down
-    20,21,22,  20,22,23     // back
+    0, 1, 2, 0, 2, 3,    // front
+    4, 5, 6, 4, 6, 7,    // right
+    8, 9, 10, 8, 10, 11,    // up
+    12, 13, 14, 12, 14, 15,    // left
+    16, 17, 18, 16, 18, 19,    // down
+    20, 21, 22, 20, 22, 23     // back
   ]);
 
   // Create a buffer object
@@ -139,7 +141,7 @@ function initEventHandlers(canvas, currentAngle) {
   var dragging = false;         // Dragging or not
   var lastX = -1, lastY = -1;   // Last position of the mouse
 
-  canvas.onmousedown = function(ev) {   // Mouse is pressed
+  canvas.onmousedown = function (ev) {   // Mouse is pressed
     var x = ev.clientX, y = ev.clientY;
     // Start dragging if a moue is in <canvas>
     var rect = ev.target.getBoundingClientRect();
@@ -149,12 +151,12 @@ function initEventHandlers(canvas, currentAngle) {
     }
   };
 
-  canvas.onmouseup = function(ev) { dragging = false;  }; // Mouse is released
+  canvas.onmouseup = function (ev) { dragging = false; }; // Mouse is released
 
-  canvas.onmousemove = function(ev) { // Mouse is moved
+  canvas.onmousemove = function (ev) { // Mouse is moved
     var x = ev.clientX, y = ev.clientY;
     if (dragging) {
-      var factor = 100/canvas.height; // The rotation ratio
+      var factor = 100 / canvas.height; // The rotation ratio
       var dx = factor * (x - lastX);
       var dy = factor * (y - lastY);
       // Limit x-axis rotation angle to -90 to 90 degrees
@@ -222,7 +224,7 @@ function initTextures(gl) {
     return false;
   }
   // Register the event handler to be called when image loading is completed
-  image.onload = function(){ loadTexture(gl, texture, u_Sampler, image); };
+  image.onload = function () { loadTexture(gl, texture, u_Sampler, image); };
   // Tell the browser to load an Image
   image.src = '../resources/sky.jpg';
 
@@ -244,3 +246,5 @@ function loadTexture(gl, texture, u_Sampler, image) {
   // Pass the texure unit 0 to u_Sampler
   gl.uniform1i(u_Sampler, 0);
 }
+
+export default main

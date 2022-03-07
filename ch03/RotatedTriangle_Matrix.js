@@ -1,17 +1,19 @@
+import FSHADER_SOURCE from './RotatedTriangle_Matrix.vert.glsl'
+import VSHADER_SOURCE from './RotatedTriangle_Matrix.vert.glsl'
 // RotatedTriangle_Matrix.js (c) matsuda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'uniform mat4 u_xformMatrix;\n' +
-  'void main() {\n' +
-  '  gl_Position = u_xformMatrix * a_Position;\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'uniform mat4 u_xformMatrix;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = u_xformMatrix * a_Position;\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  'void main() {\n' +
-  '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   'void main() {\n' +
+//   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+//   '}\n';
 
 // The rotation angle
 var ANGLE = 90.0;
@@ -32,7 +34,7 @@ function main() {
     console.log('Failed to intialize shaders.');
     return;
   }
- 
+
   // Write the positions of vertices to a vertex shader
   var n = initVertexBuffers(gl);
   if (n < 0) {
@@ -46,10 +48,10 @@ function main() {
 
   // Note: WebGL is column major order
   var xformMatrix = new Float32Array([
-     cosB, sinB, 0.0, 0.0,
+    cosB, sinB, 0.0, 0.0,
     -sinB, cosB, 0.0, 0.0,
-      0.0,  0.0, 1.0, 0.0,
-      0.0,  0.0, 0.0, 1.0
+    0.0, 0.0, 1.0, 0.0,
+    0.0, 0.0, 0.0, 1.0
   ]);
 
   // Pass the rotation matrix to the vertex shader
@@ -72,7 +74,7 @@ function main() {
 
 function initVertexBuffers(gl) {
   var vertices = new Float32Array([
-    0, 0.5,   -0.5, -0.5,   0.5, -0.5
+    0, 0.5, -0.5, -0.5, 0.5, -0.5
   ]);
   var n = 3; // The number of vertices
 
@@ -102,3 +104,5 @@ function initVertexBuffers(gl) {
   return n;
 }
 
+
+export default main

@@ -1,16 +1,19 @@
 // HelloPoint1.js (c) 2012 matsuda
 // Vertex shader program
-var VSHADER_SOURCE = 
-  'void main() {\n' +
-  '  gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n' + // Set the vertex coordinates of the point
-  '  gl_PointSize = 10.0;\n' +                    // Set the point size
-  '}\n';
+import VSHADER_SOURCE from './HelloPoint1.vert.glsl'
+import FSHADER_SOURCE from './HelloPoint1.frag.glsl'
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  'void main() {\n' +
-  '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' + // Set the point color
-  '}\n';
+// var VSHADER_SOURCE =
+//   'void main() {\n' +
+//   '  gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n' + // Set the vertex coordinates of the point
+//   '  gl_PointSize = 10.0;\n' +                    // Set the point size
+//   '}\n';
+
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   'void main() {\n' +
+//   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' + // Set the point color
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -38,3 +41,5 @@ function main() {
   // Draw a point
   gl.drawArrays(gl.POINTS, 0, 1);
 }
+
+export default main

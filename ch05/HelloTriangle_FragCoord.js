@@ -1,19 +1,21 @@
+import FSHADER_SOURCE from './HelloTriangle_FragCoord.vert.glsl'
+import VSHADER_SOURCE from './HelloTriangle_FragCoord.vert.glsl'
 // HelloTriangle_FragCoord.js (c) 2012 matsuda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'void main() {\n' +
-  '  gl_Position = a_Position;\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = a_Position;\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  'precision mediump float;\n' +
-  'uniform float u_Width;\n' +
-  'uniform float u_Height;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = vec4(gl_FragCoord.x/u_Width, 0.0, gl_FragCoord.y/u_Height, 1.0);\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   'precision mediump float;\n' +
+//   'uniform float u_Width;\n' +
+//   'uniform float u_Height;\n' +
+//   'void main() {\n' +
+//   '  gl_FragColor = vec4(gl_FragCoord.x/u_Width, 0.0, gl_FragCoord.y/u_Height, 1.0);\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -51,7 +53,7 @@ function main() {
 
 function initVertexBuffers(gl) {
   var vertices = new Float32Array([
-    0, 0.5,   -0.5, -0.5,   0.5, -0.5
+    0, 0.5, -0.5, -0.5, 0.5, -0.5
   ]);
   var n = 3; // The number of vertices
 
@@ -99,3 +101,5 @@ function initVertexBuffers(gl) {
 
   return n;
 }
+
+export default main

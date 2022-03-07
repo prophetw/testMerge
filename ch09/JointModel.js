@@ -1,30 +1,32 @@
+import FSHADER_SOURCE from './JointModel.vert.glsl'
+import VSHADER_SOURCE from './JointModel.vert.glsl'
 // JointModel.js (c) 2012 matsuda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute vec4 a_Normal;\n' +
-  'uniform mat4 u_MvpMatrix;\n' +
-  'uniform mat4 u_NormalMatrix;\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_Position = u_MvpMatrix * a_Position;\n' +
-  // Shading calculation to make the arm look three-dimensional
-  '  vec3 lightDirection = normalize(vec3(0.0, 0.5, 0.7));\n' + // Light direction
-  '  vec4 color = vec4(1.0, 0.4, 0.0, 1.0);\n' +
-  '  vec3 normal = normalize((u_NormalMatrix * a_Normal).xyz);\n' +
-  '  float nDotL = max(dot(normal, lightDirection), 0.0);\n' +
-  '  v_Color = vec4(color.rgb * nDotL + vec3(0.1), color.a);\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'attribute vec4 a_Normal;\n' +
+//   'uniform mat4 u_MvpMatrix;\n' +
+//   'uniform mat4 u_NormalMatrix;\n' +
+//   'varying vec4 v_Color;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = u_MvpMatrix * a_Position;\n' +
+//   // Shading calculation to make the arm look three-dimensional
+//   '  vec3 lightDirection = normalize(vec3(0.0, 0.5, 0.7));\n' + // Light direction
+//   '  vec4 color = vec4(1.0, 0.4, 0.0, 1.0);\n' +
+//   '  vec3 normal = normalize((u_NormalMatrix * a_Normal).xyz);\n' +
+//   '  float nDotL = max(dot(normal, lightDirection), 0.0);\n' +
+//   '  v_Color = vec4(color.rgb * nDotL + vec3(0.1), color.a);\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   '#ifdef GL_ES\n' +
+//   'precision mediump float;\n' +
+//   '#endif\n' +
+//   'varying vec4 v_Color;\n' +
+//   'void main() {\n' +
+//   '  gl_FragColor = v_Color;\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -68,7 +70,7 @@ function main() {
   viewProjMatrix.lookAt(20.0, 10.0, 30.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
   // Register the event handler to be called when keys are pressed
-  document.onkeydown = function(ev){ keydown(ev, gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix); };
+  document.onkeydown = function (ev) { keydown(ev, gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix); };
 
   draw(gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix);  // Draw the robot arm
 }
@@ -100,32 +102,32 @@ function keydown(ev, gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix) {
 function initVertexBuffers(gl) {
   // Vertex coordinates（a cuboid 3.0 in width, 10.0 in height, and 3.0 in length with its origin at the center of its bottom)
   var vertices = new Float32Array([
-    1.5, 10.0, 1.5, -1.5, 10.0, 1.5, -1.5,  0.0, 1.5,  1.5,  0.0, 1.5, // v0-v1-v2-v3 front
-    1.5, 10.0, 1.5,  1.5,  0.0, 1.5,  1.5,  0.0,-1.5,  1.5, 10.0,-1.5, // v0-v3-v4-v5 right
-    1.5, 10.0, 1.5,  1.5, 10.0,-1.5, -1.5, 10.0,-1.5, -1.5, 10.0, 1.5, // v0-v5-v6-v1 up
-   -1.5, 10.0, 1.5, -1.5, 10.0,-1.5, -1.5,  0.0,-1.5, -1.5,  0.0, 1.5, // v1-v6-v7-v2 left
-   -1.5,  0.0,-1.5,  1.5,  0.0,-1.5,  1.5,  0.0, 1.5, -1.5,  0.0, 1.5, // v7-v4-v3-v2 down
-    1.5,  0.0,-1.5, -1.5,  0.0,-1.5, -1.5, 10.0,-1.5,  1.5, 10.0,-1.5  // v4-v7-v6-v5 back
+    1.5, 10.0, 1.5, -1.5, 10.0, 1.5, -1.5, 0.0, 1.5, 1.5, 0.0, 1.5, // v0-v1-v2-v3 front
+    1.5, 10.0, 1.5, 1.5, 0.0, 1.5, 1.5, 0.0, -1.5, 1.5, 10.0, -1.5, // v0-v3-v4-v5 right
+    1.5, 10.0, 1.5, 1.5, 10.0, -1.5, -1.5, 10.0, -1.5, -1.5, 10.0, 1.5, // v0-v5-v6-v1 up
+    -1.5, 10.0, 1.5, -1.5, 10.0, -1.5, -1.5, 0.0, -1.5, -1.5, 0.0, 1.5, // v1-v6-v7-v2 left
+    -1.5, 0.0, -1.5, 1.5, 0.0, -1.5, 1.5, 0.0, 1.5, -1.5, 0.0, 1.5, // v7-v4-v3-v2 down
+    1.5, 0.0, -1.5, -1.5, 0.0, -1.5, -1.5, 10.0, -1.5, 1.5, 10.0, -1.5  // v4-v7-v6-v5 back
   ]);
 
   // Normal
   var normals = new Float32Array([
-    0.0, 0.0, 1.0,  0.0, 0.0, 1.0,  0.0, 0.0, 1.0,  0.0, 0.0, 1.0, // v0-v1-v2-v3 front
-    1.0, 0.0, 0.0,  1.0, 0.0, 0.0,  1.0, 0.0, 0.0,  1.0, 0.0, 0.0, // v0-v3-v4-v5 right
-    0.0, 1.0, 0.0,  0.0, 1.0, 0.0,  0.0, 1.0, 0.0,  0.0, 1.0, 0.0, // v0-v5-v6-v1 up
-   -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, // v1-v6-v7-v2 left
-    0.0,-1.0, 0.0,  0.0,-1.0, 0.0,  0.0,-1.0, 0.0,  0.0,-1.0, 0.0, // v7-v4-v3-v2 down
-    0.0, 0.0,-1.0,  0.0, 0.0,-1.0,  0.0, 0.0,-1.0,  0.0, 0.0,-1.0  // v4-v7-v6-v5 back
+    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, // v0-v1-v2-v3 front
+    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, // v0-v3-v4-v5 right
+    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v5-v6-v1 up
+    -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, // v1-v6-v7-v2 left
+    0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, // v7-v4-v3-v2 down
+    0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0  // v4-v7-v6-v5 back
   ]);
 
   // Indices of the vertices
   var indices = new Uint8Array([
-     0, 1, 2,   0, 2, 3,    // front
-     4, 5, 6,   4, 6, 7,    // right
-     8, 9,10,   8,10,11,    // up
-    12,13,14,  12,14,15,    // left
-    16,17,18,  16,18,19,    // down
-    20,21,22,  20,22,23     // back
+    0, 1, 2, 0, 2, 3,    // front
+    4, 5, 6, 4, 6, 7,    // right
+    8, 9, 10, 8, 10, 11,    // up
+    12, 13, 14, 12, 14, 15,    // left
+    16, 17, 18, 16, 18, 19,    // down
+    20, 21, 22, 20, 22, 23     // back
   ]);
 
   // Write the vertex property to buffers (coordinates and normals)
@@ -206,3 +208,5 @@ function drawBox(gl, n, viewProjMatrix, u_MvpMatrix, u_NormalMatrix) {
   // Draw
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
+
+export default main

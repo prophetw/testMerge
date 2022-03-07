@@ -1,3 +1,5 @@
+// import FSHADER_SOURCE from './Shadow_highp.vert.glsl'
+// import VSHADER_SOURCE from './Shadow_highp.vert.glsl'
 // Shadow_highp.js (c) matsuda and tanaka
 // Vertex shader program for generating a shadow map
 var SHADOW_VSHADER_SOURCE =
@@ -29,7 +31,7 @@ var VSHADER_SOURCE =
   'varying vec4 v_PositionFromLight;\n' +
   'varying vec4 v_Color;\n' +
   'void main() {\n' +
-  '  gl_Position = u_MvpMatrix * a_Position;\n' + 
+  '  gl_Position = u_MvpMatrix * a_Position;\n' +
   '  v_PositionFromLight = u_MvpMatrixFromLight * a_Position;\n' +
   '  v_Color = a_Color;\n' +
   '}\n';
@@ -75,7 +77,7 @@ function main() {
   shadowProgram.a_Position = gl.getAttribLocation(shadowProgram, 'a_Position');
   shadowProgram.u_MvpMatrix = gl.getUniformLocation(shadowProgram, 'u_MvpMatrix');
   if (shadowProgram.a_Position < 0 || !shadowProgram.u_MvpMatrix) {
-    console.log('Failed to get the storage location of attribute or uniform variable from shadowProgram'); 
+    console.log('Failed to get the storage location of attribute or uniform variable from shadowProgram');
     return;
   }
 
@@ -87,8 +89,8 @@ function main() {
   normalProgram.u_MvpMatrixFromLight = gl.getUniformLocation(normalProgram, 'u_MvpMatrixFromLight');
   normalProgram.u_ShadowMap = gl.getUniformLocation(normalProgram, 'u_ShadowMap');
   if (normalProgram.a_Position < 0 || normalProgram.a_Color < 0 || !normalProgram.u_MvpMatrix ||
-      !normalProgram.u_MvpMatrixFromLight || !normalProgram.u_ShadowMap) {
-    console.log('Failed to get the storage location of attribute or uniform variable from normalProgram'); 
+    !normalProgram.u_MvpMatrixFromLight || !normalProgram.u_ShadowMap) {
+    console.log('Failed to get the storage location of attribute or uniform variable from normalProgram');
     return;
   }
 
@@ -100,7 +102,7 @@ function main() {
     return;
   }
 
-  // Initialize framebuffer object (FBO)  
+  // Initialize framebuffer object (FBO)
   var fbo = initFramebufferObject(gl);
   if (!fbo) {
     console.log('Failed to initialize frame buffer object');
@@ -114,22 +116,22 @@ function main() {
   gl.enable(gl.DEPTH_TEST);
 
   var viewProjMatrixFromLight = new Matrix4(); // Prepare a view projection matrix for generating a shadow map
-  viewProjMatrixFromLight.setPerspective(70.0, OFFSCREEN_WIDTH/OFFSCREEN_HEIGHT, 1.0, 200.0);
+  viewProjMatrixFromLight.setPerspective(70.0, OFFSCREEN_WIDTH / OFFSCREEN_HEIGHT, 1.0, 200.0);
   viewProjMatrixFromLight.lookAt(LIGHT_X, LIGHT_Y, LIGHT_Z, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
   var viewProjMatrix = new Matrix4();          // Prepare a view projection matrix for regular drawing
-  viewProjMatrix.setPerspective(45, canvas.width/canvas.height, 1.0, 100.0);
+  viewProjMatrix.setPerspective(45, canvas.width / canvas.height, 1.0, 100.0);
   viewProjMatrix.lookAt(0.0, 7.0, 9.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
   var currentAngle = 0.0; // Current rotation angle (degrees)
   var mvpMatrixFromLight_t = new Matrix4(); // A model view projection matrix from light source (for triangle)
   var mvpMatrixFromLight_p = new Matrix4(); // A model view projection matrix from light source (for plane)
-  var tick = function() {
+  var tick = function () {
     currentAngle = animate(currentAngle);
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);               // Change the drawing destination to FBO
     gl.viewport(0, 0, OFFSCREEN_HEIGHT, OFFSCREEN_HEIGHT); // Set view port for FBO
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);   // Clear FBO    
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);   // Clear FBO
 
     gl.useProgram(shadowProgram); // Set shaders for generating a shadow map
     // Draw the triangle and the plane (for generating a shadow map)
@@ -152,7 +154,7 @@ function main() {
 
     window.requestAnimationFrame(tick, canvas);
   };
-  tick(); 
+  tick();
 }
 
 // Coordinate transformation matrix
@@ -195,23 +197,23 @@ function initAttributeVariable(gl, a_attribute, buffer) {
 function initVertexBuffersForPlane(gl) {
   // Create a plane
   //  v1------v0
-  //  |        | 
+  //  |        |
   //  |        |
   //  |        |
   //  v2------v3
 
   // Vertex coordinates
   var vertices = new Float32Array([
-    3.0, -1.7, 2.5,  -3.0, -1.7, 2.5,  -3.0, -1.7, -2.5,   3.0, -1.7, -2.5    // v0-v1-v2-v3
+    3.0, -1.7, 2.5, -3.0, -1.7, 2.5, -3.0, -1.7, -2.5, 3.0, -1.7, -2.5    // v0-v1-v2-v3
   ]);
 
   // Colors
   var colors = new Float32Array([
-    1.0, 1.0, 1.0,    1.0, 1.0, 1.0,  1.0, 1.0, 1.0,   1.0, 1.0, 1.0
+    1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
   ]);
 
   // Indices of the vertices
-  var indices = new Uint8Array([0, 1, 2,   0, 2, 3]);
+  var indices = new Uint8Array([0, 1, 2, 0, 2, 3]);
 
   var o = new Object(); // Utilize Object object to return multiple buffer objects together
 
@@ -219,7 +221,7 @@ function initVertexBuffersForPlane(gl) {
   o.vertexBuffer = initArrayBufferForLaterUse(gl, vertices, 3, gl.FLOAT);
   o.colorBuffer = initArrayBufferForLaterUse(gl, colors, 3, gl.FLOAT);
   o.indexBuffer = initElementArrayBufferForLaterUse(gl, indices, gl.UNSIGNED_BYTE);
-  if (!o.vertexBuffer || !o.colorBuffer || !o.indexBuffer) return null; 
+  if (!o.vertexBuffer || !o.colorBuffer || !o.indexBuffer) return null;
 
   o.numIndices = indices.length;
 
@@ -233,15 +235,15 @@ function initVertexBuffersForPlane(gl) {
 function initVertexBuffersForTriangle(gl) {
   // Create a triangle
   //       v2
-  //      / | 
+  //      / |
   //     /  |
   //    /   |
   //  v0----v1
 
   // Vertex coordinates
-  var vertices = new Float32Array([-0.8, 3.5, 0.0,  0.8, 3.5, 0.0,  0.0, 3.5, 1.8]);
+  var vertices = new Float32Array([-0.8, 3.5, 0.0, 0.8, 3.5, 0.0, 0.0, 3.5, 1.8]);
   // Colors
-  var colors = new Float32Array([1.0, 0.5, 0.0,  1.0, 0.5, 0.0,  1.0, 0.0, 0.0]);    
+  var colors = new Float32Array([1.0, 0.5, 0.0, 1.0, 0.5, 0.0, 1.0, 0.0, 0.0]);
   // Indices of the vertices
   var indices = new Uint8Array([0, 1, 2]);
 
@@ -251,7 +253,7 @@ function initVertexBuffersForTriangle(gl) {
   o.vertexBuffer = initArrayBufferForLaterUse(gl, vertices, 3, gl.FLOAT);
   o.colorBuffer = initArrayBufferForLaterUse(gl, colors, 3, gl.FLOAT);
   o.indexBuffer = initElementArrayBufferForLaterUse(gl, indices, gl.UNSIGNED_BYTE);
-  if (!o.vertexBuffer || !o.colorBuffer || !o.indexBuffer) return null; 
+  if (!o.vertexBuffer || !o.colorBuffer || !o.indexBuffer) return null;
 
   o.numIndices = indices.length;
 
@@ -300,7 +302,7 @@ function initFramebufferObject(gl) {
   var framebuffer, texture, depthBuffer;
 
   // Define the error handling function
-  var error = function() {
+  var error = function () {
     if (framebuffer) gl.deleteFramebuffer(framebuffer);
     if (texture) gl.deleteTexture(texture);
     if (depthBuffer) gl.deleteRenderbuffer(depthBuffer);
@@ -367,3 +369,5 @@ function animate(angle) {
   var newAngle = angle + (ANGLE_STEP * elapsed) / 1000.0;
   return newAngle % 360;
 }
+
+export default main

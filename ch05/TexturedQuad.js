@@ -1,24 +1,26 @@
+import FSHADER_SOURCE from './TexturedQuad.vert.glsl'
+import VSHADER_SOURCE from './TexturedQuad.vert.glsl'
 // TexturedQuad.js (c) 2012 matsuda and kanda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute vec2 a_TexCoord;\n' +
-  'varying vec2 v_TexCoord;\n' +
-  'void main() {\n' +
-  '  gl_Position = a_Position;\n' +
-  '  v_TexCoord = a_TexCoord;\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'attribute vec2 a_TexCoord;\n' +
+//   'varying vec2 v_TexCoord;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = a_Position;\n' +
+//   '  v_TexCoord = a_TexCoord;\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'uniform sampler2D u_Sampler;\n' +
-  'varying vec2 v_TexCoord;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   '#ifdef GL_ES\n' +
+//   'precision mediump float;\n' +
+//   '#endif\n' +
+//   'uniform sampler2D u_Sampler;\n' +
+//   'varying vec2 v_TexCoord;\n' +
+//   'void main() {\n' +
+//   '  gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -57,10 +59,10 @@ function main() {
 function initVertexBuffers(gl) {
   var verticesTexCoords = new Float32Array([
     // Vertex coordinates, texture coordinate
-    -0.5,  0.5,   0.0, 1.0,
-    -0.5, -0.5,   0.0, 0.0,
-     0.5,  0.5,   1.0, 1.0,
-     0.5, -0.5,   1.0, 0.0,
+    -0.5, 0.5, 0.0, 1.0,
+    -0.5, -0.5, 0.0, 0.0,
+    0.5, 0.5, 1.0, 1.0,
+    0.5, -0.5, 1.0, 0.0,
   ]);
   var n = 4; // The number of vertices
 
@@ -117,7 +119,7 @@ function initTextures(gl, n) {
     return false;
   }
   // Register the event handler to be called on loading an image
-  image.onload = function(){ loadTexture(gl, n, texture, u_Sampler, image); };
+  image.onload = function () { loadTexture(gl, n, texture, u_Sampler, image); };
   // Tell the browser to load an image
   image.src = '../resources/sky.jpg';
 
@@ -135,11 +137,13 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   // Set the texture image
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-  
+
   // Set the texture unit 0 to the sampler
   gl.uniform1i(u_Sampler, 0);
-  
+
   gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
 
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle
 }
+
+export default main

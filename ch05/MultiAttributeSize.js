@@ -1,18 +1,20 @@
+import FSHADER_SOURCE from './MultiAttributeSize.vert.glsl'
+import VSHADER_SOURCE from './MultiAttributeSize.vert.glsl'
 // MultiAttributeSize.js (c) 2012 matsuda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute float a_PointSize;\n' +
-  'void main() {\n' +
-  '  gl_Position = a_Position;\n' +
-  '  gl_PointSize = a_PointSize;\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'attribute float a_PointSize;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = a_Position;\n' +
+//   '  gl_PointSize = a_PointSize;\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  'void main() {\n' +
-  '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   'void main() {\n' +
+//   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -50,7 +52,7 @@ function main() {
 
 function initVertexBuffers(gl) {
   var vertices = new Float32Array([
-    0.0, 0.5,   -0.5, -0.5,   0.5, -0.5
+    0.0, 0.5, -0.5, -0.5, 0.5, -0.5
   ]);
   var n = 3;
 
@@ -59,7 +61,7 @@ function initVertexBuffers(gl) {
   ]);
 
   // Create a buffer object
-  var vertexBuffer = gl.createBuffer();  
+  var vertexBuffer = gl.createBuffer();
   var sizeBuffer = gl.createBuffer();
   if (!vertexBuffer || !sizeBuffer) {
     console.log('Failed to create the buffer object');
@@ -70,7 +72,7 @@ function initVertexBuffers(gl) {
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
   var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    if(a_Position < 0) {
+  if (a_Position < 0) {
     console.log('Failed to get the storage location of a_Position');
     return -1;
   }
@@ -81,7 +83,7 @@ function initVertexBuffers(gl) {
   gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, sizes, gl.STATIC_DRAW);
   var a_PointSize = gl.getAttribLocation(gl.program, 'a_PointSize');
-  if(a_PointSize < 0) {
+  if (a_PointSize < 0) {
     console.log('Failed to get the storage location of a_PointSize');
     return -1;
   }
@@ -93,3 +95,5 @@ function initVertexBuffers(gl) {
 
   return n;
 }
+
+export default main

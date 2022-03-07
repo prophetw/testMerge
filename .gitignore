@@ -1,0 +1,26 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/npm-debug.log*
+/yarn-error.log
+/yarn.lock
+/package-lock.json
+
+# production
+/dist
+.vscode/
+
+# misc
+.DS_Store
+.parcel-cache
+# umi
+typings/
+public/library/
+var.sh
+public/library
+
+
+# mfsu 如果需要 服务端也使用 mfsu打包 那么需要提交 ./mfsu-production 里面的所有的内容
+# 这样 服务端打包就会非常的快
+.mfsu-production/

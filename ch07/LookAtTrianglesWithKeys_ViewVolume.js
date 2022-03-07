@@ -1,3 +1,5 @@
+import FSHADER_SOURCE from './LookAtTrianglesWithKeys_ViewVolume.vert.glsl'
+import VSHADER_SOURCE from './LookAtTrianglesWithKeys_ViewVolume.vert.glsl'
 // LookAtTrianglesWithKey_ViewVolume.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -143,3 +145,5 @@ function draw(gl, n, u_ViewMatrix, viewMatrix) {
   gl.drawArrays(gl.TRIANGLES, 0, n);
 }
 
+
+export default main

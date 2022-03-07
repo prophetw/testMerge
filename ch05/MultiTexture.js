@@ -1,27 +1,29 @@
+import FSHADER_SOURCE from './MultiTexture.vert.glsl'
+import VSHADER_SOURCE from './MultiTexture.vert.glsl'
 // MultiTexture.js (c) 2012 matsuda and kanda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute vec2 a_TexCoord;\n' +
-  'varying vec2 v_TexCoord;\n' +
-  'void main() {\n' +
-  '  gl_Position = a_Position;\n' +
-  '  v_TexCoord = a_TexCoord;\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'attribute vec2 a_TexCoord;\n' +
+//   'varying vec2 v_TexCoord;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = a_Position;\n' +
+//   '  v_TexCoord = a_TexCoord;\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'uniform sampler2D u_Sampler0;\n' +
-  'uniform sampler2D u_Sampler1;\n' +
-  'varying vec2 v_TexCoord;\n' +
-  'void main() {\n' +
-  '  vec4 color0 = texture2D(u_Sampler0, v_TexCoord);\n' +
-  '  vec4 color1 = texture2D(u_Sampler1, v_TexCoord);\n' +
-  '  gl_FragColor = color0 * color1;\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   '#ifdef GL_ES\n' +
+//   'precision mediump float;\n' +
+//   '#endif\n' +
+//   'uniform sampler2D u_Sampler0;\n' +
+//   'uniform sampler2D u_Sampler1;\n' +
+//   'varying vec2 v_TexCoord;\n' +
+//   'void main() {\n' +
+//   '  vec4 color0 = texture2D(u_Sampler0, v_TexCoord);\n' +
+//   '  vec4 color1 = texture2D(u_Sampler1, v_TexCoord);\n' +
+//   '  gl_FragColor = color0 * color1;\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -60,10 +62,10 @@ function main() {
 function initVertexBuffers(gl) {
   var verticesTexCoords = new Float32Array([
     // Vertex coordinate, Texture coordinate
-    -0.5,  0.5,   0.0, 1.0,
-    -0.5, -0.5,   0.0, 0.0,
-     0.5,  0.5,   1.0, 1.0,
-     0.5, -0.5,   1.0, 0.0,
+    -0.5, 0.5, 0.0, 1.0,
+    -0.5, -0.5, 0.0, 0.0,
+    0.5, 0.5, 1.0, 1.0,
+    0.5, -0.5, 1.0, 0.0,
   ]);
   var n = 4; // The number of vertices
 
@@ -102,7 +104,7 @@ function initVertexBuffers(gl) {
 
 function initTextures(gl, n) {
   // Create a texture object
-  var texture0 = gl.createTexture(); 
+  var texture0 = gl.createTexture();
   var texture1 = gl.createTexture();
   if (!texture0 || !texture1) {
     console.log('Failed to create the texture object');
@@ -125,8 +127,8 @@ function initTextures(gl, n) {
     return false;
   }
   // Register the event handler to be called when image loading is completed
-  image0.onload = function(){ loadTexture(gl, n, texture0, u_Sampler0, image0, 0); };
-  image1.onload = function(){ loadTexture(gl, n, texture1, u_Sampler1, image1, 1); };
+  image0.onload = function () { loadTexture(gl, n, texture0, u_Sampler0, image0, 0); };
+  image1.onload = function () { loadTexture(gl, n, texture1, u_Sampler1, image1, 1); };
   // Tell the browser to load an Image
   image0.src = '../resources/sky.jpg';
   image1.src = '../resources/circle.gif';
@@ -134,7 +136,7 @@ function initTextures(gl, n) {
   return true;
 }
 // Specify whether the texture unit is ready to use
-var g_texUnit0 = false, g_texUnit1 = false; 
+var g_texUnit0 = false, g_texUnit1 = false;
 function loadTexture(gl, n, texture, u_Sampler, image, texUnit) {
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);// Flip the image's y-axis
   // Make the texture unit active
@@ -146,15 +148,15 @@ function loadTexture(gl, n, texture, u_Sampler, image, texUnit) {
     g_texUnit1 = true;
   }
   // Bind the texture object to the target
-  gl.bindTexture(gl.TEXTURE_2D, texture);   
+  gl.bindTexture(gl.TEXTURE_2D, texture);
 
   // Set texture parameters
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   // Set the image to texture
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-  
+
   gl.uniform1i(u_Sampler, texUnit);   // Pass the texure unit to u_Sampler
-  
+
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -162,3 +164,5 @@ function loadTexture(gl, n, texture, u_Sampler, image, texUnit) {
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, n);   // Draw the rectangle
   }
 }
+
+export default main

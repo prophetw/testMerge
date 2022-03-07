@@ -1,16 +1,19 @@
 // HelloQuad.js (c) 2012 matsuda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'void main() {\n' +
-  '  gl_Position = a_Position;\n' +
-  '}\n';
+import VSHADER_SOURCE from './HelloQuad.vert.glsl'
+import FSHADER_SOURCE from './HelloQuad.frag.glsl'
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  'void main() {\n' +
-  '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = a_Position;\n' +
+//   '}\n';
+
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   'void main() {\n' +
+//   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -48,7 +51,7 @@ function main() {
 
 function initVertexBuffers(gl) {
   var vertices = new Float32Array([
-    -0.5, 0.5,   -0.5, -0.5,   0.5, 0.5,　0.5, -0.5
+    -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5
   ]);
   var n = 4; // The number of vertices
 
@@ -77,3 +80,5 @@ function initVertexBuffers(gl) {
 
   return n;
 }
+
+export default main

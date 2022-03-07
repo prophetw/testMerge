@@ -1,17 +1,19 @@
+import FSHADER_SOURCE from './RotatedTranslatedTriangle.vert.glsl'
+import VSHADER_SOURCE from './RotatedTranslatedTriangle.vert.glsl'
 // RotatedTranslatedTriangle.js (c) 2012 matsuda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'uniform mat4 u_ModelMatrix;\n' +
-  'void main() {\n' +
-  '  gl_Position = u_ModelMatrix * a_Position;\n' +
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//   'uniform mat4 u_ModelMatrix;\n' +
+//   'void main() {\n' +
+//   '  gl_Position = u_ModelMatrix * a_Position;\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  'void main() {\n' +
-  '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   'void main() {\n' +
+//   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -66,7 +68,7 @@ function main() {
 
 function initVertexBuffers(gl) {
   var vertices = new Float32Array([
-    0, 0.3,   -0.3, -0.3,   0.3, -0.3
+    0, 0.3, -0.3, -0.3, 0.3, -0.3
   ]);
   var n = 3; // The number of vertices
 
@@ -96,3 +98,5 @@ function initVertexBuffers(gl) {
   return n;
 }
 
+
+export default main

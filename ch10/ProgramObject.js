@@ -1,3 +1,5 @@
+import FSHADER_SOURCE from './ProgramObject.vert.glsl'
+import VSHADER_SOURCE from './ProgramObject.vert.glsl'
 // ProgramObject.js (c) 2012 matsuda and kanda
 // Vertex shader for single color drawing
 var SOLID_VSHADER_SOURCE =
@@ -8,8 +10,8 @@ var SOLID_VSHADER_SOURCE =
   'varying vec4 v_Color;\n' +
   'void main() {\n' +
   '  vec3 lightDirection = vec3(0.0, 0.0, 1.0);\n' + // Light direction(World coordinate)
-　'  vec4 color = vec4(0.0, 1.0, 1.0, 1.0);\n' +     // Face color
-　'  gl_Position = u_MvpMatrix * a_Position;\n' +
+  '  vec4 color = vec4(0.0, 1.0, 1.0, 1.0);\n' +     // Face color
+  '  gl_Position = u_MvpMatrix * a_Position;\n' +
   '  vec3 normal = normalize(vec3(u_NormalMatrix * a_Normal));\n' +
   '  float nDotL = max(dot(normal, lightDirection), 0.0);\n' +
   '  v_Color = vec4(color.rgb * nDotL, color.a);\n' +
@@ -88,11 +90,11 @@ function main() {
   texProgram.u_NormalMatrix = gl.getUniformLocation(texProgram, 'u_NormalMatrix');
   texProgram.u_Sampler = gl.getUniformLocation(texProgram, 'u_Sampler');
 
-  if (solidProgram.a_Position < 0 || solidProgram.a_Normal < 0 || 
-      !solidProgram.u_MvpMatrix || !solidProgram.u_NormalMatrix ||
-      texProgram.a_Position < 0 || texProgram.a_Normal < 0 || texProgram.a_TexCoord < 0 ||
-      !texProgram.u_MvpMatrix || !texProgram.u_NormalMatrix || !texProgram.u_Sampler) { 
-    console.log('Failed to get the storage location of attribute or uniform variable'); 
+  if (solidProgram.a_Position < 0 || solidProgram.a_Normal < 0 ||
+    !solidProgram.u_MvpMatrix || !solidProgram.u_NormalMatrix ||
+    texProgram.a_Position < 0 || texProgram.a_Normal < 0 || texProgram.a_TexCoord < 0 ||
+    !texProgram.u_MvpMatrix || !texProgram.u_NormalMatrix || !texProgram.u_Sampler) {
+    console.log('Failed to get the storage location of attribute or uniform variable');
     return;
   }
 
@@ -116,12 +118,12 @@ function main() {
 
   // Calculate the view projection matrix
   var viewProjMatrix = new Matrix4();
-  viewProjMatrix.setPerspective(30.0, canvas.width/canvas.height, 1.0, 100.0);
+  viewProjMatrix.setPerspective(30.0, canvas.width / canvas.height, 1.0, 100.0);
   viewProjMatrix.lookAt(0.0, 0.0, 15.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
   // Start drawing
   var currentAngle = 0.0; // Current rotation angle (degrees)
-  var tick = function() {
+  var tick = function () {
     currentAngle = animate(currentAngle);  // Update current rotation angle
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear color and depth buffers
@@ -146,39 +148,39 @@ function initVertexBuffers(gl) {
   //  v2------v3
 
   var vertices = new Float32Array([   // Vertex coordinates
-     1.0, 1.0, 1.0,  -1.0, 1.0, 1.0,  -1.0,-1.0, 1.0,   1.0,-1.0, 1.0,    // v0-v1-v2-v3 front
-     1.0, 1.0, 1.0,   1.0,-1.0, 1.0,   1.0,-1.0,-1.0,   1.0, 1.0,-1.0,    // v0-v3-v4-v5 right
-     1.0, 1.0, 1.0,   1.0, 1.0,-1.0,  -1.0, 1.0,-1.0,  -1.0, 1.0, 1.0,    // v0-v5-v6-v1 up
-    -1.0, 1.0, 1.0,  -1.0, 1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0,-1.0, 1.0,    // v1-v6-v7-v2 left
-    -1.0,-1.0,-1.0,   1.0,-1.0,-1.0,   1.0,-1.0, 1.0,  -1.0,-1.0, 1.0,    // v7-v4-v3-v2 down
-     1.0,-1.0,-1.0,  -1.0,-1.0,-1.0,  -1.0, 1.0,-1.0,   1.0, 1.0,-1.0     // v4-v7-v6-v5 back
+    1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,    // v0-v1-v2-v3 front
+    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,    // v0-v3-v4-v5 right
+    1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,    // v0-v5-v6-v1 up
+    -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,    // v1-v6-v7-v2 left
+    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,    // v7-v4-v3-v2 down
+    1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0     // v4-v7-v6-v5 back
   ]);
 
   var normals = new Float32Array([   // Normal
-     0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,   0.0, 0.0, 1.0,     // v0-v1-v2-v3 front
-     1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,   1.0, 0.0, 0.0,     // v0-v3-v4-v5 right
-     0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,   0.0, 1.0, 0.0,     // v0-v5-v6-v1 up
-    -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,  -1.0, 0.0, 0.0,     // v1-v6-v7-v2 left
-     0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,   0.0,-1.0, 0.0,     // v7-v4-v3-v2 down
-     0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0,   0.0, 0.0,-1.0      // v4-v7-v6-v5 back
+    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,     // v0-v1-v2-v3 front
+    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,     // v0-v3-v4-v5 right
+    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,     // v0-v5-v6-v1 up
+    -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0,     // v1-v6-v7-v2 left
+    0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0,     // v7-v4-v3-v2 down
+    0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0      // v4-v7-v6-v5 back
   ]);
 
   var texCoords = new Float32Array([   // Texture coordinates
-     1.0, 1.0,   0.0, 1.0,   0.0, 0.0,   1.0, 0.0,    // v0-v1-v2-v3 front
-     0.0, 1.0,   0.0, 0.0,   1.0, 0.0,   1.0, 1.0,    // v0-v3-v4-v5 right
-     1.0, 0.0,   1.0, 1.0,   0.0, 1.0,   0.0, 0.0,    // v0-v5-v6-v1 up
-     1.0, 1.0,   0.0, 1.0,   0.0, 0.0,   1.0, 0.0,    // v1-v6-v7-v2 left
-     0.0, 0.0,   1.0, 0.0,   1.0, 1.0,   0.0, 1.0,    // v7-v4-v3-v2 down
-     0.0, 0.0,   1.0, 0.0,   1.0, 1.0,   0.0, 1.0     // v4-v7-v6-v5 back
+    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,    // v0-v1-v2-v3 front
+    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0,    // v0-v3-v4-v5 right
+    1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0,    // v0-v5-v6-v1 up
+    1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,    // v1-v6-v7-v2 left
+    0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,    // v7-v4-v3-v2 down
+    0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0     // v4-v7-v6-v5 back
   ]);
 
   var indices = new Uint8Array([        // Indices of the vertices
-     0, 1, 2,   0, 2, 3,    // front
-     4, 5, 6,   4, 6, 7,    // right
-     8, 9,10,   8,10,11,    // up
-    12,13,14,  12,14,15,    // left
-    16,17,18,  16,18,19,    // down
-    20,21,22,  20,22,23     // back
+    0, 1, 2, 0, 2, 3,    // front
+    4, 5, 6, 4, 6, 7,    // right
+    8, 9, 10, 8, 10, 11,    // up
+    12, 13, 14, 12, 14, 15,    // left
+    16, 17, 18, 16, 18, 19,    // down
+    20, 21, 22, 20, 22, 23     // back
   ]);
 
   var o = new Object(); // Utilize Object to to return multiple buffer objects together
@@ -188,7 +190,7 @@ function initVertexBuffers(gl) {
   o.normalBuffer = initArrayBufferForLaterUse(gl, normals, 3, gl.FLOAT);
   o.texCoordBuffer = initArrayBufferForLaterUse(gl, texCoords, 2, gl.FLOAT);
   o.indexBuffer = initElementArrayBufferForLaterUse(gl, indices, gl.UNSIGNED_BYTE);
-  if (!o.vertexBuffer || !o.normalBuffer || !o.texCoordBuffer || !o.indexBuffer) return null; 
+  if (!o.vertexBuffer || !o.normalBuffer || !o.texCoordBuffer || !o.indexBuffer) return null;
 
   o.numIndices = indices.length;
 
@@ -212,7 +214,7 @@ function initTextures(gl, program) {
     return null;
   }
   // Register the event handler to be called when image loading is completed
-  image.onload = function() {
+  image.onload = function () {
     // Write the image data to texture object
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);  // Flip the image Y coordinate
     gl.activeTexture(gl.TEXTURE0);
@@ -334,3 +336,5 @@ function animate(angle) {
   var newAngle = angle + (ANGLE_STEP * elapsed) / 1000.0;
   return newAngle % 360;
 }
+
+export default main

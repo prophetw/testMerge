@@ -1,3 +1,5 @@
+import FSHADER_SOURCE from './ColoredCube_singleColor.vert.glsl'
+import VSHADER_SOURCE from './ColoredCube_singleColor.vert.glsl'
 // ColoredCube_singleColor.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
@@ -150,3 +152,5 @@ function initArrayBuffer(gl, data, num, type, attribute) {
 
   return true;
 }
+
+export default main

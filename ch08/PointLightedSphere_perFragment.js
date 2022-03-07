@@ -1,47 +1,49 @@
+import FSHADER_SOURCE from './PointLightedSphere_perFragment.vert.glsl'
+import VSHADER_SOURCE from './PointLightedSphere_perFragment.vert.glsl'
 // PointLightedCube_perFragment.js (c) 2012 matsuda and kanda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-   //  'attribute vec4 a_Color;\n' + // Defined constant in main()
-  'attribute vec4 a_Normal;\n' +
-  'uniform mat4 u_MvpMatrix;\n' +
-  'uniform mat4 u_ModelMatrix;\n' +    // Model matrix
-  'uniform mat4 u_NormalMatrix;\n' +   // Transformation matrix of the normal
-  'varying vec4 v_Color;\n' +
-  'varying vec3 v_Normal;\n' +
-  'varying vec3 v_Position;\n' +
-  'void main() {\n' +
-  '  vec4 color = vec4(1.0, 1.0, 1.0, 1.0);\n' + // Sphere color
-  '  gl_Position = u_MvpMatrix * a_Position;\n' +
-     // Calculate the vertex position in the world coordinate
-  '  v_Position = vec3(u_ModelMatrix * a_Position);\n' +
-  '  v_Normal = normalize(vec3(u_NormalMatrix * a_Normal));\n' +
-  '  v_Color = color;\n' + 
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//    //  'attribute vec4 a_Color;\n' + // Defined constant in main()
+//   'attribute vec4 a_Normal;\n' +
+//   'uniform mat4 u_MvpMatrix;\n' +
+//   'uniform mat4 u_ModelMatrix;\n' +    // Model matrix
+//   'uniform mat4 u_NormalMatrix;\n' +   // Transformation matrix of the normal
+//   'varying vec4 v_Color;\n' +
+//   'varying vec3 v_Normal;\n' +
+//   'varying vec3 v_Position;\n' +
+//   'void main() {\n' +
+//   '  vec4 color = vec4(1.0, 1.0, 1.0, 1.0);\n' + // Sphere color
+//   '  gl_Position = u_MvpMatrix * a_Position;\n' +
+//      // Calculate the vertex position in the world coordinate
+//   '  v_Position = vec3(u_ModelMatrix * a_Position);\n' +
+//   '  v_Normal = normalize(vec3(u_NormalMatrix * a_Normal));\n' +
+//   '  v_Color = color;\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'uniform vec3 u_LightColor;\n' +     // Light color
-  'uniform vec3 u_LightPosition;\n' +  // Position of the light source
-  'uniform vec3 u_AmbientLight;\n' +   // Ambient light color
-  'varying vec3 v_Normal;\n' +
-  'varying vec3 v_Position;\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-     // Normalize the normal because it is interpolated and not 1.0 in length any more
-  '  vec3 normal = normalize(v_Normal);\n' +
-     // Calculate the light direction and make it 1.0 in length
-  '  vec3 lightDirection = normalize(u_LightPosition - v_Position);\n' +
-     // The dot product of the light direction and the normal
-  '  float nDotL = max(dot(lightDirection, normal), 0.0);\n' +
-     // Calculate the final color from diffuse reflection and ambient reflection
-  '  vec3 diffuse = u_LightColor * v_Color.rgb * nDotL;\n' +
-  '  vec3 ambient = u_AmbientLight * v_Color.rgb;\n' +
-  '  gl_FragColor = vec4(diffuse + ambient, v_Color.a);\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   '#ifdef GL_ES\n' +
+//   'precision mediump float;\n' +
+//   '#endif\n' +
+//   'uniform vec3 u_LightColor;\n' +     // Light color
+//   'uniform vec3 u_LightPosition;\n' +  // Position of the light source
+//   'uniform vec3 u_AmbientLight;\n' +   // Ambient light color
+//   'varying vec3 v_Normal;\n' +
+//   'varying vec3 v_Position;\n' +
+//   'varying vec4 v_Color;\n' +
+//   'void main() {\n' +
+//      // Normalize the normal because it is interpolated and not 1.0 in length any more
+//   '  vec3 normal = normalize(v_Normal);\n' +
+//      // Calculate the light direction and make it 1.0 in length
+//   '  vec3 lightDirection = normalize(u_LightPosition - v_Position);\n' +
+//      // The dot product of the light direction and the normal
+//   '  float nDotL = max(dot(lightDirection, normal), 0.0);\n' +
+//      // Calculate the final color from diffuse reflection and ambient reflection
+//   '  vec3 diffuse = u_LightColor * v_Color.rgb * nDotL;\n' +
+//   '  vec3 ambient = u_AmbientLight * v_Color.rgb;\n' +
+//   '  gl_FragColor = vec4(diffuse + ambient, v_Color.a);\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -60,7 +62,7 @@ function main() {
     return;
   }
 
-  // 
+  //
   var n = initVertexBuffers(gl);
   if (n < 0) {
     console.log('Failed to set the vertex information');
@@ -78,7 +80,7 @@ function main() {
   var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
   var u_LightPosition = gl.getUniformLocation(gl.program, 'u_LightPosition');
   var u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
-  if (!u_ModelMatrix || !u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition　|| !u_AmbientLight) { 
+  if (!u_ModelMatrix || !u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition || !u_AmbientLight) {
     console.log('Failed to get the storage location');
     return;
   }
@@ -97,7 +99,7 @@ function main() {
   // Calculate the model matrix
   modelMatrix.setRotate(90, 0, 1, 0); // Rotate around the y-axis
   // Calculate the view projection matrix
-  mvpMatrix.setPerspective(30, canvas.width/canvas.height, 1, 100);
+  mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
   mvpMatrix.lookAt(0, 0, 6, 0, 0, 0, 0, 1, 0);
   mvpMatrix.multiply(modelMatrix);
   // Calculate the matrix to transform the normal based on the model matrix
@@ -149,8 +151,8 @@ function initVertexBuffers(gl) { // Create a sphere
   // Generate indices
   for (j = 0; j < SPHERE_DIV; j++) {
     for (i = 0; i < SPHERE_DIV; i++) {
-      p1 = j * (SPHERE_DIV+1) + i;
-      p2 = p1 + (SPHERE_DIV+1);
+      p1 = j * (SPHERE_DIV + 1) + i;
+      p2 = p1 + (SPHERE_DIV + 1);
 
       indices.push(p1);
       indices.push(p2);
@@ -166,8 +168,8 @@ function initVertexBuffers(gl) { // Create a sphere
   // Same data can be used for vertex and normal
   // In order to make it intelligible, another buffer is prepared separately
   if (!initArrayBuffer(gl, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)) return -1;
-  if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(positions), gl.FLOAT, 3))  return -1;
-  
+  if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(positions), gl.FLOAT, 3)) return -1;
+
   // Unbind the buffer object
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
@@ -205,3 +207,5 @@ function initArrayBuffer(gl, attribute, data, type, num) {
 
   return true;
 }
+
+export default main

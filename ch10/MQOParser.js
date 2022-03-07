@@ -1,7 +1,7 @@
 // MQOParser.js (c) 2012 matsuda and itami
 // MQODoc object
 // Constructor
-var MQODoc = function() {
+var MQODoc = function () {
   this.lines;         // Array of lines that builds up the file
   this.index;         // The index of the line to be parsed
   this.materials;     // Property to manage the information in Material chunk
@@ -11,7 +11,7 @@ var MQODoc = function() {
 }
 
 // Parsing the MQO file
-MQODoc.prototype.parse = function(fileString) {
+MQODoc.prototype.parse = function (fileString) {
   this.lines = fileString.split('\n');  // Break up into lines and store them as array
   this.lines.push(null);       // Append null
   this.index = 0;              // Initialize index of line
@@ -28,11 +28,11 @@ MQODoc.prototype.parse = function(fileString) {
     if (line.indexOf('Scene') >= 0) {    // Skip Scene chunk (not use)
       this.skipToEndOfChunk();
       continue; // Go to the next line
-    } 
+    }
     if (line.indexOf('Material') >= 0) { // Read Material chunk
       this.materials = this.readMaterials(line);
       continue; // Go to the next line
-    } 
+    }
     if (line.indexOf('Object') >= 0) {   // Read Object chunk
       if (obj = this.readObjects()) this.objects.push(obj);
       else return false;
@@ -43,7 +43,7 @@ MQODoc.prototype.parse = function(fileString) {
 }
 
 // Read Material chunk
-MQODoc.prototype.readMaterials = function(line) {
+MQODoc.prototype.readMaterials = function (line) {
   var sp = new StringParser(line); // StringParser object for parsing the content of the line
 
   // Parse "Material 2 {"
@@ -62,7 +62,7 @@ MQODoc.prototype.readMaterials = function(line) {
       var b = sp.getFloat();
       var a = sp.getFloat();
       materials[i] = new Material(r, g, b, a); // Pack r, g, b, and a in Material object
-    } else { alert ('error material'); return null; }; 
+    } else { alert('error material'); return null; };
   }
   this.skipToEndOfChunk();  // Skip to the end of chunk
 
@@ -70,7 +70,7 @@ MQODoc.prototype.readMaterials = function(line) {
 }
 
 // Read Object chunk
-MQODoc.prototype.readObjects = function() {
+MQODoc.prototype.readObjects = function () {
   var mqoObject = new MQOObject(); // Create MQOObject instance for manage Object chunk information
 
   // Parse the object chunk for each line
@@ -81,15 +81,15 @@ MQODoc.prototype.readObjects = function() {
     if (line.indexOf('color') >= 0) {              // Read color parameters
       mqoObject.color = this.readColor(line);      // The format of the target is "color 0.898 0.498 0.698"
       continue;
-    } 
+    }
     if (line.indexOf('shading') >= 0) {            // Read shading parameter
       mqoObject.shading = this.readShading(line);  // The format of the target is "shading 0"
       continue;
-    } 
+    }
     if (line.indexOf('vertex') >= 0) {             // Read vertex chunk
       mqoObject.vertices = this.readVertices(line);// The format of the target is "vertex 8 {...}"
       continue;
-    } 
+    }
     if (line.indexOf('face') >= 0) {               // Read face chunk
       mqoObject.faces = this.readFaces(line);      // The format of the target is "face 6 {...}"
       continue;
@@ -109,18 +109,18 @@ MQODoc.prototype.readObjects = function() {
 }
 
 // Read color parameters (The format of the target is "color 0.898 0.498 0.698")
-MQODoc.prototype.readColor = function(line) {
+MQODoc.prototype.readColor = function (line) {
   var sp = new StringParser(line);
   sp.skipToNextWord();  // Skip "color"
   var r = sp.getFloat();
   var g = sp.getFloat();
-  var b = sp.getFloat(); 
+  var b = sp.getFloat();
 
   return new Material(r, g, b, 1.0);
 }
 
 // Read shading parameter (The format of the target is "shading 0")
-MQODoc.prototype.readShading = function(line) {
+MQODoc.prototype.readShading = function (line) {
   var sp = new StringParser(line);
   sp.skipToNextWord();  // Skip "shading"
 
@@ -128,14 +128,14 @@ MQODoc.prototype.readShading = function(line) {
 }
 
 // Read vertex chunk
-MQODoc.prototype.readVertices = function(line) {
+MQODoc.prototype.readVertices = function (line) {
   var sp = new StringParser(line);
   // Parse "vertex 8 {"
   sp.skipToNextWord();         // Skip "vertex"
   var n = sp.getInt();         // Get the number of vertices
   var vertices = new Array(n); // Create the array for vertices coordinate
   // Get vertices coordinate (Parse "-100.0000 100.0000 100.0000")
-  for (var i = 0; i < n; i++){
+  for (var i = 0; i < n; i++) {
     sp.init(this.lines[this.index++]);
     var x = sp.getFloat();
     var y = sp.getFloat();
@@ -148,7 +148,7 @@ MQODoc.prototype.readVertices = function(line) {
 }
 
 // Read face chunk
-MQODoc.prototype.readFaces = function(line) {
+MQODoc.prototype.readFaces = function (line) {
   var sp = new StringParser(line);
   // Parse "face 6 {"
   sp.skipToNextWord();	           // Skip "face"
@@ -168,7 +168,7 @@ MQODoc.prototype.readFaces = function(line) {
         for (var j = 0; j < n; j++) vIndices[j] = sp.getInt();
         continue;
       }
-      if (word == 'M') { mIndex = sp.getInt(); break; } 
+      if (word == 'M') { mIndex = sp.getInt(); break; }
     }
     faces[i] = new Face(vIndices, mIndex);
     this.updateNumVertices(n); // Update number of vertex and number of index
@@ -179,16 +179,16 @@ MQODoc.prototype.readFaces = function(line) {
 }
 
 // Update number of vertex and number of index
-MQODoc.prototype.updateNumVertices = function(numIndices) {
- this.numVertices += numIndices;      // Add to total number of vertex
- if (numIndices == 3)
-   this.numIndices += numIndices;     // Add 3 (Draw a triangle)
- else // numIndices == 4 (Rectangle)
-   this.numIndices += numIndices * 2; // Add 6 (Draw 2 triangles)
+MQODoc.prototype.updateNumVertices = function (numIndices) {
+  this.numVertices += numIndices;      // Add to total number of vertex
+  if (numIndices == 3)
+    this.numIndices += numIndices;     // Add 3 (Draw a triangle)
+  else // numIndices == 4 (Rectangle)
+    this.numIndices += numIndices * 2; // Add 6 (Draw 2 triangles)
 }
 
 // Skip to the end of chunk
-MQODoc.prototype.skipToEndOfChunk = function() {
+MQODoc.prototype.skipToEndOfChunk = function () {
   var line;
   while (line = this.lines[this.index++])
     if (line.indexOf('}') >= 0) break;
@@ -196,7 +196,7 @@ MQODoc.prototype.skipToEndOfChunk = function() {
 
 //------------------------------------------------------------------------------
 // Retrieve the information for drawing 3D model
-MQODoc.prototype.getDrawingInfo = function() {
+MQODoc.prototype.getDrawingInfo = function () {
   // Create an arrays for vertex coordinates, normals, colors, and indices
   var vertices = new Float32Array(this.numVertices * 3);
   var normals = new Float32Array(this.numVertices * 3);
@@ -223,7 +223,7 @@ MQODoc.prototype.getDrawingInfo = function() {
         if (obj.shading == 0)   // Use either surface normal or vertex normal
           normal = face.normal; // Use surface normal
         else
-          normal= v.normal;     // Use vertex normal
+          normal = v.normal;     // Use vertex normal
 
         for (var l = 0; l < 3; l++) {
           vertices[index_vertices + k * 3 + l] = v.xyz[l]; // Set vertex coordinates
@@ -255,14 +255,14 @@ MQODoc.prototype.getDrawingInfo = function() {
 //------------------------------------------------------------------------------
 // Material object
 //------------------------------------------------------------------------------
-var Material = function(r, g, b, a) {
+var Material = function (r, g, b, a) {
   this.color = [r, g, b, a];
 }
 
 //------------------------------------------------------------------------------
 // MQOObject object
 //------------------------------------------------------------------------------
-var MQOObject = function() {
+var MQOObject = function () {
   this.shading = 1;
   this.color = null;
   this.vertices = null;
@@ -272,7 +272,7 @@ var MQOObject = function() {
 //------------------------------------------------------------------------------
 // Vertex object
 //------------------------------------------------------------------------------
-var Vertex = function(x, y, z) {
+var Vertex = function (x, y, z) {
   this.xyz = [x, y, z];
   this.normal = [0.0, 0.0, 0.0]; // Sum of the normal to the face of all that share this vertex
 }
@@ -280,14 +280,14 @@ var Vertex = function(x, y, z) {
 //------------------------------------------------------------------------------
 // Face object
 //------------------------------------------------------------------------------
-var Face = function(vIndices, mIndex) {
+var Face = function (vIndices, mIndex) {
   this.vIndices = vIndices;
   this.mIndex = mIndex;
   this.normal = null; // The normal of this face
 }
 
 // Set normal
-Face.prototype.setNormal = function(vertices) {
+Face.prototype.setNormal = function (vertices) {
   var v0 = vertices[this.vIndices[0]];
   var v1 = vertices[this.vIndices[1]];
   var v2 = vertices[this.vIndices[2]];
@@ -300,12 +300,12 @@ Face.prototype.setNormal = function(vertices) {
       var v3 = vertices[this.vIndices[3]];
       this.normal = calcNormal(v1.xyz, v2.xyz, v3.xyz);
     }
-    if(this.normal == null){         // If failed to calculate the normal, set (0, 1, 0) to normal
+    if (this.normal == null) {         // If failed to calculate the normal, set (0, 1, 0) to normal
       this.normal = [0.0, 1.0, 0.0];
     }
   }
   // Add the normal to all vertices constituting this face
-  for(var i = 0, len = this.vIndices.length; i < len; i++){
+  for (var i = 0, len = this.vIndices.length; i < len; i++) {
     var v = vertices[this.vIndices[i]];
     v.normal[0] += this.normal[0]; // Note the addition
     v.normal[1] += this.normal[1];
@@ -316,7 +316,7 @@ Face.prototype.setNormal = function(vertices) {
 //------------------------------------------------------------------------------
 // Drawing information object (Vertex coordinates, Normals, Colors and Indices)
 //------------------------------------------------------------------------------
-var DrawingInfo = function(vertices, normals, colors, indices) {
+var DrawingInfo = function (vertices, normals, colors, indices) {
   this.vertices = vertices;
   this.normals = normals;
   this.colors = colors;
@@ -340,38 +340,38 @@ var DrawingInfo = function(vertices, normals, colors, indices) {
 // String parsing object
 //------------------------------------------------------------------------------
 // Constructor
-var StringParser = function(str) {
+var StringParser = function (str) {
   this.str;   // Target string
   this.index; // Position of the string in processing
   this.init(str);
 }
 
 // Initialize StringParser object
-StringParser.prototype.init = function(str)　{
+StringParser.prototype.init = function (str) {
   this.str = str;
   this.index = 0;
 }
 
 // Skip delimiters (' ','\t','(',')', '"')
-StringParser.prototype.skipDelimiters = function() {
-  for(var i = this.index, len = this.str.length; i < len; i++) {
+StringParser.prototype.skipDelimiters = function () {
+  for (var i = this.index, len = this.str.length; i < len; i++) {
     var c = this.str.charAt(i);
     // Skip TAB, Space, '(' and ')'
-    if (c == '\t'|| c == ' ' || c == '(' || c == ')' || c == '"') continue;
+    if (c == '\t' || c == ' ' || c == '(' || c == ')' || c == '"') continue;
     break;
   }
   this.index = i;
 }
 
 // Skip to top of the next word
-StringParser.prototype.skipToNextWord = function() {
+StringParser.prototype.skipToNextWord = function () {
   this.skipDelimiters();
   var n = getWordLength(this.str, this.index);
   this.index += (n + 1);
 }
 
 // Get a word
-StringParser.prototype.getWord = function() {
+StringParser.prototype.getWord = function () {
   this.skipDelimiters();
   var n = getWordLength(this.str, this.index);
   if (n == 0) return null;
@@ -382,22 +382,22 @@ StringParser.prototype.getWord = function() {
 }
 
 // Get a integer value
-StringParser.prototype.getInt = function() {
+StringParser.prototype.getInt = function () {
   return parseInt(this.getWord()); // Convert string to integer value
 }
 
 // Get a floating-point value
-StringParser.prototype.getFloat = function() {
+StringParser.prototype.getFloat = function () {
   return parseFloat(this.getWord()); // Convert string to floating-point value
 }
 
 // Count letter number to delimiter ' ','\t','(',')' and '"'
 function getWordLength(str, start) {
   var n = 0;
-  for(var i = start, len = str.length; i < len; i++){
+  for (var i = start, len = str.length; i < len; i++) {
     var c = str.charAt(i);
-    if (c == '\t'|| c == ' ' || c == '(' || c == ')' || c == '"') 
-	break;
+    if (c == '\t' || c == ' ' || c == '(' || c == ')' || c == '"')
+      break;
   }
   return i - start;
 }
@@ -409,7 +409,7 @@ function calcNormal(p0, p1, p2) {
   // Calculate vector from p0 to p1 and vector from p1 to p2
   var v0 = new Float32Array(3);
   var v1 = new Float32Array(3);
-  for (var i = 0; i < 3; i++){
+  for (var i = 0; i < 3; i++) {
     v0[i] = p0[i] - p1[i];
     v1[i] = p2[i] - p1[i];
   }

@@ -1,44 +1,46 @@
+import FSHADER_SOURCE from './PointLightedSphere.vert.glsl'
+import VSHADER_SOURCE from './PointLightedSphere.vert.glsl'
 // PointLightedCube.js (c) 2012 matsuda and kanda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-   //  'attribute vec4 a_Color;\n' + // Defined constant in main()
-  'attribute vec4 a_Normal;\n' +
-  'uniform mat4 u_MvpMatrix;\n' +
-  'uniform mat4 u_ModelMatrix;\n' +    // Model matrix
-  'uniform mat4 u_NormalMatrix;\n' +   // Transformation matrix of the normal
-  'uniform vec3 u_LightColor;\n' +     // Light color
-  'uniform vec3 u_LightPosition;\n' +  // Position of the light source
-  'uniform vec3 u_AmbientLight;\n' +   // Ambient light color
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  vec4 color = vec4(1.0, 1.0, 1.0, 1.0);\n' + // Sphere color
-  '  gl_Position = u_MvpMatrix * a_Position;\n' +
-     // Calculate a normal to be fit with a model matrix, and make it 1.0 in length
-  '  vec3 normal = normalize(vec3(u_NormalMatrix * a_Normal));\n' +
-     // Calculate world coordinate of vertex
-  '  vec4 vertexPosition = u_ModelMatrix * a_Position;\n' +
-     // Calculate the light direction and make it 1.0 in length
-  '  vec3 lightDirection = normalize(u_LightPosition - vec3(vertexPosition));\n' +
-     // The dot product of the light direction and the normal
-  '  float nDotL = max(dot(lightDirection, normal), 0.0);\n' +
-     // Calculate the color due to diffuse reflection
-  '  vec3 diffuse = u_LightColor * color.rgb * nDotL;\n' +
-     // Calculate the color due to ambient reflection
-  '  vec3 ambient = u_AmbientLight * color.rgb;\n' +
-     // Add the surface colors due to diffuse reflection and ambient reflection
-  '  v_Color = vec4(diffuse + ambient, color.a);\n' + 
-  '}\n';
+// var VSHADER_SOURCE =
+//   'attribute vec4 a_Position;\n' +
+//    //  'attribute vec4 a_Color;\n' + // Defined constant in main()
+//   'attribute vec4 a_Normal;\n' +
+//   'uniform mat4 u_MvpMatrix;\n' +
+//   'uniform mat4 u_ModelMatrix;\n' +    // Model matrix
+//   'uniform mat4 u_NormalMatrix;\n' +   // Transformation matrix of the normal
+//   'uniform vec3 u_LightColor;\n' +     // Light color
+//   'uniform vec3 u_LightPosition;\n' +  // Position of the light source
+//   'uniform vec3 u_AmbientLight;\n' +   // Ambient light color
+//   'varying vec4 v_Color;\n' +
+//   'void main() {\n' +
+//   '  vec4 color = vec4(1.0, 1.0, 1.0, 1.0);\n' + // Sphere color
+//   '  gl_Position = u_MvpMatrix * a_Position;\n' +
+//      // Calculate a normal to be fit with a model matrix, and make it 1.0 in length
+//   '  vec3 normal = normalize(vec3(u_NormalMatrix * a_Normal));\n' +
+//      // Calculate world coordinate of vertex
+//   '  vec4 vertexPosition = u_ModelMatrix * a_Position;\n' +
+//      // Calculate the light direction and make it 1.0 in length
+//   '  vec3 lightDirection = normalize(u_LightPosition - vec3(vertexPosition));\n' +
+//      // The dot product of the light direction and the normal
+//   '  float nDotL = max(dot(lightDirection, normal), 0.0);\n' +
+//      // Calculate the color due to diffuse reflection
+//   '  vec3 diffuse = u_LightColor * color.rgb * nDotL;\n' +
+//      // Calculate the color due to ambient reflection
+//   '  vec3 ambient = u_AmbientLight * color.rgb;\n' +
+//      // Add the surface colors due to diffuse reflection and ambient reflection
+//   '  v_Color = vec4(diffuse + ambient, color.a);\n' +
+//   '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
-  '}\n';
+// // Fragment shader program
+// var FSHADER_SOURCE =
+//   '#ifdef GL_ES\n' +
+//   'precision mediump float;\n' +
+//   '#endif\n' +
+//   'varying vec4 v_Color;\n' +
+//   'void main() {\n' +
+//   '  gl_FragColor = v_Color;\n' +
+//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -75,7 +77,7 @@ function main() {
   var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
   var u_LightPosition = gl.getUniformLocation(gl.program, 'u_LightPosition');
   var u_AmbientLight = gl.getUniformLocation(gl.program, 'u_AmbientLight');
-  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition　|| !u_AmbientLight) { 
+  if (!u_MvpMatrix || !u_NormalMatrix || !u_LightColor || !u_LightPosition || !u_AmbientLight) {
     console.log('Failed to get the storage location');
     return;
   }
@@ -95,7 +97,7 @@ function main() {
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
   // Calculate the view projection matrix
-  mvpMatrix.setPerspective(30, canvas.width/canvas.height, 1, 100);
+  mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
   mvpMatrix.lookAt(0, 0, 6, 0, 0, 0, 0, 1, 0);
   mvpMatrix.multiply(modelMatrix);
   // Pass the model view projection matrix to u_MvpMatrix
@@ -143,8 +145,8 @@ function initVertexBuffers(gl) { // Create a sphere
   // Generate indices
   for (j = 0; j < SPHERE_DIV; j++) {
     for (i = 0; i < SPHERE_DIV; i++) {
-      p1 = j * (SPHERE_DIV+1) + i;
-      p2 = p1 + (SPHERE_DIV+1);
+      p1 = j * (SPHERE_DIV + 1) + i;
+      p2 = p1 + (SPHERE_DIV + 1);
 
       indices.push(p1);
       indices.push(p2);
@@ -160,8 +162,8 @@ function initVertexBuffers(gl) { // Create a sphere
   // Same data can be used for vertex and normal
   // In order to make it intelligible, another buffer is prepared separately
   if (!initArrayBuffer(gl, 'a_Position', new Float32Array(positions), gl.FLOAT, 3)) return -1;
-  if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(positions), gl.FLOAT, 3))  return -1;
-  
+  if (!initArrayBuffer(gl, 'a_Normal', new Float32Array(positions), gl.FLOAT, 3)) return -1;
+
   // Unbind the buffer object
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
@@ -201,3 +203,5 @@ function initArrayBuffer(gl, attribute, data, type, num) {
 
   return true;
 }
+
+export default main
