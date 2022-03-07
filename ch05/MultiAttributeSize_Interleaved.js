@@ -1,5 +1,5 @@
 import FSHADER_SOURCE from './MultiAttributeSize_Interleaved.frag.glsl'
-import VSHADER_SOURCE from './MultiAttributeSize_Interleaved.vert.glsl'
+import VSHADER_SOURCE from './MultiAttributeSize_Interleaved.frag.glsl'
 // MultiAttributeSize_Interleaved.js (c) 2012 matsuda
 // Vertex shader program
 // var VSHADER_SOURCE =

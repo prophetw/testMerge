@@ -18,7 +18,7 @@ var FSHADER_SOURCE =
   'varying vec2 v_TexCoord;\n' +
 
   // Get the number at the specified digit
-  'float getNumber(float value, float digit) {\n' + 
+  'float getNumber(float value, float digit) {\n' +
   '  int thisDigit = int(value / digit);\n' +
   '  int upperDigit = int(thisDigit / 10) * 10;\n' +
   '  return float(thisDigit - upperDigit);\n' +
@@ -90,10 +90,10 @@ function main() {
 
 function initVertexBuffers(gl) {
   var verticesTexCoords = new Float32Array([
-    -0.8,  0.05,   0.0, 1.0,
-    -0.8, -0.05,   0.0, 0.0,
-     0.8,  0.05,   1.0, 1.0,
-     0.8, -0.05,   1.0, 0.0,
+    -0.8, 0.05, 0.0, 1.0,
+    -0.8, -0.05, 0.0, 0.0,
+    0.8, 0.05, 1.0, 1.0,
+    0.8, -0.05, 1.0, 0.0,
   ]);
   var n = 4; // The number of vertices
 
@@ -151,9 +151,9 @@ function initTextures(gl, n) {
     return false;
   }
   // Register the event handler to be called when image loading is completed
-  image.onload = function(){ loadTexture(gl, n, texture, u_Sampler, image); };
+  image.onload = function () { loadTexture(gl, n, texture, u_Sampler, image); };
   // Tell the browser to load an Image
-  image.src = '../resources/numbers.png';
+  image.src = './resources/numbers.png';
 
   return true;
 }
@@ -169,10 +169,10 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   // Set the image to texture
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-  
+
   // Pass the texure unit 0 to u_Sampler
   gl.uniform1i(u_Sampler, 0);
-  
+
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
 

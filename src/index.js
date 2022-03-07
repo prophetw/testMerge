@@ -19,5 +19,5 @@ import {
 
 
 
-const ExampleFn = ColoredTriangle
+const ExampleFn = TexturedQuad
 window.onload = ExampleFn

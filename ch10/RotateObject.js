@@ -226,11 +226,18 @@ function initTextures(gl) {
   // Register the event handler to be called when image loading is completed
   image.onload = function () { loadTexture(gl, texture, u_Sampler, image); };
   // Tell the browser to load an Image
-  image.src = '../resources/sky.jpg';
+  image.src = './resources/sky.jpg')
 
   return true;
 }
 
+/**
+ *
+ * @param {*} gl
+ * @param {*} texture
+ * @param {*} u_Sampler
+ * @param {*} image
+ */
 function loadTexture(gl, texture, u_Sampler, image) {
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);  // Flip the image Y coordinate
   // Activate texture unit0

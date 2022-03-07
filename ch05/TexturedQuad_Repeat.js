@@ -1,5 +1,5 @@
 import FSHADER_SOURCE from './TexturedQuad_Repeat.frag.glsl'
-import VSHADER_SOURCE from './TexturedQuad_Repeat.vert.glsl'
+import VSHADER_SOURCE from './TexturedQuad_Repeat.frag.glsl'
 // TexturedQuad_Repeat.js (c) 2012 matsuda
 // Vertex shader program
 // var VSHADER_SOURCE =
@@ -127,7 +127,7 @@ function initTextures(gl, n) {
   // Register the event handler to be called when image loading is completed
   image.onload = function () { loadTexture(gl, n, texture, u_Sampler, image); };
   // Tell the browser to load an Image
-  image.src = '../resources/sky.jpg';
+  image.src = './resources/sky.jpg';
 
   return true;
 }

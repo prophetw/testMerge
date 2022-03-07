@@ -61,18 +61,18 @@ var picturePanel = null;
 var nextPicturePanel = null;
 
 var pictureInfos = new Array(
-  new pictureItem("'../resources/7herbs.jpg',          'Nanakusa\n\nUse arrow keys!'"),
-  new pictureItem("'../resources/blueflower.jpg',      'Blue\nFlower'"),
-  new pictureItem("'../resources/blueflower2.jpg',     'Blue\nFlower2'"),
-  new pictureItem("'../resources/lightblueflower.jpg', 'Light\nBlue\nFlower'"),
-  new pictureItem("'../resources/orange.jpg',          'Orange'"),
-  new pictureItem("'../resources/parasol.jpg',         'Parasol'"),
-  new pictureItem("'../resources/pinkflower.jpg',      'Pink\nFlower'"),
-  new pictureItem("'../resources/redflower.jpg',       'Red\nFlower'"),
-  new pictureItem("'../resources/sky.jpg',             'Sky'"),
-  new pictureItem("'../resources/sky_cloud.jpg',       'Sky\nCloud'"),
-  new pictureItem("'../resources/sky_roof.jpg',        'Sky\nand\nRoof'"),
-  new pictureItem("'../resources/yellowflower.jpg',    'Yellow\nFlower'")
+  new pictureItem("'./resources/7herbs.jpg',          'Nanakusa\n\nUse arrow keys!'"),
+  new pictureItem("'./resources/blueflower.jpg',      'Blue\nFlower'"),
+  new pictureItem("'./resources/blueflower2.jpg',     'Blue\nFlower2'"),
+  new pictureItem("'./resources/lightblueflower.jpg', 'Light\nBlue\nFlower'"),
+  new pictureItem("'./resources/orange.jpg',          'Orange'"),
+  new pictureItem("'./resources/parasol.jpg',         'Parasol'"),
+  new pictureItem("'./resources/pinkflower.jpg',      'Pink\nFlower'"),
+  new pictureItem("'./resources/redflower.jpg',       'Red\nFlower'"),
+  new pictureItem("'./resources/sky.jpg',             'Sky'"),
+  new pictureItem("'./resources/sky_cloud.jpg',       'Sky\nCloud'"),
+  new pictureItem("'./resources/sky_roof.jpg',        'Sky\nand\nRoof'"),
+  new pictureItem("'./resources/yellowflower.jpg',    'Yellow\nFlower'")
 );
 
 function pictureItem(line) {
@@ -100,12 +100,12 @@ function trimFrom(target, separator) {
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
-  var hud = document.getElementById('hud');  
+  var hud = document.getElementById('hud');
 
-  if (!canvas || !hud) { 
+  if (!canvas || !hud) {
     console.log('Failed to get HTML elements');
-    return false; 
-  } 
+    return false;
+  }
 
   // Get the rendering context for WebGL
   var gl = getWebGLContext(canvas);
@@ -118,14 +118,14 @@ function main() {
 
   // Create a shader
   g_program_color = createProgram(gl, VSHADER_COLOR_SOURCE, FSHADER_COLOR_SOURCE);
-  if (g_program_color == null ) {
+  if (g_program_color == null) {
     console.log('Failed to create the shader');
     return;
   }
 
   // Create a shader for a texture
   g_program_texture = createProgram(gl, VSHADER_TEXTURE_SOURCE, FSHADER_TEXTURE_SOURCE);
-  if (g_program_texture == null ) {
+  if (g_program_texture == null) {
     console.log('Failed to create the shader');
     return;
   }
@@ -148,12 +148,12 @@ function main() {
 
   // Set a matrix of a picture panel
   g_panelDefaultMatrix.setTranslate(-0.5, 0.2, 0.0);
-  g_panelDefaultMatrix.rotate( 52.0, 0.0, 1.0, 0.0);
+  g_panelDefaultMatrix.rotate(52.0, 0.0, 1.0, 0.0);
   g_panelDefaultMatrix.rotate(-12.0, 1.0, 0.0, 0.0);
-  g_panelDefaultMatrix.rotate(15.0, 0.0, 0.0, 1.0); 
-  
+  g_panelDefaultMatrix.rotate(15.0, 0.0, 0.0, 1.0);
+
   // Register the key event handler
-  document.onkeydown = function(ev){ keydown(ev, gl); };
+  document.onkeydown = function (ev) { keydown(ev, gl); };
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST);
@@ -162,8 +162,8 @@ function main() {
   picturePanel = new PicturePanel(gl, pictureInfos);
   picturePanel.selectedIndex = 0;
 
-  var tick = function() {
-    if(!onUpdate(gl, ctx)) return;
+  var tick = function () {
+    if (!onUpdate(gl, ctx)) return;
     requestAnimationFrame(tick, canvas);
   };
   tick();
@@ -229,18 +229,18 @@ function useTextureShader(gl) {
 
 // The vertex information for a picture plate
 var selectedVerticesColors = new Float32Array([
-  -0.55,  0.55,   0.88, 0.09, 0.09,
-  -0.55, -0.55,   0.88, 0.09, 0.09,
-   0.55,  0.55,   0.88, 0.09, 0.09,
-   0.55, -0.55,   0.88, 0.09, 0.09,
+  -0.55, 0.55, 0.88, 0.09, 0.09,
+  -0.55, -0.55, 0.88, 0.09, 0.09,
+  0.55, 0.55, 0.88, 0.09, 0.09,
+  0.55, -0.55, 0.88, 0.09, 0.09,
 ]);
 
 // The vertex information for a picture
 var normalVerticesColors = new Float32Array([
-  -0.55,  0.55,   1.0, 1.0, 1.0,
-  -0.55, -0.55,   1.0, 1.0, 1.0,
-   0.55,  0.55,   1.0, 1.0, 1.0,
-   0.55, -0.55,   1.0, 1.0, 1.0,
+  -0.55, 0.55, 1.0, 1.0, 1.0,
+  -0.55, -0.55, 1.0, 1.0, 1.0,
+  0.55, 0.55, 1.0, 1.0, 1.0,
+  0.55, -0.55, 1.0, 1.0, 1.0,
 ]);
 
 function drawVerticesColors(gl, verticesColors, matrix) {
@@ -261,25 +261,25 @@ function drawVerticesColors(gl, verticesColors, matrix) {
 }
 
 function onUpdate(gl, ctx) {
-  if(picturePanel == null)  return;
+  if (picturePanel == null) return;
 
   picturePanel.update();
-  if (nextPicturePanel != null){
-     nextPicturePanel.update();
-     if (nextPicturePanel.mode == 5) {
-        nextPicturePanel.setMode(0);
-        picturePanel = nextPicturePanel;
-        nextPicturePanel = null;
-        picturePanel.selectedIndex = 0;
-     }
+  if (nextPicturePanel != null) {
+    nextPicturePanel.update();
+    if (nextPicturePanel.mode == 5) {
+      nextPicturePanel.setMode(0);
+      picturePanel = nextPicturePanel;
+      nextPicturePanel = null;
+      picturePanel.selectedIndex = 0;
+    }
   }
 
   gl.clear(gl.COLOR_BUFFER_BIT);
   ctx.clearRect(0, 0, 400, 400); // Clear <hud>
 
   picturePanel.draw(gl, g_panelDefaultMatrix);
-  if (nextPicturePanel != null){
-     nextPicturePanel.draw(gl, g_panelDefaultMatrix);
+  if (nextPicturePanel != null) {
+    nextPicturePanel.draw(gl, g_panelDefaultMatrix);
   }
 
   if (picturePanel.selectedIndex >= 0) {
@@ -307,15 +307,15 @@ function onUpdate(gl, ctx) {
     var lines = description.split('\n');
     ctx.font = '14px "Times New Roman"';
     ctx.fillStyle = 'rgba(255, 255, 255, 1)'; // Set white to the color of letters
-    for(var i = 0; i < lines.length; i++)
-      ctx.fillText(lines[i], 270, 150 + i * 16); 
+    for (var i = 0; i < lines.length; i++)
+      ctx.fillText(lines[i], 270, 150 + i * 16);
   }
-  
+
   return true;
 }
 
 function keydown(ev, gl) {
-  if (picturePanel == null)   return;
+  if (picturePanel == null) return;
   if (picturePanel.mode != 0) return;
   switch (ev.keyCode) {
     case 38: // UP arrow key
@@ -350,25 +350,25 @@ function keydown(ev, gl) {
 var cellX = new Array(-1.2, 0.0, 1.2, -1.2, 0.0, 1.2, -1.2, 0.0, 1.2, -1.2, 0.0, 1.2);
 var cellY = new Array(1.8, 1.8, 1.8, 0.6, 0.6, 0.6, -0.6, -0.6, -0.6, -1.8, -1.8, -1.8);
 
-// The target index 
+// The target index
 var upperIndex = new Array(0, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8);
 var lowerIndex = new Array(0, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1, 2);
-var leftIndex  = new Array(0, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+var leftIndex = new Array(0, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 var rightIndex = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0);
 
 // The number of pictures
 var cellsParPanel = 12;
 
 // Constructor
-var PicturePanel = function(gl, infos) {
+var PicturePanel = function (gl, infos) {
   this.mode = 0;
   this.selectedIndex = -1;
   this.angle = 0.0;
   this.infos = infos;
 
   this.cells = new Array();
-  for (var i = 0; i < cellsParPanel; i++){
-    if(i >= this.infos.length)  break;
+  for (var i = 0; i < cellsParPanel; i++) {
+    if (i >= this.infos.length) break;
     this.cells[i] = new PictureCell(gl, this.infos[i].path);
   }
 }
@@ -380,83 +380,83 @@ var PicturePanel = function(gl, infos) {
 //  3: Hide animation (Down key)
 //  4: Show animation (Down key)
 //  5: End animation
-PicturePanel.prototype.setMode = function(mode) {
+PicturePanel.prototype.setMode = function (mode) {
   this.mode = mode;
-  if (this.mode == 1 || this.mode == 3){
+  if (this.mode == 1 || this.mode == 3) {
     this.selectedIndex = -1;
   }
-  if (this.mode == 2 || this.mode == 4){
+  if (this.mode == 2 || this.mode == 4) {
     this.angle = 180.0;
   }
 }
 
 // Select the upper panel
-PicturePanel.prototype.selectUpper = function() {
+PicturePanel.prototype.selectUpper = function () {
   do {
     this.selectedIndex = upperIndex[this.selectedIndex + 1];
-  } while(this.selectedIndex >= this.cells.length)
+  } while (this.selectedIndex >= this.cells.length)
 }
 
 // Select the lower panel
-PicturePanel.prototype.selectLower = function() {
+PicturePanel.prototype.selectLower = function () {
   do {
     this.selectedIndex = lowerIndex[this.selectedIndex + 1];
-  } while(this.selectedIndex >= this.cells.length)
+  } while (this.selectedIndex >= this.cells.length)
 }
 
 // Select the right panel
-PicturePanel.prototype.selectRight = function() {
+PicturePanel.prototype.selectRight = function () {
   do {
     this.selectedIndex = rightIndex[this.selectedIndex + 1];
-  } while(this.selectedIndex >= this.cells.length)
+  } while (this.selectedIndex >= this.cells.length)
 }
 
 // Select the left panel
-PicturePanel.prototype.selectLeft = function() {
+PicturePanel.prototype.selectLeft = function () {
   do {
     this.selectedIndex = leftIndex[this.selectedIndex + 1];
-  } while(this.selectedIndex >= this.cells.length)
+  } while (this.selectedIndex >= this.cells.length)
 }
 
 // Update
-PicturePanel.prototype.update = function(gl, panelDefaultMatrix) {
+PicturePanel.prototype.update = function (gl, panelDefaultMatrix) {
   var speed = 8.0;
-  switch(this.mode){
+  switch (this.mode) {
     case 1: // Hide animation (Up key)
       this.angle -= speed;
-      if(this.angle < 0.0)  this.angle += 360.0;	  
-      if(this.angle <= 180.0){
+      if (this.angle < 0.0) this.angle += 360.0;
+      if (this.angle <= 180.0) {
         this.angle = 180.0;
         this.mode = 5;  // End the animation
       }
       break;
     case 2: // Show animation (Up key)
       this.angle -= speed;
-      if(this.angle <= 0.0){
+      if (this.angle <= 0.0) {
         this.angle = 0.0;
         this.mode = 5;  // End animation
       }
       break;
     case 3: // Hide animation (Down key)
       this.angle += speed;
-      if(this.angle >= 180.0){
+      if (this.angle >= 180.0) {
         this.angle = 180.0;
         this.mode = 5;  // End animation
       }
       break;
     case 4: // Show animation (Down key)
       this.angle += speed;
-      if(this.angle >= 360.0){
+      if (this.angle >= 360.0) {
         this.angle = 0.0;
         this.mode = 5;  // End animation
       }
       break;
   }
-  return(this.mode);
+  return (this.mode);
 }
 
 // Rendering
-PicturePanel.prototype.draw = function(gl, panelDefaultMatrix) {
+PicturePanel.prototype.draw = function (gl, panelDefaultMatrix) {
   var panelMatrix = new Matrix4();
   panelMatrix.set(panelDefaultMatrix);
   panelMatrix.rotate(this.angle, 0.0, 1.0, 0.0);
@@ -481,7 +481,7 @@ PicturePanel.prototype.draw = function(gl, panelDefaultMatrix) {
   useTextureShader(gl);
 
   // Draw a picture
-  for (var i = 0; i < this.cells.length; i++){
+  for (var i = 0; i < this.cells.length; i++) {
     modelMatrix.set(panelMatrix);
     modelMatrix.translate(cellX[i], cellY[i], 0.002);
     mvpMatrix.set(g_viewProjMatrix);
@@ -493,16 +493,16 @@ PicturePanel.prototype.draw = function(gl, panelDefaultMatrix) {
 //------------------------------------------------------------------------------
 // Object for drawing a picture
 // Constructor
-var PictureCell = function(gl, filePath) {
+var PictureCell = function (gl, filePath) {
   this.filePath = filePath;
   this.isTextureLoaded = false;
   this.result = true;
 
   this.verticesTexCoords = new Float32Array([
-    -0.5,  0.5,   0.0, 1.0,
-    -0.5, -0.5,   0.0, 0.0,
-     0.5,  0.5,   1.0, 1.0,
-     0.5, -0.5,   1.0, 0.0,
+    -0.5, 0.5, 0.0, 1.0,
+    -0.5, -0.5, 0.0, 0.0,
+    0.5, 0.5, 1.0, 1.0,
+    0.5, -0.5, 1.0, 0.0,
   ]);
   this.n = 4; // The number of vertices
 
@@ -520,16 +520,16 @@ var PictureCell = function(gl, filePath) {
   }
 
   var thisInstance = this;
-  this.image.onload = function(){ thisInstance.onLoadTexture(gl); };
+  this.image.onload = function () { thisInstance.onLoadTexture(gl); };
 
   this.image.src = filePath;
 }
 
-PictureCell.prototype.onLoadTexture = function(gl) {
+PictureCell.prototype.onLoadTexture = function (gl) {
   this.isTextureLoaded = true;
 }
 
-PictureCell.prototype.draw = function(gl, modelMatrix) {
+PictureCell.prototype.draw = function (gl, modelMatrix) {
   gl.uniformMatrix4fv(u_MvpMatrix, false, modelMatrix.elements);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, g_vertexTexCoordBuffer);
@@ -537,7 +537,7 @@ PictureCell.prototype.draw = function(gl, modelMatrix) {
 
   var FSIZE = this.verticesTexCoords.BYTES_PER_ELEMENT;
   gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, FSIZE * 4, 0);
-  gl.enableVertexAttribArray(a_Position); 
+  gl.enableVertexAttribArray(a_Position);
 
   gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, FSIZE * 4, FSIZE * 2);
   gl.enableVertexAttribArray(a_TexCoord);
@@ -548,8 +548,8 @@ PictureCell.prototype.draw = function(gl, modelMatrix) {
 
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, this.image);
-  
+
   gl.uniform1i(u_Sampler, 0);
-  
+
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, this.n);
 }

@@ -8,10 +8,10 @@ var VSHADER_SOURCE =
   '\n' +
   'attribute vec4 a_Position;\n' +
   'attribute vec2 a_TexCoord;\n' +
-  '\n' +  
+  '\n' +
   'varying vec4 v_Color;\n' +
   'varying vec2 v_TexCoord;\n' +
-  '\n' +  
+  '\n' +
   'void main() {\n' +
   '  mat4 modelViewMatrix = u_viewMatrix * u_modelMatrix;\n' +
   '  gl_Position = u_perspectiveMatrix * modelViewMatrix * a_Position;\n' +
@@ -62,7 +62,7 @@ function main() {
   }
 
   // Set texture
-  if (!initTextures(gl, "../resources/particle.png")) {
+  if (!initTextures(gl, "./resources/particle.png")) {
     console.log('Failed to set texture');
     return;
   }
@@ -73,7 +73,7 @@ function main() {
   var lightDirShaderLocation = gl.getUniformLocation(gl.program, 'u_lightDir');
   var textureSamplerShaderLocation = gl.getUniformLocation(gl.program, 'u_Sampler');
   var alphaShaderLocation = gl.getUniformLocation(gl.program, 'u_Alpha');
-  
+
   init_gl(gl);
   sendQuadVertexBuffers(gl);
 
@@ -84,13 +84,13 @@ function main() {
     initParticle(particle[i], true);
   }
 
-  var tick = function() {
+  var tick = function () {
     window.requestAnimationFrame(tick);
     updateParticle(particle);
     drawCommon(gl, canvas, perspectiveMatrixShaderLocation, viewMatrixShaderLocation, lightDirShaderLocation);
-    drawParticle(gl,particle, perspectiveMatrixShaderLocation, modelMatrixShaderLocation, textureSamplerShaderLocation, alphaShaderLocation);
+    drawParticle(gl, particle, perspectiveMatrixShaderLocation, modelMatrixShaderLocation, textureSamplerShaderLocation, alphaShaderLocation);
   };
-  tick(); 
+  tick();
 }
 
 
@@ -108,8 +108,8 @@ function init_gl(gl) {
 function drawCommon(gl, canvas, perspectiveMatrixShaderLocation, viewMatrixShaderLocation, lightDirShaderLocation) {
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    // Clear <canvas>
-  g_perspectiveMatrix.setPerspective(30, canvas.width/canvas.height, 1, 10000);
-  g_viewMatrix.setLookAt(0, 3, 10,   0, 2, 0,    0, 1, 0);   // eyePos - focusPos - upVector
+  g_perspectiveMatrix.setPerspective(30, canvas.width / canvas.height, 1, 10000);
+  g_viewMatrix.setLookAt(0, 3, 10, 0, 2, 0, 0, 1, 0);   // eyePos - focusPos - upVector
 
   gl.uniformMatrix4fv(perspectiveMatrixShaderLocation, false, g_perspectiveMatrix.elements);
   gl.uniformMatrix4fv(viewMatrixShaderLocation, false, g_viewMatrix.elements);
@@ -118,7 +118,7 @@ function drawCommon(gl, canvas, perspectiveMatrixShaderLocation, viewMatrixShade
 }
 
 function drawParticle(gl, p, perspectiveMatrixShaderLocation, modelMatrixShaderLocation, textureSamplerShaderLocation, alphaShaderLocation) {
-  
+
   gl.bindBuffer(gl.ARRAY_BUFFER, g_quadVertexPositionBuffer);
   var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
   gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
@@ -176,27 +176,27 @@ function updateParticle(p) {
 
 function sendQuadVertexBuffers(gl) {
   //  v3----v2
-  //  |      | 
+  //  |      |
   //  |      |
   //  |      |
   //  v0----v1
 
-  var quadVertices = new Float32Array([-0.5,-0.5,0, 0.5,-0.5,0, 0.5,0.5,0, -0.5,0.5,0]);
+  var quadVertices = new Float32Array([-0.5, -0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, 0.5, 0]);
   g_quadVertexPositionBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, g_quadVertexPositionBuffer);    
+  gl.bindBuffer(gl.ARRAY_BUFFER, g_quadVertexPositionBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, quadVertices, gl.STATIC_DRAW);
 
-  var quadTexCoords = new Float32Array([0,0, 1,0, 1,1, 0,1]);
+  var quadTexCoords = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
   g_quadVertexTexCoordBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, g_quadVertexTexCoordBuffer);    
+  gl.bindBuffer(gl.ARRAY_BUFFER, g_quadVertexTexCoordBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, quadTexCoords, gl.STATIC_DRAW);
 
-  var quadNormals = new Float32Array([0,0,1, 0,0,1, 0,0,1, 0,0,1]);    
+  var quadNormals = new Float32Array([0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1]);
   g_quadVertexNormalBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, g_quadVertexNormalBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, quadNormals, gl.STATIC_DRAW);
 
-  var indices = new Uint8Array([0,1,2, 2,3,0]);
+  var indices = new Uint8Array([0, 1, 2, 2, 3, 0]);
   g_quadVertexIndexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, g_quadVertexIndexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
@@ -204,7 +204,7 @@ function sendQuadVertexBuffers(gl) {
   return true;
 }
 
-function Particle(){
+function Particle() {
   this.velocity = new Array(3);
   this.position = new Array(3);
   this.angle = 0;
@@ -247,12 +247,12 @@ function initTextures(gl, str) {
   }
 
   IMAGE = new Image();
-  if(!IMAGE) {
+  if (!IMAGE) {
     console.log('画像オブジェクトの作成に失敗');
     return false;
   }
 
-  IMAGE.onload = function(){ loadTexture(gl, TEXTURE, IMAGE); };
+  IMAGE.onload = function () { loadTexture(gl, TEXTURE, IMAGE); };
   IMAGE.src = str;
 
   return true;

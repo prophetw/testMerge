@@ -257,7 +257,7 @@ function initTextures(gl) {
   };
 
   // Tell the browser to load an Image
-  image.src = '../resources/sky_cloud.jpg';
+  image.src = './resources/sky_cloud.jpg';
 
   return texture;
 }

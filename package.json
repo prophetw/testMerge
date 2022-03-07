@@ -6,6 +6,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel src/index.html"
   },
+  "staticFiles": {
+    "staticPath": "resources",
+    "staticOutPath": "resources/"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/prophetw/WebGLTuturialSourceCode.git"
@@ -20,6 +24,7 @@
     "parcel": "^2.3.2"
   },
   "devDependencies": {
-    "@parcel/transformer-glsl": "2.3.2"
+    "@parcel/transformer-glsl": "2.3.2",
+    "parcel-reporter-static-files-copy": "^1.3.4"
   }
 }

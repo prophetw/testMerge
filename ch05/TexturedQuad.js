@@ -1,5 +1,5 @@
 import FSHADER_SOURCE from './TexturedQuad.frag.glsl'
-import VSHADER_SOURCE from './TexturedQuad.vert.glsl'
+import VSHADER_SOURCE from './TexturedQuad.frag.glsl'
 // TexturedQuad.js (c) 2012 matsuda and kanda
 // Vertex shader program
 // var VSHADER_SOURCE =
@@ -121,11 +121,10 @@ function initTextures(gl, n) {
   // Register the event handler to be called on loading an image
   image.onload = function () { loadTexture(gl, n, texture, u_Sampler, image); };
   // Tell the browser to load an image
-  image.src = '../resources/sky.jpg';
+  image.src = './resources/sky.jpg';
 
   return true;
 }
-
 function loadTexture(gl, n, texture, u_Sampler, image) {
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
   // Enable texture unit0
@@ -140,7 +139,6 @@ function loadTexture(gl, n, texture, u_Sampler, image) {
 
   // Set the texture unit 0 to the sampler
   gl.uniform1i(u_Sampler, 0);
-
   gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
 
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, n); // Draw the rectangle

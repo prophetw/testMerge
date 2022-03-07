@@ -1,5 +1,5 @@
 import FSHADER_SOURCE from './MultiAttributeColor.frag.glsl'
-import VSHADER_SOURCE from './MultiAttributeColor.vert.glsl'
+import VSHADER_SOURCE from './MultiAttributeColor.frag.glsl'
 // MultiAttributeColor.js (c) 2012 matsuda
 // Vertex shader program
 // var VSHADER_SOURCE =

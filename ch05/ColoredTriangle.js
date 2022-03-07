@@ -1,5 +1,5 @@
 import FSHADER_SOURCE from './ColoredTriangle.frag.glsl'
-import VSHADER_SOURCE from './ColoredTriangle.vert.glsl'
+import VSHADER_SOURCE from './ColoredTriangle.frag.glsl'
 // ColoredTriangle.js (c) 2012 matsuda
 // Vertex shader program
 // var VSHADER_SOURCE =
@@ -52,7 +52,9 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   // Draw the rectangle
+  // gl.drawArrays(gl.LINE, 0, n);
   gl.drawArrays(gl.TRIANGLES, 0, n);
+  // gl.drawArrays(gl.LINE_LOOP, 0, n);
 }
 
 function initVertexBuffers(gl) {
