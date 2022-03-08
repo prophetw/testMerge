@@ -1,5 +1,5 @@
 import FSHADER_SOURCE from './TexturedQuad_Repeat.frag.glsl'
-import VSHADER_SOURCE from './TexturedQuad_Repeat.frag.glsl'
+import VSHADER_SOURCE from './TexturedQuad_Repeat.vert.glsl'
 // TexturedQuad_Repeat.js (c) 2012 matsuda
 // Vertex shader program
 // var VSHADER_SOURCE =
@@ -131,7 +131,14 @@ function initTextures(gl, n) {
 
   return true;
 }
-
+/**
+ *
+ * @param {WebGLRenderingContext} gl
+ * @param {*} n
+ * @param {*} texture
+ * @param {*} u_Sampler
+ * @param {*} image
+ */
 function loadTexture(gl, n, texture, u_Sampler, image) {
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);  // Flip the image's y axis
   // Activate texture unit0

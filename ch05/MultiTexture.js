@@ -1,5 +1,5 @@
 import FSHADER_SOURCE from './MultiTexture.frag.glsl'
-import VSHADER_SOURCE from './MultiTexture.frag.glsl'
+import VSHADER_SOURCE from './MultiTexture.vert.glsl'
 // MultiTexture.js (c) 2012 matsuda and kanda
 // Vertex shader program
 // var VSHADER_SOURCE =

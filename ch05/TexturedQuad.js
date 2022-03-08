@@ -1,5 +1,5 @@
 import FSHADER_SOURCE from './TexturedQuad.frag.glsl'
-import VSHADER_SOURCE from './TexturedQuad.frag.glsl'
+import VSHADER_SOURCE from './TexturedQuad.vert.glsl'
 // TexturedQuad.js (c) 2012 matsuda and kanda
 // Vertex shader program
 // var VSHADER_SOURCE =

@@ -1,5 +1,5 @@
 import FSHADER_SOURCE from './HelloTriangle_FragCoord.frag.glsl'
-import VSHADER_SOURCE from './HelloTriangle_FragCoord.frag.glsl'
+import VSHADER_SOURCE from './HelloTriangle_FragCoord.vert.glsl'
 // HelloTriangle_FragCoord.js (c) 2012 matsuda
 // Vertex shader program
 // var VSHADER_SOURCE =
