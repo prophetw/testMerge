@@ -25,7 +25,7 @@ import VSHADER_SOURCE from './LightedCube_ambient.vert.glsl'
 //   '  v_Color = vec4(diffuse + ambient, a_Color.a);\n' +
 //   '}\n';
 
-// // Fragment shader program
+// Fragment shader program
 // var FSHADER_SOURCE =
 //   '#ifdef GL_ES\n' +
 //   'precision mediump float;\n' +

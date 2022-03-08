@@ -111,7 +111,7 @@ function initVertexBuffers(gl) {
 
   // Create a buffer object
   var indexBuffer = gl.createBuffer();
-  if (!indexBuffer) 
+  if (!indexBuffer)
     return -1;
 
   // Write the vertex coordinates and color to the buffer object

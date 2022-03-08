@@ -53,7 +53,7 @@ function main() {
 
   // Get the storage location of u_mvpMatrix
   var u_mvpMatrix = gl.getUniformLocation(gl.program, 'u_mvpMatrix');
-  if (!u_mvpMatrix) { 
+  if (!u_mvpMatrix) {
     console.log('Failed to get the storage location of u_mvpMatrix');
     return;
   }
@@ -90,9 +90,9 @@ function main() {
 function initVertexBuffers(gl) {
   var verticesColors = new Float32Array([
     // Vertex coordinates and color
-     0.0,  1.0,   0.0,  0.4,  0.4,  1.0,  // The front blue one 
+     0.0,  1.0,   0.0,  0.4,  0.4,  1.0,  // The front blue one
     -0.5, -1.0,   0.0,  0.4,  0.4,  1.0,
-     0.5, -1.0,   0.0,  1.0,  0.4,  0.4, 
+     0.5, -1.0,   0.0,  1.0,  0.4,  0.4,
 
      0.0,  1.0,  -2.0,  1.0,  1.0,  0.4, // The middle yellow one
     -0.5, -1.0,  -2.0,  1.0,  1.0,  0.4,
@@ -100,12 +100,12 @@ function initVertexBuffers(gl) {
 
      0.0,  1.0,  -4.0,  0.4,  1.0,  0.4, // The back green one
     -0.5, -1.0,  -4.0,  0.4,  1.0,  0.4,
-     0.5, -1.0,  -4.0,  1.0,  0.4,  0.4, 
+     0.5, -1.0,  -4.0,  1.0,  0.4,  0.4,
   ]);
   var n = 9;
 
   // Create a buffer object
-  var vertexColorbuffer = gl.createBuffer();  
+  var vertexColorbuffer = gl.createBuffer();
   if (!vertexColorbuffer) {
     console.log('Failed to create the buffer object');
     return -1;

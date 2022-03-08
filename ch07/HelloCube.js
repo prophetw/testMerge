@@ -52,7 +52,7 @@ function main() {
 
   // Get the storage location of u_MvpMatrix
   var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
-  if (!u_MvpMatrix) { 
+  if (!u_MvpMatrix) {
     console.log('Failed to get the storage location of u_MvpMatrix');
     return;
   }

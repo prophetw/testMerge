@@ -53,7 +53,7 @@ function main() {
   // get the storage locations of u_ViewMatrix and u_ProjMatrix
   var u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
   var u_ProjMatrix = gl.getUniformLocation(gl.program, 'u_ProjMatrix');
-  if (!u_ViewMatrix || !u_ProjMatrix) { 
+  if (!u_ViewMatrix || !u_ProjMatrix) {
     console.log('Failed to get the storage location of u_ViewMatrix and/or u_ProjMatrix');
     return;
   }
@@ -62,8 +62,8 @@ function main() {
   var projMatrix = new Matrix4();  // The projection matrix
 
   // calculate the view matrix and projection matrix
-  viewMatrix.setLookAt(0, 0, 5, 0, 0, -100, 0, 1, 0);
-  projMatrix.setPerspective(30, canvas.width/canvas.height, 1, 100);
+  viewMatrix.setLookAt(0, 0, 5, 0, 0, 0, 0, 1, 0);
+  projMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
   // Pass the view and projection matrix to u_ViewMatrix, u_ProjMatrix
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
   gl.uniformMatrix4fv(u_ProjMatrix, false, projMatrix.elements);
@@ -78,35 +78,35 @@ function main() {
 function initVertexBuffers(gl) {
   var verticesColors = new Float32Array([
     // Three triangles on the right side
-    0.75,  1.0,  -4.0,  0.4,  1.0,  0.4, // The back green one
-    0.25, -1.0,  -4.0,  0.4,  1.0,  0.4,
-    1.25, -1.0,  -4.0,  1.0,  0.4,  0.4, 
+    0.75, 1.0, -4.0, 0.4, 1.0, 0.4, // The back green one
+    0.25, -1.0, -4.0, 0.4, 1.0, 0.4,
+    1.25, -1.0, -4.0, 1.0, 0.4, 0.4,
 
-    0.75,  1.0,  -2.0,  1.0,  1.0,  0.4, // The middle yellow one
-    0.25, -1.0,  -2.0,  1.0,  1.0,  0.4,
-    1.25, -1.0,  -2.0,  1.0,  0.4,  0.4, 
+    0.75, 1.0, -2.0, 1.0, 1.0, 0.4, // The middle yellow one
+    0.25, -1.0, -2.0, 1.0, 1.0, 0.4,
+    1.25, -1.0, -2.0, 1.0, 0.4, 0.4,
 
-    0.75,  1.0,   0.0,  0.4,  0.4,  1.0,  // The front blue one 
-    0.25, -1.0,   0.0,  0.4,  0.4,  1.0,
-    1.25, -1.0,   0.0,  1.0,  0.4,  0.4, 
+    0.75, 1.0, 0.0, 0.4, 0.4, 1.0,  // The front blue one
+    0.25, -1.0, 0.0, 0.4, 0.4, 1.0,
+    1.25, -1.0, 0.0, 1.0, 0.4, 0.4,
 
     // Three triangles on the left side
-   -0.75,  1.0,  -4.0,  0.4,  1.0,  0.4, // The back green one
-   -1.25, -1.0,  -4.0,  0.4,  1.0,  0.4,
-   -0.25, -1.0,  -4.0,  1.0,  0.4,  0.4, 
+    -0.75, 1.0, -4.0, 0.4, 1.0, 0.4, // The back green one
+    -1.25, -1.0, -4.0, 0.4, 1.0, 0.4,
+    -0.25, -1.0, -4.0, 1.0, 0.4, 0.4,
 
-   -0.75,  1.0,  -2.0,  1.0,  1.0,  0.4, // The middle yellow one
-   -1.25, -1.0,  -2.0,  1.0,  1.0,  0.4,
-   -0.25, -1.0,  -2.0,  1.0,  0.4,  0.4, 
+    -0.75, 1.0, -2.0, 1.0, 1.0, 0.4, // The middle yellow one
+    -1.25, -1.0, -2.0, 1.0, 1.0, 0.4,
+    -0.25, -1.0, -2.0, 1.0, 0.4, 0.4,
 
-   -0.75,  1.0,   0.0,  0.4,  0.4,  1.0,  // The front blue one 
-   -1.25, -1.0,   0.0,  0.4,  0.4,  1.0,
-   -0.25, -1.0,   0.0,  1.0,  0.4,  0.4, 
+    -0.75, 1.0, 0.0, 0.4, 0.4, 1.0,  // The front blue one
+    -1.25, -1.0, 0.0, 0.4, 0.4, 1.0,
+    -0.25, -1.0, 0.0, 1.0, 0.4, 0.4,
   ]);
   var n = 18; // Three vertices per triangle * 6
 
   // Create a buffer object
-  var vertexColorbuffer = gl.createBuffer();  
+  var vertexColorbuffer = gl.createBuffer();
   if (!vertexColorbuffer) {
     console.log('Failed to create the buffer object');
     return -1;
@@ -120,7 +120,7 @@ function initVertexBuffers(gl) {
 
   // Assign the buffer object to a_Position and enable the assignment
   var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-  if(a_Position < 0) {
+  if (a_Position < 0) {
     console.log('Failed to get the storage location of a_Position');
     return -1;
   }
@@ -129,7 +129,7 @@ function initVertexBuffers(gl) {
 
   // Assign the buffer object to a_Color and enable the assignment
   var a_Color = gl.getAttribLocation(gl.program, 'a_Color');
-  if(a_Color < 0) {
+  if (a_Color < 0) {
     console.log('Failed to get the storage location of a_Color');
     return -1;
   }

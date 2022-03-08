@@ -73,6 +73,7 @@ function main() {
   // Set the light direction (in the world coordinate)
   var lightDirection = new Vector3([0.5, 3.0, 4.0]);
   lightDirection.normalize();     // Normalize
+  console.log(' lightDirection ', lightDirection);
   gl.uniform3fv(u_LightDirection, lightDirection.elements);
 
   // Calculate the view projection matrix
@@ -108,16 +109,16 @@ function initVertexBuffers(gl) {
 
 
   var colors = new Float32Array([    // Colors
-    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,     // v0-v1-v2-v3 front
-    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,     // v0-v3-v4-v5 right
-    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,     // v0-v5-v6-v1 up
-    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,     // v1-v6-v7-v2 left
-    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,     // v7-v4-v3-v2 down
-    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0　    // v4-v7-v6-v5 back
+    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,     // v0-v1-v2-v3 front
+    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,     // v0-v3-v4-v5 right
+    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,     // v0-v5-v6-v1 up
+    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,     // v1-v6-v7-v2 left
+    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,     // v7-v4-v3-v2 down
+    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0      // v4-v7-v6-v5 back
   ]);
 
 
-  var normals = new Float32Array([    // Normal
+  var normals = new Float32Array([    // Normal 法向量
     0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
     1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
     0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
