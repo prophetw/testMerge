@@ -31,6 +31,11 @@ import VSHADER_SOURCE from './MultiJointModel_segment.vert.glsl'
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
+  const pEle = document.createElement('p')
+  pEle.innerHTML = `
+&larr;&rarr;: arm1 rotation,&uarr;&darr;: joint1 rotation, xz: joint2(wrist) rotation, cv: finger rotation
+  `
+  document.body.appendChild(pEle)
 
   // Get the rendering context for WebGL
   var gl = getWebGLContext(canvas);

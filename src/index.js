@@ -31,7 +31,13 @@ import {
   PointLightedSphere,PointLightedSphere_perFragment
 } from '../ch08'
 import {JointModel,MultiJointModel,MultiJointModel_segment} from '../ch09'
+import {
+  ThreeDoverWeb, BlendedCube, Fog,
+  Fog_w, FramebufferObject, HUD, LookAtBlendedTriangles,
+   OBJViewer, PickFace, PickObject, Picking,
+   ProgramObject, RotateObject, RotatingTriangle_contextLost,
+   RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
+} from '../ch10'
 
-
-const ExampleFn = PointLightedCube_perFragment
+const ExampleFn = ProgramObject
 window.onload = ExampleFn

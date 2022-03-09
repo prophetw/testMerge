@@ -226,7 +226,7 @@ function initTextures(gl) {
   // Register the event handler to be called when image loading is completed
   image.onload = function () { loadTexture(gl, texture, u_Sampler, image); };
   // Tell the browser to load an Image
-  image.src = './resources/sky.jpg')
+  image.src = './resources/sky.jpg'
 
   return true;
 }

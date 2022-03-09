@@ -15,4 +15,10 @@ import PerspectiveView from './PerspectiveView'
 import PerspectiveView_mvp from './PerspectiveView_mvp'
 import PerspectiveView_mvpMatrix from './PerspectiveView_mvpMatrix'
 import Zfighting from './Zfighting'
-export {ColoredCube,ColoredCube_singleColor,DepthBuffer,HelloCube,HelloCube_singleColor,LookAtRotatedTriangles,LookAtRotatedTriangles_mvMatrix,LookAtTriangles,LookAtTrianglesWithKeys,LookAtTrianglesWithKeys_ViewVolume,OrthoView,OrthoView_halfSize,OrthoView_halfWidth,PerspectiveView,PerspectiveView_mvp,PerspectiveView_mvpMatrix,Zfighting}
+export {
+  ColoredCube,ColoredCube_singleColor,
+  DepthBuffer,HelloCube,HelloCube_singleColor,
+  LookAtRotatedTriangles,LookAtRotatedTriangles_mvMatrix,LookAtTriangles,
+  LookAtTrianglesWithKeys,LookAtTrianglesWithKeys_ViewVolume,OrthoView,
+  OrthoView_halfSize,OrthoView_halfWidth,PerspectiveView,PerspectiveView_mvp,
+  PerspectiveView_mvpMatrix,Zfighting}

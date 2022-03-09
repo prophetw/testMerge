@@ -32,7 +32,15 @@ var ANGLE_STEP = 20.0; // Rotation angle (degrees/second)
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
+  // <canvas id="hud" width="400" height="400" style="position: absolute; z-index: 1"></canvas>
+  const canvasEle = document.createElement('canvas')
+  canvasEle.id = 'hud'
+  canvasEle.width = 400
+  canvasEle.height = 400
+  canvasEle.style = "position: absolute; z-index: 1; top: 0; left: 0"
+  document.body.appendChild(canvasEle)
   var hud = document.getElementById('hud');
+  console.log(' hud ', hud);
 
   if (!canvas || !hud) {
     console.log('Failed to get HTML elements');
@@ -183,8 +191,13 @@ function draw(gl, n, currentAngle, viewProjMatrix, u_MvpMatrix) {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);     // Clear buffers (color and depth)
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);   // Draw
 }
+/**
+ *
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {*} currentAngle
+ */
 
-function draw2D(ctx, currentAngle) {
+function draw2D(ctx , currentAngle) {
   ctx.clearRect(0, 0, 400, 400); // Clear <hud>
   // Draw triangle with white lines
   ctx.beginPath();                      // Start drawing

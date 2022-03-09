@@ -31,7 +31,11 @@ import VSHADER_SOURCE from './JointModel.vert.glsl'
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
-
+  const pEle = document.createElement('p')
+  pEle.innerHTML = `
+  &larr;&rarr;: arm1 rotation(y-axis), &uarr;&darr;: joint1 rotation(z-axis)
+  `
+  document.body.appendChild(pEle)
   // Get the rendering context for WebGL
   var gl = getWebGLContext(canvas);
   if (!gl) {

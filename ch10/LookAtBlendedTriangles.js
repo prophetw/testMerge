@@ -29,7 +29,7 @@ function main() {
   var canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
-  var gl = getWebGLContext(canvas);
+  var gl= getWebGLContext(canvas);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
@@ -54,6 +54,7 @@ function main() {
   gl.enable(gl.BLEND);
   // Set blending function
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 
   // get the storage locations of u_ViewMatrix and u_ProjMatrix
   var u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
@@ -80,17 +81,17 @@ function main() {
 function initVertexBuffers(gl) {
   var verticesColors = new Float32Array([
     // Vertex coordinates and color(RGBA)
-    0.0, 0.5, -0.4, 0.4, 1.0, 0.4, 0.4, // The back green one
-    -0.5, -0.5, -0.4, 0.4, 1.0, 0.4, 0.4,
-    0.5, -0.5, -0.4, 1.0, 0.4, 0.4, 0.4,
+    0.0, 0.5, -0.4,    0.4, 1.0, 0.4, 0.4, // The back green one
+    -0.5, -0.5, -0.4,  0.4, 1.0, 0.4, 0.4,
+    0.5, -0.5, -0.4,   1.0, 0.4, 0.4, 0.4,
 
-    0.5, 0.4, -0.2, 1.0, 0.4, 0.4, 0.4, // The middle yerrow one
-    -0.5, 0.4, -0.2, 1.0, 1.0, 0.4, 0.4,
-    0.0, -0.6, -0.2, 1.0, 1.0, 0.4, 0.4,
+    0.5, 0.4, -0.2,   1.0, 0.4, 0.4, 0.4, // The middle yerrow one
+    -0.5, 0.4, -0.2,  1.0, 1.0, 0.4, 0.4,
+    0.0, -0.6, -0.2,  1.0, 1.0, 0.4, 0.4,
 
-    0.0, 0.5, 0.0, 0.4, 0.4, 1.0, 0.4,  // The front blue one
-    -0.5, -0.5, 0.0, 0.4, 0.4, 1.0, 0.4,
-    0.5, -0.5, 0.0, 1.0, 0.4, 0.4, 0.4,
+    0.0, 0.5, 0.0,    0.4, 0.4, 1.0, 0.4,  // The front blue one
+    -0.5, -0.5, 0.0,  0.4, 0.4, 1.0, 0.4,
+    0.5, -0.5, 0.0,   1.0, 0.4, 0.4, 0.4,
   ]);
   var n = 9;
 

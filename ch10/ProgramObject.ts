@@ -1,5 +1,5 @@
-import FSHADER_SOURCE from './ProgramObject.frag.glsl'
-import VSHADER_SOURCE from './ProgramObject.vert.glsl'
+// import FSHADER_SOURCE from './ProgramObject.frag.glsl'
+// import VSHADER_SOURCE from './ProgramObject.vert.glsl'
 // ProgramObject.js (c) 2012 matsuda and kanda
 // Vertex shader for single color drawing
 var SOLID_VSHADER_SOURCE =
@@ -59,18 +59,18 @@ var TEXTURE_FSHADER_SOURCE =
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
-  var gl = getWebGLContext(canvas);
+  var gl = window.getWebGLContext(canvas);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
 
   // Initialize shaders
-  var solidProgram = createProgram(gl, SOLID_VSHADER_SOURCE, SOLID_FSHADER_SOURCE);
-  var texProgram = createProgram(gl, TEXTURE_VSHADER_SOURCE, TEXTURE_FSHADER_SOURCE);
+  var solidProgram = window.createProgram(gl, SOLID_VSHADER_SOURCE, SOLID_FSHADER_SOURCE);
+  var texProgram = window.createProgram(gl, TEXTURE_VSHADER_SOURCE, TEXTURE_FSHADER_SOURCE);
   if (!solidProgram || !texProgram) {
     console.log('Failed to intialize shaders.');
     return;
@@ -117,7 +117,7 @@ function main() {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
   // Calculate the view projection matrix
-  var viewProjMatrix = new Matrix4();
+  var viewProjMatrix = new window.Matrix4();
   viewProjMatrix.setPerspective(30.0, canvas.width / canvas.height, 1.0, 100.0);
   viewProjMatrix.lookAt(0.0, 0.0, 15.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
@@ -132,12 +132,12 @@ function main() {
     // Draw a cube with texture
     drawTexCube(gl, texProgram, cube, texture, 2.0, currentAngle, viewProjMatrix);
 
-    window.requestAnimationFrame(tick, canvas);
+    window.requestAnimationFrame(tick);
   };
   tick();
 }
 
-function initVertexBuffers(gl) {
+function initVertexBuffers(gl: WebGLRenderingContext) {
   // Create a cube
   //    v6----- v5
   //   /|      /|
@@ -183,7 +183,13 @@ function initVertexBuffers(gl) {
     20, 21, 22, 20, 22, 23     // back
   ]);
 
-  var o = new Object(); // Utilize Object to to return multiple buffer objects together
+  var o = new Object() as {
+    vertexBuffer: WebGLBuffer
+    normalBuffer: WebGLBuffer
+    texCoordBuffer: WebGLBuffer
+    indexBuffer: WebGLBuffer
+    numIndices: number
+  }; // Utilize Object to to return multiple buffer objects together
 
   // Write vertex information to buffer object
   o.vertexBuffer = initArrayBufferForLaterUse(gl, vertices, 3, gl.FLOAT);
@@ -201,7 +207,7 @@ function initVertexBuffers(gl) {
   return o;
 }
 
-function initTextures(gl, program) {
+function initTextures(gl: WebGLRenderingContext, program: WebGLProgram) {
   var texture = gl.createTexture();   // Create a texture object
   if (!texture) {
     console.log('Failed to create the texture object');
@@ -270,9 +276,9 @@ function initAttributeVariable(gl, a_attribute, buffer) {
 }
 
 // Coordinate transformation matrix
-var g_modelMatrix = new Matrix4();
-var g_mvpMatrix = new Matrix4();
-var g_normalMatrix = new Matrix4();
+var g_modelMatrix = new window.Matrix4();
+var g_mvpMatrix = new window.Matrix4();
+var g_normalMatrix = new window.Matrix4();
 
 function drawCube(gl, program, o, x, angle, viewProjMatrix) {
   // Calculate a model matrix
@@ -293,7 +299,11 @@ function drawCube(gl, program, o, x, angle, viewProjMatrix) {
   gl.drawElements(gl.TRIANGLES, o.numIndices, o.indexBuffer.type, 0);   // Draw
 }
 
-function initArrayBufferForLaterUse(gl, data, num, type) {
+function initArrayBufferForLaterUse(
+  gl: WebGLRenderingContext,
+  data: ArrayBuffer,
+  num: number,
+  type: number): WebGLBuffer {
   var buffer = gl.createBuffer();   // Create a buffer object
   if (!buffer) {
     console.log('Failed to create the buffer object');
@@ -310,7 +320,7 @@ function initArrayBufferForLaterUse(gl, data, num, type) {
   return buffer;
 }
 
-function initElementArrayBufferForLaterUse(gl, data, type) {
+function initElementArrayBufferForLaterUse(gl: WebGLRenderingContext, data: ArrayBuffer, type: number): WebGLBuffer {
   var buffer = gl.createBuffer();　  // Create a buffer object
   if (!buffer) {
     console.log('Failed to create the buffer object');

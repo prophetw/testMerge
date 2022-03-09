@@ -5,7 +5,6 @@ import Fog_w from './Fog_w'
 import FramebufferObject from './FramebufferObject'
 import HUD from './HUD'
 import LookAtBlendedTriangles from './LookAtBlendedTriangles'
-import MQOParser from './MQOParser'
 import OBJViewer from './OBJViewer'
 import PickFace from './PickFace'
 import PickObject from './PickObject'
@@ -17,4 +16,10 @@ import RoundedPoints from './RoundedPoints'
 import Shadow from './Shadow'
 import Shadow_highp from './Shadow_highp'
 import Shadow_highp_sphere from './Shadow_highp_sphere'
-export { ThreeDoverWeb, BlendedCube, Fog, Fog_w, FramebufferObject, HUD, LookAtBlendedTriangles, MQOParser, OBJViewer, PickFace, PickObject, Picking, ProgramObject, RotateObject, RotatingTriangle_contextLost, RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere }
+export {
+   ThreeDoverWeb, BlendedCube, Fog,
+   Fog_w, FramebufferObject, HUD, LookAtBlendedTriangles,
+   OBJViewer, PickFace, PickObject, Picking,
+   ProgramObject, RotateObject, RotatingTriangle_contextLost,
+   RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
+  }

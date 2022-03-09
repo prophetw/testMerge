@@ -32,7 +32,27 @@ var ANGLE_STEP = 20.0; // Rotation angle (degrees/second)
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
+  const divEle = document.createElement('div')
+  divEle.innerHTML= `
+<h1>19<h1>
 
+<h2>Great Designs Come from Great Designers --- Not from Great Design Processes</h2>
+
+<p>The basic premise underlying the SEI's [Software
+Engineering Institute] work on software process maturity
+is that the quality of a software product is largely
+determined by the quality of the software development
+and maintenance processes used to build it.</p>
+
+Mark Paulk [1995], "The evolution of the SEI's capability maturity model for software"
+
+<p>...[W]hile some may see them as the crazy ones, we see
+genius, because the ones who are crazy enough to think
+that they can change the world, are the ones who do.</p>
+
+                                Steve Jobs, Apple commercial (1997)
+  `
+  document.body.appendChild(divEle)
   // Get the rendering context for WebGL
   var gl = getWebGLContext(canvas);
   if (!gl) {

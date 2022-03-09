@@ -25,17 +25,17 @@ import VSHADER_SOURCE from './BlendedCube.vert.glsl'
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  const canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
-  var gl = getWebGLContext(canvas);
+  var gl = window.getWebGLContext(canvas);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
 
   // Initialize shaders
-  if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+  if (!window.initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
     console.log('Failed to intialize shaders.');
     return;
   }
@@ -65,7 +65,7 @@ function main() {
   }
 
   // Set the eye point and the viewing volume
-  var mvpMatrix = new Matrix4();
+  var mvpMatrix = new window.Matrix4();
   mvpMatrix.setPerspective(30, 1, 1, 100);
   mvpMatrix.lookAt(3, 3, 7, 0, 0, 0, 0, 1, 0);
 
@@ -79,7 +79,7 @@ function main() {
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
 }
 
-function initVertexBuffers(gl) {
+function initVertexBuffers(gl: WebGLRenderingContext) {
   // Create a cube
   //    v6----- v5
   //   /|      /|
@@ -138,7 +138,7 @@ function initVertexBuffers(gl) {
   return indices.length;
 }
 
-function initArrayBuffer(gl, data, num, type, attribute) {
+function initArrayBuffer(gl: WebGLRenderingContext, data: ArrayBuffer, num, type, attribute) {
   // Create a buffer object
   var buffer = gl.createBuffer();
   if (!buffer) {
