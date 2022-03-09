@@ -148,12 +148,12 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
   //  v2------v3
 
   var vertices = new Float32Array([   // Vertex coordinates
-    1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,    // v0-v1-v2-v3 front
-    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,    // v0-v3-v4-v5 right
-    1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,    // v0-v5-v6-v1 up
-    -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,    // v1-v6-v7-v2 left
-    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,    // v7-v4-v3-v2 down
-    1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0     // v4-v7-v6-v5 back
+    1.0, 1.0, 1.0,    -1.0, 1.0, 1.0,   -1.0, -1.0, 1.0,   1.0, -1.0, 1.0,    // v0-v1-v2-v3 front
+    1.0, 1.0, 1.0,    1.0, -1.0, 1.0,   1.0, -1.0, -1.0,   1.0, 1.0, -1.0,    // v0-v3-v4-v5 right
+    1.0, 1.0, 1.0,    1.0, 1.0, -1.0,   -1.0, 1.0, -1.0,   -1.0, 1.0, 1.0,    // v0-v5-v6-v1 up
+    -1.0, 1.0, 1.0,   -1.0, 1.0, -1.0,  -1.0, -1.0, -1.0,  -1.0, -1.0, 1.0,    // v1-v6-v7-v2 left
+    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0,  1.0, -1.0, 1.0,    -1.0, -1.0, 1.0,    // v7-v4-v3-v2 down
+    1.0, -1.0, -1.0,  -1.0, -1.0, -1.0, -1.0, 1.0, -1.0,   1.0, 1.0, -1.0     // v4-v7-v6-v5 back
   ]);
 
   var normals = new Float32Array([   // Normal
@@ -241,7 +241,7 @@ function initTextures(gl: WebGLRenderingContext, program: WebGLProgram) {
   return texture;
 }
 
-function drawSolidCube(gl, program, o, x, angle, viewProjMatrix) {
+function drawSolidCube(gl: WebGLRenderingContext, program, o, x, angle, viewProjMatrix) {
   gl.useProgram(program);   // Tell that this program object is used
 
   // Assign the buffer objects and enable the assignment
@@ -252,7 +252,7 @@ function drawSolidCube(gl, program, o, x, angle, viewProjMatrix) {
   drawCube(gl, program, o, x, angle, viewProjMatrix);   // Draw
 }
 
-function drawTexCube(gl, program, o, texture, x, angle, viewProjMatrix) {
+function drawTexCube(gl: WebGLRenderingContext, program, o, texture, x, angle, viewProjMatrix) {
   gl.useProgram(program);   // Tell that this program object is used
 
   // Assign the buffer objects and enable the assignment
@@ -269,7 +269,7 @@ function drawTexCube(gl, program, o, texture, x, angle, viewProjMatrix) {
 }
 
 // Assign the buffer objects and enable the assignment
-function initAttributeVariable(gl, a_attribute, buffer) {
+function initAttributeVariable(gl: WebGLRenderingContext, a_attribute, buffer) {
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.vertexAttribPointer(a_attribute, buffer.num, buffer.type, false, 0, 0);
   gl.enableVertexAttribArray(a_attribute);
@@ -280,7 +280,7 @@ var g_modelMatrix = new window.Matrix4();
 var g_mvpMatrix = new window.Matrix4();
 var g_normalMatrix = new window.Matrix4();
 
-function drawCube(gl, program, o, x, angle, viewProjMatrix) {
+function drawCube(gl: WebGLRenderingContext, program: WebGLProgram, o, x, angle, viewProjMatrix) {
   // Calculate a model matrix
   g_modelMatrix.setTranslate(x, 0.0, 0.0);
   g_modelMatrix.rotate(20.0, 1.0, 0.0, 0.0);

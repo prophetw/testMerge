@@ -39,5 +39,5 @@ import {
    RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
 } from '../ch10'
 
-const ExampleFn = ProgramObject
+const ExampleFn = FramebufferObject
 window.onload = ExampleFn

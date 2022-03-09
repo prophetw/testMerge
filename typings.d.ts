@@ -1,6 +1,4 @@
 declare module '*.glsl'
-
-
 interface Window {
   getWebGLContext: (htmlDomEle: HTMLCanvasElement)=> WebGLRenderingContext
   initShaders: (gl: WebGLRenderingContext, VSHADER_SOURCE: string, FSHADER_SOURCE: string)=>boolean
