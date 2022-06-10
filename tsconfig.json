@@ -1,0 +1,7 @@
+{
+  "include": ["./**/*", "typings.d.ts"],
+  "compilerOptions": {
+    "target": "es2021",
+    "strict": true
+  },
+}

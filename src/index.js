@@ -39,5 +39,14 @@ import {
    RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
 } from '../ch10'
 
-const ExampleFn = FramebufferObject
-window.onload = ExampleFn
+const ExampleFn = HUD
+window.onload = ()=>{
+  ExampleFn()
+  spector = new window.SPECTOR.Spector();
+  spector.spyCanvas();
+  spector.fullCapture = true;
+  window.spector = spector;
+  document.getElementById('spector').addEventListener('click', ()=>{
+    window.spector.displayUI()
+  })
+}
