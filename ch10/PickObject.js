@@ -1,3 +1,4 @@
+import { spector } from '../src';
 import FSHADER_SOURCE from './PickObject.frag.glsl'
 import VSHADER_SOURCE from './PickObject.vert.glsl'
 // PickObject.js (c) 2012 matsuda and kanda
@@ -78,6 +79,7 @@ function main() {
     var x = ev.clientX, y = ev.clientY;
     var rect = ev.target.getBoundingClientRect();
     if (rect.left <= x && x < rect.right && rect.top <= y && y < rect.bottom) {
+    spector.startCapture(document.getElementById('webgl'), 50)
       // If pressed position is inside <canvas>, check if it is above object
       var x_in_canvas = x - rect.left, y_in_canvas = rect.bottom - y;
       var picked = check(gl, n, x_in_canvas, y_in_canvas, currentAngle, u_Clicked, viewProjMatrix, u_MvpMatrix);
