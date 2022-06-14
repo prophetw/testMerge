@@ -40,6 +40,8 @@ function main() {
     return;
   }
 
+  window.spector.startCapture(canvas, 100)
+
   // Set the vertex information
   var n = initVertexBuffers(gl);
   if (n < 0) {
