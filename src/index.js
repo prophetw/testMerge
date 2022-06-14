@@ -40,7 +40,7 @@ import {
    RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
 } from '../ch10'
 
-const ExampleFn = HelloPoint2
+const ExampleFn = ColoredPoint
 const spector = new SPECTOR.Spector();
 window.spector = spector
 console.log(' spector ', spector);

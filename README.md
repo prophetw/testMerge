@@ -9,6 +9,14 @@ $ yarn start
 
 # change src/index.js choose target example
 
+git clone https://github.com/BabylonJS/Spector.js.git
+cd Spector.js 
+yarn link
+
+cd WebGLexamples
+yarn link 'spectorjs'
+
+
 ```
 
 webgl 编程指南 源码

@@ -6,10 +6,10 @@ import FSHADER_SOURCE from './ClickedPoints.frag.glsl'
 function main() {
   // Retrieve <canvas> element
   document.title = 'ClickedPoints '
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
-  var gl = getWebGLContext(canvas);
+  var gl = window.getWebGLContext(canvas);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
@@ -38,11 +38,12 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
-var g_points = []; // The array for the position of a mouse press
-function click(ev, gl, canvas, a_Position) {
+var g_points: number[] = []; // The array for the position of a mouse press
+function click(ev: MouseEvent, gl: WebGLRenderingContext, canvas: HTMLCanvasElement, a_Position: number) {
   var x = ev.clientX; // x coordinate of a mouse pointer
   var y = ev.clientY; // y coordinate of a mouse pointer
-  var rect = ev.target.getBoundingClientRect();
+  const target = ev.target as HTMLCanvasElement
+  var rect = target.getBoundingClientRect();
 
   x = ((x - rect.left) - canvas.width / 2) / (canvas.width / 2);
   y = (canvas.height / 2 - (y - rect.top)) / (canvas.height / 2);
