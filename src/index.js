@@ -1,4 +1,4 @@
-import * as SPECTOR from 'spectorjs/src/spector'
+import SPECTOR from './spector'
 import { ClickedPoints, ColoredPoint, DrawRectangle, HelloCanvas, HelloPoint1, HelloPoint2 } from "../ch02"
 import {
   HelloQuad, HelloQuad_FAN, HelloTriangle,
@@ -40,12 +40,12 @@ import {
    RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
 } from '../ch10'
 
-const ExampleFn = PickObject
+const ExampleFn = HelloPoint2
 const spector = new SPECTOR.Spector();
+window.spector = spector
 console.log(' spector ', spector);
 window.onload = ()=>{
   spector.spyCanvas();
-  spector.fullCapture = true;
   document.getElementById('spector').addEventListener('click', ()=>{
     console.log(' display ui ');
     spector.displayUI()
@@ -54,15 +54,15 @@ window.onload = ()=>{
     const canvasDom = document.getElementById('webgl')
     const commandCount = 150
     // spector.captureCanvas(canvasDom)
-    spector.startCapture(canvasDom, commandCount)
+    spector.startCapture(canvasDom, 50)
   })
   if (!spector.resultView) {
     spector.getResultUI();
     spector.onCapture.add((capture) => {
+      console.log(' ---- capture result ', capture);
       spector.resultView.display();
       spector.resultView.addCapture(capture);
     });
   }
   ExampleFn()
 }
-export {spector}

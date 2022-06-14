@@ -1,8 +1,11 @@
+import { spector } from "../src";
+
 // HelloCanvas.js (c) 2012 matsuda
 function main() {
   // Retrieve <canvas> element
   document.title = 'HelloCanvas'
   var canvas = document.getElementById('webgl');
+  spector.startCapture(canvas, 20)
 
   // Get the rendering context for WebGL
   var gl = getWebGLContext(canvas);
