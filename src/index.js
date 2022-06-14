@@ -40,29 +40,41 @@ import {
    RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
 } from '../ch10'
 
-const ExampleFn = ColoredPoint
-const spector = new SPECTOR.Spector();
-window.spector = spector
-console.log(' spector ', spector);
-window.onload = ()=>{
-  spector.spyCanvas();
-  document.getElementById('spector').addEventListener('click', ()=>{
-    console.log(' display ui ');
-    spector.displayUI()
-  })
-  document.getElementById('start').addEventListener('click', ()=>{
-    const canvasDom = document.getElementById('webgl')
-    const commandCount = 150
-    // spector.captureCanvas(canvasDom)
-    spector.startCapture(canvasDom, 50)
-  })
-  if (!spector.resultView) {
-    spector.getResultUI();
-    spector.onCapture.add((capture) => {
-      console.log(' ---- capture result ', capture);
-      spector.resultView.display();
-      spector.resultView.addCapture(capture);
-    });
+const initSpector = (callback=()=>{
+  //
+})=>{
+
+  const spector = new SPECTOR.Spector();
+  window.spector = spector
+  console.log(' spector ', spector);
+  window.onload = ()=>{
+    spector.spyCanvas();
+    document.getElementById('spector').addEventListener('click', ()=>{
+      console.log(' display ui ');
+      spector.displayUI()
+    })
+    document.getElementById('start').addEventListener('click', ()=>{
+      const canvasDom = document.getElementById('webgl')
+      const commandCount = 150
+      // spector.captureCanvas(canvasDom)
+      spector.startCapture(canvasDom, 50)
+    })
+    if (!spector.resultView) {
+      spector.getResultUI();
+      spector.onCapture.add((capture) => {
+        console.log(' ---- capture result ', capture);
+        spector.resultView.display();
+        spector.resultView.addCapture(capture);
+      });
+    }
+    callback()
   }
-  ExampleFn()
+
 }
+
+
+
+const ExampleFn = HelloQuad
+
+initSpector(ExampleFn)
+

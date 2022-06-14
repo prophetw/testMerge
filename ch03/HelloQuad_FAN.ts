@@ -18,17 +18,17 @@ import FSHADER_SOURCE from './HelloQuad_FAN.frag.glsl'
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl')  as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
-  var gl = getWebGLContext(canvas);
+  var gl = window.getWebGLContext(canvas);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
 
   // Initialize shaders
-  if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+  if (!window.initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
     console.log('Failed to intialize shaders.');
     return;
   }
@@ -50,7 +50,7 @@ function main() {
   gl.drawArrays(gl.TRIANGLE_FAN, 0, n);
 }
 
-function initVertexBuffers(gl) {
+function initVertexBuffers(gl: WebGLRenderingContext) {
   var vertices = new Float32Array([
     -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5
   ]);
