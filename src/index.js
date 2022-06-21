@@ -82,7 +82,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLHelloTriangle
+const ExampleFn = TexturedQuad
 
 initSpector(ExampleFn)
 

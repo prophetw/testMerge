@@ -41,6 +41,7 @@ function main() {
   // Specify the color for clearing <canvas>
   gl.clearColor(0, 0, 0, 1);
 
+  gl.enable(gl.BLEND)
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -50,9 +51,13 @@ function main() {
 
 function initVertexBuffers(gl:WebGLRenderingContext ) {
   var vertices = new Float32Array([
-    0, 0.5, -0.5, -0.5, 0.5, -0.5
+    // vertics    // color
+    0, 0.5,       1.0, 0.0, 0.0, 1,  // first point + rgba
+    -0.5, -0.5,   0.0, 1.0, 0.0, 0.7, // second point + rgba
+    0.5, -0.5,    0.0, 0.0, 1.0, 1, // third point + rgba
   ]);
   var n = 3; // The number of vertices
+  const FSIZE = vertices.BYTES_PER_ELEMENT
 
   // Create a buffer object
   var vertexBuffer = gl.createBuffer();
@@ -71,11 +76,18 @@ function initVertexBuffers(gl:WebGLRenderingContext ) {
     console.log('Failed to get the storage location of a_Position');
     return -1;
   }
+  var a_Color = gl.getAttribLocation(gl.program, 'a_Color');
+  if (a_Color < 0) {
+    console.log('Failed to get the storage location of a_Color');
+    return -1;
+  }
   // Assign the buffer object to a_Position variable
-  gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
-
+  gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, FSIZE * 6, 0);
   // Enable the assignment to a_Position variable
   gl.enableVertexAttribArray(a_Position);
+
+  gl.vertexAttribPointer(a_Color, 4, gl.FLOAT, false, FSIZE * 6, FSIZE * 2);
+  gl.enableVertexAttribArray(a_Color);
 
   return n;
 }

@@ -58,11 +58,11 @@ function main() {
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
   var verticesTexCoords = new Float32Array([
-    // Vertex coordinates, texture coordinate
-    -0.5, 0.5, 0.0, 1.0,
-    -0.5, -0.5, 0.0, 0.0,
-    0.5, 0.5, 1.0, 1.0,
-    0.5, -0.5, 1.0, 0.0,
+    // Vertex,    texture coordinate
+    -0.5, 0.5,    0.0, 1.0,
+    -0.5, -0.5,   0.0, 0.0,
+    0.5, 0.5,     1.0, 1.0,
+    0.5, -0.5,    1.0, 0.0,
   ]);
   var n = 4; // The number of vertices
 
@@ -100,7 +100,7 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
   return n;
 }
 
-function initTextures(gl, n) {
+function initTextures(gl: WebGLRenderingContext, n: number) {
   var texture = gl.createTexture();   // Create a texture object
   if (!texture) {
     console.log('Failed to create the texture object');
@@ -121,11 +121,11 @@ function initTextures(gl, n) {
   // Register the event handler to be called on loading an image
   image.onload = function () { loadTexture(gl, n, texture, u_Sampler, image); };
   // Tell the browser to load an image
-  image.src = './resources/sky.jpg';
+  image.src = './resources/wall.jpg';
 
   return true;
 }
-function loadTexture(gl, n, texture, u_Sampler, image) {
+function loadTexture(gl: WebGLRenderingContext, n: number, texture: WebGLTexture | null, u_Sampler: WebGLUniformLocation | null , image: HTMLImageElement) {
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
   // Enable texture unit0
   gl.activeTexture(gl.TEXTURE0);
