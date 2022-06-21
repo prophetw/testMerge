@@ -40,6 +40,13 @@ import {
    RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
 } from '../ch10'
 
+import {
+  LOGLHelloTriangle,
+  LOGLHelloRectangle
+} from '../learnopengl'
+
+
+
 const initSpector = (callback=()=>{
   //
 })=>{
@@ -62,7 +69,8 @@ const initSpector = (callback=()=>{
     if (!spector.resultView) {
       spector.getResultUI();
       spector.onCapture.add((capture) => {
-        console.log(' ---- capture result ', capture);
+        capture.commands = capture.commands.filter(command=>command.name!=='getError')
+	      console.log(' ---- capture result ', capture);
         spector.resultView.display();
         spector.resultView.addCapture(capture);
       });
@@ -74,7 +82,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = HelloQuad
+const ExampleFn = LOGLHelloTriangle
 
 initSpector(ExampleFn)
 

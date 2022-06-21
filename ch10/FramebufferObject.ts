@@ -272,8 +272,8 @@ function initTextures(gl: WebGLRenderingContext) {
   return texture;
 }
 
-function initFramebufferObject(gl) {
-  var framebuffer, texture, depthBuffer;
+function initFramebufferObject(gl: WebGLRenderingContext) {
+  var framebuffer: WebGLFramebuffer| null, texture: WebGLFramebuffer| null , depthBuffer: WebGLFramebuffer | null;
 
   // Define the error handling function
   var error = function () {
