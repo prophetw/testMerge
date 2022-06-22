@@ -42,7 +42,9 @@ import {
 
 import {
   LOGLHelloTriangle,
-  LOGLHelloRectangle
+  LOGLHelloRectangle,
+  LOGLTexturesTriangle,
+  LOGLTexturesWoodBox,
 } from '../learnopengl'
 
 
@@ -82,7 +84,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = TexturedQuad
+const ExampleFn = LOGLTexturesWoodBox
 
 initSpector(ExampleFn)
 
