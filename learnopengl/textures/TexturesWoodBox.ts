@@ -34,6 +34,34 @@ function main() {
   const imagesSrcAry = ['./resources/container.jpg', './resources/awesomeface.png']
   // boxWood
   // const imagesSrcAry = ['./resources/container.jpg']
+  let dftMixVal = 0.2
+  document.addEventListener('keyup', e=>{
+    if(e.code === "ArrowUp"){
+      //
+      var a_MixVal = gl.getAttribLocation(gl.program, 'a_MixVal');
+      console.log(a_MixVal);
+      if (!a_MixVal) {
+        console.log('Failed to get the storage location of u_Sampler: ' + a_MixVal);
+        return -1;
+      }
+      dftMixVal+=0.1
+      gl.vertexAttrib1f(a_MixVal, dftMixVal)
+      console.log(dftMixVal);
+      startDraw(gl, 4)
+    }
+    if(e.code === "ArrowDown"){
+      //
+      var a_MixVal = gl.getAttribLocation(gl.program, 'a_MixVal');
+      console.log(a_MixVal);
+      if (!a_MixVal) {
+        console.log('Failed to get the storage location of u_Sampler: ' + a_MixVal);
+        return -1;
+      }
+      dftMixVal-=0.1
+      gl.vertexAttrib1f(a_MixVal, dftMixVal)
+      startDraw(gl, 4)
+    }
+  })
 
   imagesSrcAry.map((src, index)=>{
     const initResult = initTextures(gl, index, src, ()=>{
@@ -51,10 +79,18 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
   var verticesTexCoords = new Float32Array([
     //    Vertex,           Color           texture coordinate
    //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-          0.5,  0.5, 0.0,   1.0, 0.0, 0.0,   2.0, 2.0,   // 右上
-          0.5, -0.5, 0.0,   0.0, 1.0, 0.0,   2.0, 0.0,   // 右下
-          -0.5, -0.5, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0,   // 左下
-          -0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.0, 2.0    // 左上
+        0.5,  0.5, 0.0,   1.0, 0.0, 0.0,   1.0, 1.0,   // 右上
+        0.5, -0.5, 0.0,   0.0, 1.0, 0.0,   1.0, 0.0,   // 右下
+        -0.5, -0.5, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0,   // 左下
+        -0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.0, 1.0,    // 左上
+          // 0.5,  0.5, 0.0,   1.0, 0.0, 0.0,   2.0, 2.0,   // 右上  // 缩小两倍
+          // 0.5, -0.5, 0.0,   0.0, 1.0, 0.0,   2.0, 0.0,   // 右下
+          // -0.5, -0.5, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0,   // 左下
+          // -0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.0, 2.0,    // 左上
+        //   0.5,  0.5, 0.0,   1.0, 0.0, 0.0,   0.55, 0.55, // top right // 0.10 放大到
+        //  0.5, -0.5, 0.0,   0.0, 1.0, 0.0,   0.55, 0.45, // bottom right
+        // -0.5, -0.5, 0.0,   0.0, 0.0, 1.0,   0.45, 0.45, // bottom let
+        // -0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.45, 0.55  // top let
   ]);
   var n = 4; // The number of vertices
 
@@ -98,6 +134,15 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
   // Assign the buffer object to a_TexCoord variable
   gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, FSIZE * 8, FSIZE * 6);
   gl.enableVertexAttribArray(a_TexCoord);  // Enable the assignment of the buffer object
+
+  // Get the storage location of a_TexCoord
+  var a_MixVal = gl.getAttribLocation(gl.program, 'a_MixVal');
+  console.log(a_MixVal);
+  if (!a_MixVal) {
+    console.log('Failed to get the storage location of u_Sampler: ' + a_MixVal);
+    return -1;
+  }
+  gl.vertexAttrib1f(a_MixVal, 0.2)
 
   return n;
 }
@@ -143,7 +188,14 @@ function loadTexture(gl: WebGLRenderingContext, textIndex: number, texture: WebG
   gl.bindTexture(gl.TEXTURE_2D, texture1);
    * */
 
-  //
+//
+//  // set the texture wrapping parameters
+//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); // note that we set the container wrapping method to gl.CLAMP_TO_EDGE
+//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+//  // set texture filtering parameters
+//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); // set texture filtering to nearest neighbor to clearly see the texels/pixels
+//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
 
   // Set the texture parameters
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);

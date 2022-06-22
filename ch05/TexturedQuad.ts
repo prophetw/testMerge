@@ -24,7 +24,7 @@ import VSHADER_SOURCE from './TexturedQuad.vert.glsl'
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
