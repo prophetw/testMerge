@@ -21,10 +21,20 @@ import VSHADER_SOURCE from './LookAtTriangles.vert.glsl'
 //   'void main() {\n' +
 //   '  gl_FragColor = v_Color;\n' +
 //   '}\n';
-
+const viewModel = {
+  eyeX: 0.2,
+  eyeY: 0.25,
+  eyeZ: 0.25,
+  x: 0,
+  y: 0,
+  z: 0,
+  upX: 0,
+  upY: 1,
+  upZ: 0,
+}
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
@@ -49,6 +59,24 @@ function main() {
   // Specify the color for clearing <canvas>
   gl.clearColor(0, 0, 0, 1);
 
+  changeViewModel(gl)
+
+  // Clear <canvas>
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  // Draw the rectangle
+  gl.drawArrays(gl.TRIANGLES, 0, n);
+  injectOptions(gl, n)
+}
+
+function redraw  (gl:WebGLRenderingContext, n: number){
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.drawArrays(gl.TRIANGLES, 0, n);
+}
+
+function changeViewModel(gl:WebGLRenderingContext){
+
   // Get the storage location of u_ViewMatrix
   var u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
   if (!u_ViewMatrix) {
@@ -58,16 +86,58 @@ function main() {
 
   // Set the matrix to be used for to set the camera view
   var viewMatrix = new Matrix4();
-  viewMatrix.setLookAt(0.20, 0.25, 0.25, 0, 0, 0, 0, 1, 0);
+  const {eyeX, eyeY, eyeZ, x,y,z,upX,upY,upZ} = viewModel
+  viewMatrix.setLookAt(eyeX, eyeY, eyeZ, x,y,z,upX,upY,upZ);
 
   // Set the view matrix
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
+}
 
-  // Clear <canvas>
-  gl.clear(gl.COLOR_BUFFER_BIT);
 
-  // Draw the rectangle
-  gl.drawArrays(gl.TRIANGLES, 0, n);
+function injectOptions (gl:WebGLRenderingContext, n: number){
+  const html = `
+      <label for="eyeX" class="form-label">eyeX</label>
+      <input type="range" class="form-range" value="0.2" step="0.1" min="-10" max="10" id="eyeX">
+      <label for="eyeY" class="form-label">eyeY</label>
+      <input type="range" class="form-range" value="0.25" step="0.1" min="-10" max="10" id="eyeY">
+      <label for="eyeZ" class="form-label">eyeZ</label>
+      <input type="range" class="form-range" value="0.25" step="0.1" min="-10" max="10" id="eyeZ">
+  `
+  const div = document.createElement('div')
+  div.innerHTML = html
+  div.style.position = 'absolute'
+  div.style.top = '0px'
+  div.style.right = '0px'
+  document.body.appendChild(div)
+  const eyeX = document.getElementById('eyeX')
+  if(eyeX){
+    eyeX.addEventListener('change', e=>{
+      if(e && e.target && e.target.value){
+        console.log(e.target.value);
+        viewModel.eyeX=e.target.value
+        changeViewModel(gl)
+        redraw(gl, n)
+      }
+    })
+  }
+  const eyeY = document.getElementById('eyeY')
+  if(eyeY){
+    eyeY.addEventListener('change', e=>{
+      console.log(e.target.value);
+        viewModel.eyeY=e.target.value
+        changeViewModel(gl)
+        redraw(gl, n)
+    })
+  }
+  const eyeZ = document.getElementById('eyeZ')
+  if(eyeZ){
+    eyeZ.addEventListener('change', e=>{
+      console.log(e.target.value);
+        viewModel.eyeZ=e.target.value
+        changeViewModel(gl)
+        redraw(gl, n)
+    })
+  }
 }
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
