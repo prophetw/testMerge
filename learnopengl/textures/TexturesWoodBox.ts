@@ -38,34 +38,31 @@ function main() {
   document.addEventListener('keyup', e=>{
     if(e.code === "ArrowUp"){
       //
-      var a_MixVal = gl.getAttribLocation(gl.program, 'a_MixVal');
-      console.log(a_MixVal);
-      if (!a_MixVal) {
-        console.log('Failed to get the storage location of u_Sampler: ' + a_MixVal);
-        return -1;
+      var u_MixVal = gl.getUniformLocation(gl.program, 'u_MixVal');
+      if (!u_MixVal) {
+        console.log('Failed to get the storage location of u_MixVal: ' + u_MixVal);
+        return false;
       }
       dftMixVal+=0.1
-      gl.vertexAttrib1f(a_MixVal, dftMixVal)
-      console.log(dftMixVal);
+      gl.uniform1f(u_MixVal, dftMixVal)
       startDraw(gl, 4)
     }
     if(e.code === "ArrowDown"){
       //
-      var a_MixVal = gl.getAttribLocation(gl.program, 'a_MixVal');
-      console.log(a_MixVal);
-      if (!a_MixVal) {
-        console.log('Failed to get the storage location of u_Sampler: ' + a_MixVal);
-        return -1;
+      var u_MixVal = gl.getUniformLocation(gl.program, 'u_MixVal');
+      if (!u_MixVal) {
+        console.log('Failed to get the storage location of u_MixVal: ' + u_MixVal);
+        return false;
       }
       dftMixVal-=0.1
-      gl.vertexAttrib1f(a_MixVal, dftMixVal)
+      gl.uniform1f(u_MixVal, dftMixVal)
       startDraw(gl, 4)
     }
   })
 
   imagesSrcAry.map((src, index)=>{
     const initResult = initTextures(gl, index, src, ()=>{
-      startDraw(gl, n)
+      startDraw(gl, 4)
     })
     return initResult
   })
@@ -135,14 +132,12 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
   gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, FSIZE * 8, FSIZE * 6);
   gl.enableVertexAttribArray(a_TexCoord);  // Enable the assignment of the buffer object
 
-  // Get the storage location of a_TexCoord
-  var a_MixVal = gl.getAttribLocation(gl.program, 'a_MixVal');
-  console.log(a_MixVal);
-  if (!a_MixVal) {
-    console.log('Failed to get the storage location of u_Sampler: ' + a_MixVal);
-    return -1;
+  var u_MixVal = gl.getUniformLocation(gl.program, 'u_MixVal');
+  if (!u_MixVal) {
+    console.log('Failed to get the storage location of u_Sampler: ' + u_MixVal);
+    return false;
   }
-  gl.vertexAttrib1f(a_MixVal, 0.2)
+  gl.uniform1f(u_MixVal, 0.2)
 
   return n;
 }
