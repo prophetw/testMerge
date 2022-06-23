@@ -46,6 +46,8 @@ import {
   LOGLTexturesTriangle,
   LOGLTexturesWoodBox,
   LOGLCameraPosition,
+  LOGLCoodSysFirst,
+  LOGLCoodSysDraw,
 } from '../learnopengl'
 
 
@@ -85,7 +87,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LookAtTriangles
+const ExampleFn = LookAtRotatedTriangles
 
 initSpector(ExampleFn)
 

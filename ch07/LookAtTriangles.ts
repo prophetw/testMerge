@@ -96,7 +96,7 @@ function changeViewModel(gl:WebGLRenderingContext){
 
 function injectOptions (gl:WebGLRenderingContext, n: number){
   const html = `
-      <label for="eyeX" class="form-label">eyeX</label>
+      <label for="eyeX" class="form-label">eyeX click to active then use arrowup arrowdown to adjust</label>
       <input type="range" class="form-range" value="0.2" step="0.1" min="-10" max="10" id="eyeX">
       <label for="eyeY" class="form-label">eyeY</label>
       <input type="range" class="form-range" value="0.25" step="0.1" min="-10" max="10" id="eyeY">
@@ -106,7 +106,7 @@ function injectOptions (gl:WebGLRenderingContext, n: number){
   const div = document.createElement('div')
   div.innerHTML = html
   div.style.position = 'absolute'
-  div.style.top = '0px'
+  div.style.top = '410px'
   div.style.right = '0px'
   document.body.appendChild(div)
   const eyeX = document.getElementById('eyeX')

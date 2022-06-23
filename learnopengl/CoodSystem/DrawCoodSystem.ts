@@ -1,5 +1,5 @@
-import FSHADER_SOURCE from './LookAtRotatedTriangles.frag.glsl'
-import VSHADER_SOURCE from './LookAtRotatedTriangles.vert.glsl'
+import FSHADER_SOURCE from './DrawCoodSystem.frag.glsl'
+import VSHADER_SOURCE from './DrawCoodSystem.vert.glsl'
 // LookAtRotatedTriangles.js (c) 2012 matsuda
 // Vertex shader program
 
@@ -13,9 +13,7 @@ const viewModel = {
   upX: 0,
   upY: 1,
   upZ: 0,
-  angleX: 0,
-  angleY: 0,
-  angleZ: 0,
+  angle: -10,
 }
 function main() {
   // Retrieve <canvas> element
@@ -69,19 +67,13 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   // Draw the rectangle
-  gl.drawArrays(gl.TRIANGLES, 0, n);
-  // Draw 坐标轴
-  gl.drawArrays(gl.LINES, 9, 6);
-
+  gl.drawArrays(gl.LINES, 0, n);
 }
 
 function redraw  (gl:WebGLRenderingContext, n: number){
 
   gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.drawArrays(gl.TRIANGLES, 0, n);
-  // Draw 坐标轴
-  gl.drawArrays(gl.LINES, 9, 6);
-
+  gl.drawArrays(gl.LINES, 0, n);
 }
 
 function changeViewModel(gl:WebGLRenderingContext){
@@ -102,8 +94,7 @@ function changeViewModel(gl:WebGLRenderingContext){
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
 }
 
-type AxisName = 'X' | 'Y' | 'Z'
-function changeAngle(gl:WebGLRenderingContext, axis: AxisName){
+function changeAngle(gl:WebGLRenderingContext){
 
   // Get the storage location of u_ViewMatrix
   var u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
@@ -114,16 +105,8 @@ function changeAngle(gl:WebGLRenderingContext, axis: AxisName){
 
   // Set the matrix to be used for to set the camera view
   var modelMatrix = new Matrix4();
-  const {angleX, angleY, angleZ} = viewModel
-  if(axis === 'X'){
-    modelMatrix.setRotate(angleX, 1, 0, 0); // Rotate around z-axis
-  }
-  if(axis === 'Y'){
-    modelMatrix.setRotate(angleY, 0, 1, 0); // Rotate around z-axis
-  }
-  if(axis === 'Z'){
-    modelMatrix.setRotate(angleZ, 0, 0, 1); // Rotate around z-axis
-  }
+  const {angle} = viewModel
+  modelMatrix.setRotate(angle, 0, 0, 1); // Rotate around z-axis
 
   // Pass the view projection matrix and model matrix
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
@@ -140,12 +123,8 @@ function injectOptions (gl:WebGLRenderingContext, n: number){
       <input type="range" class="form-range" value="${viewModel.eyeY}" step="0.1" min="-10" max="10" id="eyeY">
       <label for="eyeZ" class="form-label">eyeZ</label>
       <input type="range" class="form-range" value="${viewModel.eyeZ}" step="0.1" min="-10" max="10" id="eyeZ">
-      <label for="angleX" class="form-label">angleX</label>
-      <input type="range" class="form-range" value="${viewModel.angleX}" step="1" min="-360" max="360" id="angleX">
-      <label for="angleY" class="form-label">angleY</label>
-      <input type="range" class="form-range" value="${viewModel.angleY}" step="1" min="-360" max="360" id="angleY">
-      <label for="angleZ" class="form-label">angleZ</label>
-      <input type="range" class="form-range" value="${viewModel.angleZ}" step="1" min="-360" max="360" id="angleZ">
+      <label for="angle" class="form-label">angle</label>
+      <input type="range" class="form-range" value="${viewModel.angle}" step="1" min="-360" max="360" id="angle">
   `
   const div = document.createElement('div')
   div.innerHTML = html
@@ -182,30 +161,12 @@ function injectOptions (gl:WebGLRenderingContext, n: number){
         redraw(gl, n)
     })
   }
-  const angleX = document.getElementById('angleX')
-  if(angleX){
-    angleX.addEventListener('change', e=>{
+  const angle = document.getElementById('angle')
+  if(angle){
+    angle.addEventListener('change', e=>{
       console.log(e.target.value);
-        viewModel.angleX=e.target.value
-        changeAngle(gl, 'X')
-        redraw(gl, n)
-    })
-  }
-  const angleY = document.getElementById('angleY')
-  if(angleY){
-    angleY.addEventListener('change', e=>{
-      console.log(e.target.value);
-        viewModel.angleY=e.target.value
-        changeAngle(gl, 'Y')
-        redraw(gl, n)
-    })
-  }
-  const angleZ = document.getElementById('angleZ')
-  if(angleZ){
-    angleZ.addEventListener('change', e=>{
-      console.log(e.target.value);
-        viewModel.angleZ=e.target.value
-        changeAngle(gl, 'Z')
+        viewModel.angle=e.target.value
+        changeAngle(gl)
         redraw(gl, n)
     })
   }
@@ -213,25 +174,13 @@ function injectOptions (gl:WebGLRenderingContext, n: number){
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
   var verticesColors = new Float32Array([
-    // Vertex coordinates and color
-     0.0,  0.5,  -0.4,  0.4,  1.0,  0.4, // The back green one
-    -0.5, -0.5,  -0.4,  0.4,  1.0,  0.4,
-     0.5, -0.5,  -0.4,  1.0,  0.4,  0.4,
-
-     0.5,  0.4,  -0.2,  1.0,  0.4,  0.4, // The middle yellow one
-    -0.5,  0.4,  -0.2,  1.0,  1.0,  0.4,
-     0.0, -0.6,  -0.2,  1.0,  1.0,  0.4,
-
-     0.0,  0.5,   0.0,  0.4,  0.4,  1.0,  // The front blue one
-    -0.5, -0.5,   0.0,  0.4,  0.4,  1.0,
-     0.5, -0.5,   0.0,  1.0,  0.4,  0.4,
     // 坐标线
      0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // X
-     1.0,  0.0,   0.0,  0.0,  0.0,  0.0,
+     1.0,  0.0,   0.0,  1.0,  0.0,  0.0,
      0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // Y
-     0.0,  1.0,   0.0,  0.0,  0.0,  0.0,
+     0.0,  1.0,   0.0,  1.0,  0.0,  0.0,
      0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // Z
-     0.0,  0.0,   1.0,  0.0,  0.0,  0.0,
+     0.0,  0.0,   1.0,  1.0,  0.0,  0.0,
   ]);
   var n = 9;
 

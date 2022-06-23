@@ -1,5 +1,5 @@
-import FSHADER_SOURCE from './FirstTriangle.frag.glsl'
-import VSHADER_SOURCE from './FirstTriangle.vert.glsl'
+import FSHADER_SOURCE from './First.frag.glsl'
+import VSHADER_SOURCE from './First.vert.glsl'
 
 const viewModel = {
   eyeX: 0.2,
