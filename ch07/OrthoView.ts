@@ -1,30 +1,9 @@
 import FSHADER_SOURCE from './OrthoView.frag.glsl'
 import VSHADER_SOURCE from './OrthoView.vert.glsl'
-// OrthoView.js (c) 2012 matsuda
-// Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute vec4 a_Color;\n' +
-  'uniform mat4 u_ProjMatrix;\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_Position = u_ProjMatrix * a_Position;\n' +
-  '  v_Color = a_Color;\n' +
-  '}\n';
-
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
-  '}\n';
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
   // Retrieve the nearFar element
   const pEle = document.createElement('p')
   pEle.innerHTML = 'The near and far values are displayed here.'
@@ -121,7 +100,7 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
 
 // The distances to the near and far clipping plane
 var g_near = 0.0, g_far = 0.5;
-function keydown(ev, gl, n, u_ProjMatrix, projMatrix, nf) {
+function keydown(ev: KeyboardEvent, gl: WebGLRenderingContext, n: number, u_ProjMatrix:WebGLUniformLocation | null , projMatrix: Matrix4, nf: HTMLElement|null) {
   switch (ev.keyCode) {
     case 39: g_near += 0.01; break;  // The right arrow key was pressed
     case 37: g_near -= 0.01; break;  // The left arrow key was pressed
@@ -133,7 +112,7 @@ function keydown(ev, gl, n, u_ProjMatrix, projMatrix, nf) {
   draw(gl, n, u_ProjMatrix, projMatrix, nf);
 }
 
-function draw(gl, n, u_ProjMatrix, projMatrix, nf) {
+function draw(gl: WebGLRenderingContext, n: number, u_ProjMatrix:WebGLUniformLocation | null , projMatrix: Matrix4, nf: HTMLElement|null) {
   // Specify the viewing volume
   projMatrix.setOrtho(-1.0, 1.0, -1.0, 1.0, g_near, g_far);
 
@@ -143,7 +122,9 @@ function draw(gl, n, u_ProjMatrix, projMatrix, nf) {
   gl.clear(gl.COLOR_BUFFER_BIT);       // Clear <canvas>
 
   // Display the current near and far values
-  nf.innerHTML = 'near: ' + Math.round(g_near * 100) / 100 + ', far: ' + Math.round(g_far * 100) / 100;
+  if(nf){
+    nf.innerHTML = 'near: ' + Math.round(g_near * 100) / 100 + ', far: ' + Math.round(g_far * 100) / 100;
+  }
 
   gl.drawArrays(gl.TRIANGLES, 0, n);   // Draw the triangles
 }

@@ -87,7 +87,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LookAtRotatedTriangles
+const ExampleFn = PerspectiveView
 
 initSpector(ExampleFn)
 

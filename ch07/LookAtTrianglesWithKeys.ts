@@ -2,29 +2,10 @@ import FSHADER_SOURCE from './LookAtTrianglesWithKeys.frag.glsl'
 import VSHADER_SOURCE from './LookAtTrianglesWithKeys.vert.glsl'
 // LookAtTrianglesWithKeys.js (c) 2012 matsuda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute vec4 a_Color;\n' +
-  'uniform mat4 u_ViewMatrix;\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_Position = u_ViewMatrix * a_Position;\n' +
-  '  v_Color = a_Color;\n' +
-  '}\n';
-
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
-  '}\n';
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
@@ -117,7 +98,7 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
 }
 
 var g_eyeX = 0.20, g_eyeY = 0.25, g_eyeZ = 0.25; // Eye position
-function keydown(ev, gl, n, u_ViewMatrix, viewMatrix) {
+function keydown(ev: KeyboardEvent, gl: WebGLRenderingContext, n: number, u_ViewMatrix: WebGLUniformLocation | null, viewMatrix: Matrix4) {
     if(ev.keyCode == 39) { // The right arrow key was pressed
       g_eyeX += 0.01;
     } else
@@ -127,7 +108,7 @@ function keydown(ev, gl, n, u_ViewMatrix, viewMatrix) {
     draw(gl, n, u_ViewMatrix, viewMatrix);
 }
 
-function draw(gl, n, u_ViewMatrix, viewMatrix) {
+function draw(ev: KeyboardEvent, gl: WebGLRenderingContext, n: number, u_ViewMatrix: WebGLUniformLocation | null, viewMatrix: Matrix4) {
   // Set the matrix to be used for to set the camera view
   viewMatrix.setLookAt(g_eyeX, g_eyeY, g_eyeZ, 0, 0, 0, 0, 1, 0);
 

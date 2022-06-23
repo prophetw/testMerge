@@ -2,8 +2,21 @@ import FSHADER_SOURCE from './LookAtRotatedTriangles.frag.glsl'
 import VSHADER_SOURCE from './LookAtRotatedTriangles.vert.glsl'
 // LookAtRotatedTriangles.js (c) 2012 matsuda
 // Vertex shader program
-
-const viewModel = {
+interface ViewModelType {
+  eyeX: number;
+  eyeY: number;
+  eyeZ: number;
+  x: number;
+  y: number;
+  z: number;
+  upX: number;
+  upY: number;
+  upZ: number;
+  angleX: number;
+  angleY: number;
+  angleZ: number;
+}
+const viewModel: ViewModelType = {
   eyeX: 0.2,
   eyeY: 0.25,
   eyeZ: 0.25,
@@ -16,6 +29,22 @@ const viewModel = {
   angleX: 0,
   angleY: 0,
   angleZ: 0,
+}
+type Keysss = keyof ViewModelType
+
+export function renderViewModelValue (viewModel: ViewModelType){
+  let str = ''
+  Object.keys(viewModel).map((key)=>{
+    const theKey = key as Keysss
+    str+=`${theKey}: ${viewModel[theKey]} <br />`
+  })
+  const div = document.getElementById('render_view')
+  if(div){
+    div.style.position='absolute'
+    div.style.right='0px'
+    div.style.top='0px'
+    div.innerHTML = str
+  }
 }
 function main() {
   // Retrieve <canvas> element
@@ -58,7 +87,7 @@ function main() {
 
   // Calculate matrix for rotate
   var modelMatrix = new Matrix4();
-  modelMatrix.setRotate(-10, 0, 0, 1); // Rotate around z-axis
+  modelMatrix.setRotate(0, 0, 0, 1); // Rotate around z-axis
 
   // Pass the view projection matrix and model matrix
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
@@ -76,12 +105,11 @@ function main() {
 }
 
 function redraw  (gl:WebGLRenderingContext, n: number){
-
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.TRIANGLES, 0, n);
   // Draw 坐标轴
   gl.drawArrays(gl.LINES, 9, 6);
-
+  renderViewModelValue(viewModel)
 }
 
 function changeViewModel(gl:WebGLRenderingContext){
@@ -152,7 +180,12 @@ function injectOptions (gl:WebGLRenderingContext, n: number){
   div.style.position = 'absolute'
   div.style.top = '410px'
   div.style.right = '0px'
+  const result = document.createElement('div')
+  result.id = 'render_view'
   document.body.appendChild(div)
+  document.body.appendChild(result)
+  renderViewModelValue(viewModel)
+
   const eyeX = document.getElementById('eyeX')
   if(eyeX){
     eyeX.addEventListener('change', e=>{
@@ -187,6 +220,8 @@ function injectOptions (gl:WebGLRenderingContext, n: number){
     angleX.addEventListener('change', e=>{
       console.log(e.target.value);
         viewModel.angleX=e.target.value
+        viewModel.angleY=0
+        viewModel.angleZ=0
         changeAngle(gl, 'X')
         redraw(gl, n)
     })
@@ -196,6 +231,8 @@ function injectOptions (gl:WebGLRenderingContext, n: number){
     angleY.addEventListener('change', e=>{
       console.log(e.target.value);
         viewModel.angleY=e.target.value
+        viewModel.angleX=0
+        viewModel.angleZ=0
         changeAngle(gl, 'Y')
         redraw(gl, n)
     })
@@ -205,6 +242,8 @@ function injectOptions (gl:WebGLRenderingContext, n: number){
     angleZ.addEventListener('change', e=>{
       console.log(e.target.value);
         viewModel.angleZ=e.target.value
+        viewModel.angleX=0
+        viewModel.angleY=0
         changeAngle(gl, 'Z')
         redraw(gl, n)
     })
