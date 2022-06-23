@@ -48,6 +48,8 @@ import {
   LOGLCameraPosition,
   LOGLCoodSysFirst,
   LOGLCoodSysDraw,
+  LOGLTexturesWoodBox3D,
+  LOGLTextures10WoodBox3D,
 } from '../learnopengl'
 
 
@@ -87,7 +89,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = PerspectiveView
+const ExampleFn = LOGLTextures10WoodBox3D
 
 initSpector(ExampleFn)
 

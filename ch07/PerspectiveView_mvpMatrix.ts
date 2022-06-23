@@ -1,30 +1,9 @@
 import FSHADER_SOURCE from './PerspectiveView_mvpMatrix.frag.glsl'
 import VSHADER_SOURCE from './PerspectiveView_mvpMatrix.vert.glsl'
-// PerspectiveView_mvpMatrix.js (c) 2012 matsuda
-// Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute vec4 a_Color;\n' +
-  'uniform mat4 u_MvpMatrix;\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_Position = u_MvpMatrix * a_Position;\n' +
-  '  v_Color = a_Color;\n' +
-  '}\n';
-
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
-  '}\n';
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
@@ -70,7 +49,10 @@ function main() {
   // Pass the model view projection matrix to u_MvpMatrix
   gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
-  gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
+
+  // enable depth test
+  gl.enable(gl.DEPTH_TEST)
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);   // Clear <canvas>
 
   gl.drawArrays(gl.TRIANGLES, 0, n);   // Draw the triangles
 
@@ -82,22 +64,42 @@ function main() {
   gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
 
   gl.drawArrays(gl.TRIANGLES, 0, n);   // Draw the triangles
+
+
+  　// Prepare the model matrix for another pair of triangles
+  modelMatrix.setTranslate(0, 0, 0);
+  // Calculate the model view projection matrix
+  mvpMatrix.set(projMatrix).multiply(viewMatrix).multiply(modelMatrix);
+  // Pass the model view projection matrix to u_MvpMatrix
+  gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
+
+  gl.drawArrays(gl.LINES, 9, 6);   // Draw the triangles
+
+
 }
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
   var verticesColors = new Float32Array([
     // Vertex coordinates and color
-     0.0,  1.0,  -4.0,  0.4,  1.0,  0.4, // The back green one
-    -0.5, -1.0,  -4.0,  0.4,  1.0,  0.4,
-     0.5, -1.0,  -4.0,  1.0,  0.4,  0.4,
+     0.0,  1.0,  0.0,  0.4,  1.0,  0.4, // The back green one
+    -0.5, -1.0,  0.0,  0.4,  1.0,  0.4,
+     0.5, -1.0,  0.0,  1.0,  0.4,  0.4,
 
      0.0,  1.0,  -2.0,  1.0,  1.0,  0.4, // The middle yellow one
     -0.5, -1.0,  -2.0,  1.0,  1.0,  0.4,
      0.5, -1.0,  -2.0,  1.0,  0.4,  0.4,
 
-     0.0,  1.0,   0.0,  0.4,  0.4,  1.0,  // The front blue one
-    -0.5, -1.0,   0.0,  0.4,  0.4,  1.0,
-     0.5, -1.0,   0.0,  1.0,  0.4,  0.4,
+     0.0,  1.0,   -4.0,  0.4,  0.4,  1.0,  // The front blue one
+    -0.5, -1.0,   -4.0,  0.4,  0.4,  1.0,
+     0.5, -1.0,   -4.0,  1.0,  0.4,  0.4,
+
+     // 坐标线
+    0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // X
+    1.0,  0.0,   0.0,  1.0,  0.0,  0.0,
+    0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // Y
+    0.0,  1.0,   0.0,  1.0,  0.0,  0.0,
+    0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // Z
+    0.0,  0.0,   1.0,  1.0,  0.0,  0.0,
   ]);
   var n = 9;
 

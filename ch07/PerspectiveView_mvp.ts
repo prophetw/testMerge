@@ -1,32 +1,9 @@
 import FSHADER_SOURCE from './PerspectiveView_mvp.frag.glsl'
 import VSHADER_SOURCE from './PerspectiveView_mvp.vert.glsl'
-// PerspectiveView_mvp.js (c) 2012 matsuda
-// Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute vec4 a_Color;\n' +
-  'uniform mat4 u_ModelMatrix;\n' +
-  'uniform mat4 u_ViewMatrix;\n' +
-  'uniform mat4 u_ProjMatrix;\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_Position = u_ProjMatrix * u_ViewMatrix * u_ModelMatrix * a_Position;\n' +
-  '  v_Color = a_Color;\n' +
-  '}\n';
-
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
-  '}\n';
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
@@ -66,8 +43,8 @@ function main() {
 
   // Calculate the view matrix and the projection matrix
   modelMatrix.setTranslate(0.75, 0, 0);  // Translate 0.75 units along the positive x-axis
-  viewMatrix.setLookAt(0, 0, 5, 0, 0, -100, 0, 1, 0);
-  projMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
+  viewMatrix.setLookAt(0.1, 0.1, 5, 0, 0, -1, 0, 1, 0);
+  projMatrix.setPerspective(45, canvas.width / canvas.height, 1, 100);
   // Pass the model, view, and projection matrix to the uniform variable respectively
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
@@ -83,6 +60,11 @@ function main() {
   gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
 
   gl.drawArrays(gl.TRIANGLES, 0, n);   // Draw the triangles
+
+  // 坐标轴
+  modelMatrix.setTranslate(0, 0, 0)
+  gl.uniformMatrix4fv(u_ModelMatrix, false, modelMatrix.elements);
+  gl.drawArrays(gl.LINES, 9, 6);   // Draw the triangles
 }
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
@@ -99,6 +81,16 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
     0.0, 1.0, 0.0, 0.4, 0.4, 1.0,  // The front blue one
     -0.5, -1.0, 0.0, 0.4, 0.4, 1.0,
     0.5, -1.0, 0.0, 1.0, 0.4, 0.4,
+
+    // 坐标线
+    0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // X
+    1.0,  0.0,   0.0,  1.0,  0.0,  0.0,
+    0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // Y
+    0.0,  1.0,   0.0,  1.0,  0.0,  0.0,
+    0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // Z
+    0.0,  0.0,   1.0,  1.0,  0.0,  0.0,
+
+
   ]);
   var n = 9;
 

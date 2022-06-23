@@ -1,19 +1,5 @@
 import FSHADER_SOURCE from './RotatingTriangle.frag.glsl'
 import VSHADER_SOURCE from './RotatingTriangle.vert.glsl'
-// RotatingTriangle.js (c) 2012 matsuda
-// Vertex shader program
-// var VSHADER_SOURCE =
-//   'attribute vec4 a_Position;\n' +
-//   'uniform mat4 u_ModelMatrix;\n' +
-//   'void main() {\n' +
-//   '  gl_Position = u_ModelMatrix * a_Position;\n' +
-//   '}\n';
-
-// // Fragment shader program
-// var FSHADER_SOURCE =
-//   'void main() {\n' +
-//   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
-//   '}\n';
 
 // Rotation angle (degrees/second)
 var ANGLE_STEP = 45.0;
@@ -61,7 +47,7 @@ function main() {
   var tick = function () {
     currentAngle = animate(currentAngle);  // Update the rotation angle
     draw(gl, n, currentAngle, modelMatrix, u_ModelMatrix);   // Draw the triangle
-    requestAnimationFrame(tick, canvas); // Request that the browser calls tick
+    requestAnimationFrame(tick); // Request that the browser calls tick
   };
   tick();
 }
@@ -98,7 +84,7 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
   return n;
 }
 
-function draw(gl: WebGLRenderingContext, n: number, currentAngle: number, modelMatrix: Matrix4, u_ModelMatrix: Matrix4) {
+function draw(gl: WebGLRenderingContext, n: number, currentAngle: number, modelMatrix: Matrix4, u_ModelMatrix: WebGLUniformLocation | null) {
   // Set the rotation matrix
   modelMatrix.setRotate(currentAngle, 0, 0, 1); // Rotation angle, rotation axis (0, 0, 1)
 
