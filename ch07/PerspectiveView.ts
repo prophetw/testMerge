@@ -25,7 +25,7 @@ var FSHADER_SOURCE =
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
@@ -73,6 +73,9 @@ function main() {
 
   // Draw the triangles
   gl.drawArrays(gl.TRIANGLES, 0, n);
+
+  // 坐标轴
+  gl.drawArrays(gl.LINES, 18, 6)
 }
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
@@ -102,6 +105,16 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
     -0.75, 1.0, 0.0, 0.4, 0.4, 1.0,  // The front blue one
     -1.25, -1.0, 0.0, 0.4, 0.4, 1.0,
     -0.25, -1.0, 0.0, 1.0, 0.4, 0.4,
+
+    // 坐标线
+    0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // X
+    1.0,  0.0,   0.0,  1.0,  0.0,  0.0,
+    0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // Y
+    0.0,  1.0,   0.0,  1.0,  0.0,  0.0,
+    0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // Z
+    0.0,  0.0,   1.0,  1.0,  0.0,  0.0,
+
+
   ]);
   var n = 18; // Three vertices per triangle * 6
 
