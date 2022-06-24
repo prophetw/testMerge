@@ -1,39 +1,31 @@
-import FSHADER_SOURCE from './first.frag.glsl'
-import VSHADER_SOURCE from './first.vert.glsl'
+import FSHADER_SOURCE from './cube.frag.glsl'
+import VSHADER_SOURCE from './cube.vert.glsl'
+
+import LightSourceFS from './lightSource.frag.glsl'
+import LightSourceVS from './lightSource.vert.glsl'
 
 
 
-type AngelType = 'X' | 'Y' | 'Z'
-type VertexOptions = [number,number,number, number, AngelType, number,number, number]
+enum AngelType {
+  'X','Y','Z'
+}
+type Angle = number
+type ColorRGB = [number, number, number]
+type TranslateXYZ = [number, number, number]
+type VertexOptions = [...TranslateXYZ, Angle, AngelType, ...ColorRGB]
 
 // cube transform  [x,y,z,angle,angelType]
-const lightColor = [1.0, 1.0, 1.0]
+const lightColor: ColorRGB = [0.0, 1.0, 0.0]
+const lightPosi: TranslateXYZ = [-1.5, -2.2, -20]
+const cubeColor: ColorRGB = [1.0, 0.5, 1.0]
 const cubePosi: VertexOptions[] = [
-  [ 0.0,  0.0,  0.0, 0, 'X', 1.0, 0.5, 1.0],
-  // [ 2.0,  5.0, -15.0, 30, 'Y'],
-  [-1.5, -2.2, -2.5, 60, 'Z', 1.0, 0.5, 0.0],
-  // [-3.8, -2.0, -12.3, 10, 'Y'],
-  // [ 2.4, -0.4, -3.5, 20, 'X'],
-  // [-1.7,  3.0, -7.5, 80, 'Y'],
-  // [ 1.3, -2.0, -2.5, 70, 'Z'],
-  // [ 1.5,  2.0, -2.5, 0, 'Z'],
-  // [ 1.5,  0.2, -1.5, 45, 'X'],
-  // [-1.3,  1.0, -1.5, 45, 'Y']
+  [ 0.0,  0.0,  0.0, 0, AngelType.X, ...cubeColor],
+  [...lightPosi, 0, AngelType.X, ...lightColor], // this is the light source
 ]
 const defaultCameraPosition = {
-  x: 0,
-  y: 0,
+  x: 0.8,
+  y: -1.0,
   z: 5
-}
-// 单位向量 表示方向 方便计算
-const cameraUp = [0,1,0]
-const cameraFront = [0,0,-1]
-
-// camera look at somePoint 视点 viewPoint
-const viewPoint = {
-  x: 0,
-  y: 0,
-  z: -100
 }
 
 // perspective options
@@ -45,6 +37,8 @@ const perspectiveOptions = {
 }
 
 
+let program1: WebGLProgram
+let program2: WebGLProgram
 
 function main() {
   // Retrieve <canvas> element
@@ -58,10 +52,26 @@ function main() {
   }
 
   // Initialize shaders
-  if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
-    console.log('Failed to intialize shaders.');
-    return;
+
+  program1 = createProgram(gl, VSHADER_SOURCE, FSHADER_SOURCE);
+  if (!program1) {
+    console.log('Failed to create program');
+    return false;
   }
+  gl.useProgram(program1)
+  gl.program = program1
+
+
+  program2 = createProgram(gl, LightSourceVS, LightSourceFS);
+  if (!program2) {
+    console.log('Failed to create program');
+    return false;
+  }
+
+  // if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
+  //   console.log('Failed to intialize shaders.');
+  //   return;
+  // }
 
   // Set the vertex information
   var n = initVertexBuffers(gl);
@@ -70,7 +80,8 @@ function main() {
     return;
   }
 
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor(0.1, 0.1, 0.15, 1.0);
+  gl.enable(gl.DEPTH_TEST)
 
   // scroll event   => change camera z
   canvas.addEventListener('wheel', (e)=>{
@@ -113,13 +124,20 @@ function main() {
 
 
 function resetCameraPosition(gl: WebGLRenderingContext, cubePosi: VertexOptions[]){
-  defaultCameraPosition.x = 0
-  defaultCameraPosition.y = 0
+  defaultCameraPosition.x = 0.8
+  defaultCameraPosition.y = -1.0
   defaultCameraPosition.z = 5
   perspectiveOptions.fov = 45
   gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
   for(let i=0; i<cubePosi.length; i++){
-    updateMVPMatrix(gl, cubePosi[i], defaultCameraPosition)
+    if(i===0){
+      gl.useProgram(program1)
+      gl.program = program1
+    }else{
+      gl.useProgram(program2)
+      gl.program = program2
+    }
+    updateMVPMatrix(gl, cubePosi[i], defaultCameraPosition, undefined, i)
     gl.drawArrays(gl.TRIANGLES, 0, 36);
   }
 }
@@ -133,6 +151,13 @@ function updateAll(gl: WebGLRenderingContext,
 }){
   gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
   for(let i=0; i<cubePosi.length; i++){
+    if(i===0){
+      gl.useProgram(program1)
+      gl.program = program1
+    }else{
+      gl.useProgram(program2)
+      gl.program = program2
+    }
     updateMVPMatrix(gl, cubePosi[i], cameraPosition, perspectiveOptions)
     gl.drawArrays(gl.TRIANGLES, 0, 36);
   }
@@ -153,49 +178,48 @@ function injectUI(gl: WebGLRenderingContext){
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
   var verticesTexCoords = new Float32Array([
-    //    Vertex,           Color           texture coordinate
-   //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-        -0.5, -0.5, -0.5,
-         0.5, -0.5, -0.5,
-         0.5,  0.5, -0.5,
-         0.5,  0.5, -0.5,
-        -0.5,  0.5, -0.5,
-        -0.5, -0.5, -0.5,
+  //    Vertex,       normal vector
+   -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
+   0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
+   0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
+   0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
+  -0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
+  -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
 
-        -0.5, -0.5,  0.5,
-         0.5, -0.5,  0.5,
-         0.5,  0.5,  0.5,
-         0.5,  0.5,  0.5,
-        -0.5,  0.5,  0.5,
-        -0.5, -0.5,  0.5,
+  -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
+   0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
+   0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
+   0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
+  -0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
+  -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
 
-        -0.5,  0.5,  0.5,
-        -0.5,  0.5, -0.5,
-        -0.5, -0.5, -0.5,
-        -0.5, -0.5, -0.5,
-        -0.5, -0.5,  0.5,
-        -0.5,  0.5,  0.5,
+  -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,
+  -0.5,  0.5, -0.5, -1.0,  0.0,  0.0,
+  -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,
+  -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,
+  -0.5, -0.5,  0.5, -1.0,  0.0,  0.0,
+  -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,
 
-         0.5,  0.5,  0.5,
-         0.5,  0.5, -0.5,
-         0.5, -0.5, -0.5,
-         0.5, -0.5, -0.5,
-         0.5, -0.5,  0.5,
-         0.5,  0.5,  0.5,
+   0.5,  0.5,  0.5,  1.0,  0.0,  0.0,
+   0.5,  0.5, -0.5,  1.0,  0.0,  0.0,
+   0.5, -0.5, -0.5,  1.0,  0.0,  0.0,
+   0.5, -0.5, -0.5,  1.0,  0.0,  0.0,
+   0.5, -0.5,  0.5,  1.0,  0.0,  0.0,
+   0.5,  0.5,  0.5,  1.0,  0.0,  0.0,
 
-        -0.5, -0.5, -0.5,
-         0.5, -0.5, -0.5,
-         0.5, -0.5,  0.5,
-         0.5, -0.5,  0.5,
-        -0.5, -0.5,  0.5,
-        -0.5, -0.5, -0.5,
+  -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
+   0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
+   0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
+   0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
+  -0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
+  -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
 
-        -0.5,  0.5, -0.5,
-         0.5,  0.5, -0.5,
-         0.5,  0.5,  0.5,
-         0.5,  0.5,  0.5,
-        -0.5,  0.5,  0.5,
-        -0.5,  0.5, -0.5,
+  -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,
+   0.5,  0.5, -0.5,  0.0,  1.0,  0.0,
+   0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
+   0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
+  -0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
+  -0.5,  0.5, -0.5,  0.0,  1.0,  0.0
   ]);
   var n = 36; // The number of vertices
 
@@ -217,17 +241,21 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
     console.log('Failed to get the storage location of a_Position');
     return -1;
   }
-  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 3, 0);
+  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 6, 0);
   gl.enableVertexAttribArray(a_Position);  // Enable the assignment of the buffer object
 
-  //Get the storage location of a_Position, assign and enable buffer
-  var u_lightColor = gl.getUniformLocation(gl.program, 'u_lightColor');
-  if (!u_lightColor) {
-    console.log('Failed to get the storage location of u_lightColor');
-    return -1;
+  if(gl.program === program1){
+    var a_Normal = gl.getAttribLocation(gl.program, 'a_Normal');
+    if (a_Normal < 0) {
+      console.log('Failed to get the storage location of a_Position');
+      return -1;
+    }
+    gl.vertexAttribPointer(a_Normal, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+    gl.enableVertexAttribArray(a_Normal);  // Enable the assignment of the buffer object
+
   }
-  const [r,g,b] = lightColor
-  gl.uniform3f(u_lightColor, r,g,b)
+
+
   // gl.enableVertexAttribArray(a_LightColor);
   // Get the storage location of a_Color
   // var a_Color = gl.getAttribLocation(gl.program, 'a_Color');
@@ -267,7 +295,6 @@ function updateMVPMatrix(gl: WebGLRenderingContext,
   var modelMatrix = new Matrix4(); // Model matrix
   var viewMatrix = new Matrix4();  // View matrix
   var projMatrix = new Matrix4();  // Projection matrix
-  var mvpMatrix = new Matrix4();   // Model view projection matrix
   // Calculate the model, view and projection matrices
   const [x, y, z, angle, angleType, r, g, b ] = translate
   switch(angleType){
@@ -282,22 +309,65 @@ function updateMVPMatrix(gl: WebGLRenderingContext,
   viewMatrix.setLookAt(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0, 0, -100, 0, 1, 0);
   projMatrix.setPerspective(perspectiveOptions.fov, perspectiveOptions.aspect, perspectiveOptions.near, perspectiveOptions.far);
   // Calculate the model view projection matrix
-  mvpMatrix.set(projMatrix).multiply(viewMatrix).multiply(modelMatrix);
-  var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix4');
-  if (!u_MvpMatrix) {
-    console.log('Failed to get the storage location of u_MvpMatrix4', u_MvpMatrix);
+  // mvpMatrix.set(projMatrix).multiply(viewMatrix).multiply(modelMatrix);
+
+  var u_model = gl.getUniformLocation(gl.program, 'u_model');
+  if (!u_model) {
+    console.log('Failed to get the storage location of u_MvpMatrix4', u_model);
     return -1;
   }
-  gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements)
+  gl.uniformMatrix4fv(u_model, false, modelMatrix.elements)
+
+  var u_view = gl.getUniformLocation(gl.program, 'u_view');
+  if (!u_view) {
+    console.log('Failed to get the storage location of u_view', u_view);
+    return -1;
+  }
+  gl.uniformMatrix4fv(u_view, false, viewMatrix.elements)
+
+  var u_projection = gl.getUniformLocation(gl.program, 'u_projection');
+  if (!u_projection) {
+    console.log('Failed to get the storage location of u_projection', u_projection);
+    return -1;
+  }
+  gl.uniformMatrix4fv(u_projection, false, projMatrix.elements)
+
+  if(gl.program === program1){
+
+    var u_objectColor = gl.getUniformLocation(gl.program, 'u_objectColor');
+    if (!u_objectColor) {
+      console.log('Failed to get the storage location of u_objectColor');
+      return -1;
+    }
+    gl.uniform3f(u_objectColor, r, g, b)
+
+    var u_lightColor = gl.getUniformLocation(gl.program, 'u_lightColor');
+    if (!u_lightColor) {
+      console.log('Failed to get the storage location of u_lightColor');
+      return -1;
+    }
+    const [r1,g1,b1] = lightColor
+    gl.uniform3f(u_lightColor, r1,g1,b1)
 
 
+    var u_lightPos = gl.getUniformLocation(gl.program, 'u_lightPos');
+    if (!u_lightPos) {
+      console.log('Failed to get the storage location of u_lightPos');
+      return -1;
+    }
+    const [x,y,z] = lightPosi
+    gl.uniform3f(u_lightPos, x,y,z)
+
+
+    var u_viewPos = gl.getUniformLocation(gl.program, 'u_viewPos');
+    if (!u_viewPos) {
+      console.log('Failed to get the storage location of u_viewPos');
+      return -1;
+    }
+    gl.uniform3f(u_viewPos, cameraPosition.x, cameraPosition.y, cameraPosition.z)
+
+  }
   //Get the storage location of a_Position, assign and enable buffer
-  var u_objectColor = gl.getUniformLocation(gl.program, 'u_objectColor');
-  if (!u_objectColor) {
-    console.log('Failed to get the storage location of u_objectColor');
-    return -1;
-  }
-  gl.uniform3f(u_objectColor, r, g, b)
 }
 
 
