@@ -11,6 +11,9 @@ import LOGLCoodSysDraw from './CoodSystem/DrawCoodSystem'
 
 import LOGLCameraPosition from './Camere/FirstTriangle'
 import LOGLMovingCamere from './Camere/MovingCamera'
+import LOGLEulerAngle from './Camere/EulerAngle'
+
+import LOGLLightScene from './LightScene/first'
 
 
 export {
@@ -23,5 +26,8 @@ export {
   LOGLCoodSysDraw,
   LOGLTexturesWoodBox3D,
   LOGLTextures10WoodBox3D,
-  LOGLMovingCamere
+  LOGLMovingCamere,
+  LOGLEulerAngle,
+  LOGLLightScene
+
 }

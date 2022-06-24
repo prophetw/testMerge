@@ -51,6 +51,8 @@ import {
   LOGLTexturesWoodBox3D,
   LOGLTextures10WoodBox3D,
   LOGLMovingCamere,
+  LOGLEulerAngle,
+  LOGLLightScene,
 } from '../learnopengl'
 
 
@@ -90,7 +92,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLMovingCamere
+const ExampleFn = LOGLLightScene
 
 initSpector(ExampleFn)
 
