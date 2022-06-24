@@ -137,7 +137,7 @@ function resetCameraPosition(gl: WebGLRenderingContext, cubePosi: VertexOptions[
       gl.useProgram(program2)
       gl.program = program2
     }
-    updateMVPMatrix(gl, cubePosi[i], defaultCameraPosition, undefined, i)
+    updateMVPMatrix(gl, cubePosi[i], defaultCameraPosition, undefined)
     gl.drawArrays(gl.TRIANGLES, 0, 36);
   }
 }
@@ -298,9 +298,9 @@ function updateMVPMatrix(gl: WebGLRenderingContext,
   // Calculate the model, view and projection matrices
   const [x, y, z, angle, angleType, r, g, b ] = translate
   switch(angleType){
-    case 'X': modelMatrix.rotate(angle, 1, 0, 0); break;
-    case 'Y': modelMatrix.rotate(angle, 0, 1, 0); break;
-    case 'Z': modelMatrix.rotate(angle, 0, 0, 1); break;
+    case AngelType.X: modelMatrix.rotate(angle, 1, 0, 0); break;
+    case AngelType.Y: modelMatrix.rotate(angle, 0, 1, 0); break;
+    case AngelType.Z: modelMatrix.rotate(angle, 0, 0, 1); break;
     default: break;
   }
   modelMatrix.translate(x, y, z);
