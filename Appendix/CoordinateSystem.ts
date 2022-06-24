@@ -1,23 +1,6 @@
-// CoordinateSystem.js (c) 2012 matsuda
-// Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute vec4 a_Color;\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_Position = a_Position;\n' +
-  '  v_Color = a_Color;\n' +
-  '}\n';
 
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
-  '}\n';
+import VSHADER_SOURCE from './CoordinateSystem.vert.glsl'
+import FSHADER_SOURCE from './CoordinateSystem.frag.glsl'
 
 function main() {
   var canvas = document.getElementById('webgl') as HTMLCanvasElement; // Retrieve <canvas> element
@@ -26,7 +9,9 @@ function main() {
   var n = initVertexBuffers(gl);      // Set vertex coordinates and colors
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Specify the color for clearing <canvas>
-  gl.clear(gl.COLOR_BUFFER_BIT);      // Clear <canvas>
+  gl.enable(gl.DEPTH_TEST)
+  // gl.clear(gl.COLOR_BUFFER_BIT);      // Clear <canvas>
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);      // Clear <canvas>
   gl.drawArrays(gl.TRIANGLES, 0, n);  // Draw the triangles
 }
 
@@ -62,3 +47,5 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
 
   return n;
 }
+
+export default main

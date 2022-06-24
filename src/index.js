@@ -39,6 +39,7 @@ import {
    ProgramObject, RotateObject, RotatingTriangle_contextLost,
    RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
 } from '../ch10'
+import { CoordinateSystem } from '../Appendix'
 
 import {
   LOGLHelloTriangle,
@@ -92,7 +93,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLLightScene
+const ExampleFn = CoordinateSystem
 
 initSpector(ExampleFn)
 
