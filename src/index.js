@@ -50,6 +50,7 @@ import {
   LOGLCoodSysDraw,
   LOGLTexturesWoodBox3D,
   LOGLTextures10WoodBox3D,
+  LOGLMovingCamere,
 } from '../learnopengl'
 
 
@@ -89,7 +90,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLTextures10WoodBox3D
+const ExampleFn = LOGLMovingCamere
 
 initSpector(ExampleFn)
 

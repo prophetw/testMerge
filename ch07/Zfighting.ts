@@ -2,29 +2,10 @@ import FSHADER_SOURCE from './Zfighting.frag.glsl'
 import VSHADER_SOURCE from './Zfighting.vert.glsl'
 // Zfighting.js (c) 2012 matsuda
 // Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'attribute vec4 a_Color;\n' +
-  'uniform mat4 u_ViewProjMatrix;\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_Position = u_ViewProjMatrix * a_Position;\n' +
-  '  v_Color = a_Color;\n' +
-  '}\n'
-
-// Fragment shader program
-var FSHADER_SOURCE =
-  '#ifdef GL_ES\n' +
-  'precision mediump float;\n' +
-  '#endif\n' +
-  'varying vec4 v_Color;\n' +
-  'void main() {\n' +
-  '  gl_FragColor = v_Color;\n' +
-  '}\n'
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl')
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas)
@@ -69,53 +50,22 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
   // Enable the polygon offset function
-  gl.enable(gl.POLYGON_OFFSET_FILL)
+  // gl.enable(gl.POLYGON_OFFSET_FILL)
   // Draw the triangles
   gl.drawArrays(gl.TRIANGLES, 0, n / 2) // The green triangle
-  gl.polygonOffset(1.0, 1.0) // Set the polygon offset
+  // gl.polygonOffset(1.0, 1.0) // Set the polygon offset
   gl.drawArrays(gl.TRIANGLES, n / 2, n / 2) // The yellow triangle
 }
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
   var verticesColors = new Float32Array([
-    // Vertex coordinates and color
-    0.0,
-    2.5,
-    -5.0,
-    0.4,
-    1.0,
-    0.4, // The green triangle
-    -2.5,
-    -2.5,
-    -5.0,
-    0.4,
-    1.0,
-    0.4,
-    2.5,
-    -2.5,
-    -5.0,
-    1.0,
-    0.4,
-    0.4,
-
-    0.0,
-    3.0,
-    -5.0,
-    1.0,
-    0.4,
-    0.4, // The yellow triagle
-    -3.0,
-    -3.0,
-    -5.0,
-    1.0,
-    1.0,
-    0.4,
-    3.0,
-    -3.0,
-    -5.0,
-    1.0,
-    1.0,
-    0.4
+    // Vertex coord     color
+    0.0, 2.5, -5.0,     0.4,1.0,0.4, // The green triangle
+    -2.5, -2.5, -5.0,   0.4,1.0,0.4,
+    2.5,-2.5,-5.0,      1.0, 0.4,0.4,
+    0.0,3.0,-5.0,       1.0,0.4,0.4, // The yellow triagle
+    -3.0,-3.0,-5.0,     1.0,1.0,0.4,
+    3.0,-3.0,-5.0,      1.0,1.0,0.4  //
   ])
   var n = 6
 
