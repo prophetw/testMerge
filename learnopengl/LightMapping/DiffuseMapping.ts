@@ -44,36 +44,15 @@ struct Light {
 
 // green plastic
 const material: {
-  ambient: [number, number, number]
+  // ambient: [number, number, number]
   diffuse: [number, number, number]
   specular: [number, number, number]
   shininess: number
 } = {
-
-
-  // silver
-  ambient: [0.19225,0.19225,0.19225],
+  // ambient: [0.19225,0.19225,0.19225],
   diffuse: [0.50754 ,0.50754, 0.50754],
   specular: [0.508273, 0.508273 ,0.508273],
   shininess: 0.4
-
-  // gold
-  // ambient: [0.24725,0.1995,	0.0745],
-  // diffuse: [0.75164	,0.60648	,0.22648	],
-  // specular: [0.628281	,0.555802	,0.366065],
-  // shininess: 0.4
-
-  // jade
-  // ambient: [0.135, 0.2225, 0.1575],
-  // diffuse: [0.54,0.89,0.63],
-  // specular: [0.31,0.31,0.31,],
-  // shininess: 0.1
-
-  // green plastic
-  // ambient: [0,0,0],
-  // diffuse: [	0.1	,0.35	,0.1],
-  // specular: [0.45	,0.55,	0.45],
-  // shininess: 0.24
 }
 // const material: {
 //   ambient: [number, number, number]
@@ -158,8 +137,27 @@ function main() {
     return;
   }
 
+  // Set texture
+
+  // boxWood and smileface
+  const imagesSrcAry = ['./resources/container2.png']
+
+  let count = 0
+  // window.spector.startCapture(canvas, 150)
+  imagesSrcAry.map((src, index)=>{
+    const initResult = initTextures(gl, index, 'material.diffuse',  src, ()=>{
+      count +=1
+      if(count === imagesSrcAry.length){
+        startDraw(gl, 36)
+      }
+    })
+    return initResult
+  })
+
+
+
   gl.clearColor(0.1, 0.1, 0.15, 1.0);
-  gl.enable(gl.DEPTH_TEST)
+  gl.enable(gl.DEPTH_TEST);
 
   // scroll event   => change camera z
   canvas.addEventListener('wheel', (e)=>{
@@ -256,48 +254,48 @@ function injectUI(gl: WebGLRenderingContext){
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
   var verticesTexCoords = new Float32Array([
-  //    Vertex,       normal vector
-   -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
-   0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
-   0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
-   0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
-  -0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
-  -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
+   // positions          // normals           // texture coords
+   -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  0.0,
+   0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  0.0,
+   0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  1.0,
+   0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  1.0,
+  -0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  1.0,
+  -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  0.0,
 
-  -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
-   0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
-   0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
-   0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
-  -0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
-  -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
+  -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  0.0,
+   0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  0.0,
+   0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  1.0,
+   0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  1.0,
+  -0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  1.0,
+  -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  0.0,
 
-  -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,
-  -0.5,  0.5, -0.5, -1.0,  0.0,  0.0,
-  -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,
-  -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,
-  -0.5, -0.5,  0.5, -1.0,  0.0,  0.0,
-  -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,
+  -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,  1.0,  0.0,
+  -0.5,  0.5, -0.5, -1.0,  0.0,  0.0,  1.0,  1.0,
+  -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,  0.0,  1.0,
+  -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,  0.0,  1.0,
+  -0.5, -0.5,  0.5, -1.0,  0.0,  0.0,  0.0,  0.0,
+  -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,  1.0,  0.0,
 
-   0.5,  0.5,  0.5,  1.0,  0.0,  0.0,
-   0.5,  0.5, -0.5,  1.0,  0.0,  0.0,
-   0.5, -0.5, -0.5,  1.0,  0.0,  0.0,
-   0.5, -0.5, -0.5,  1.0,  0.0,  0.0,
-   0.5, -0.5,  0.5,  1.0,  0.0,  0.0,
-   0.5,  0.5,  0.5,  1.0,  0.0,  0.0,
+   0.5,  0.5,  0.5,  1.0,  0.0,  0.0,  1.0,  0.0,
+   0.5,  0.5, -0.5,  1.0,  0.0,  0.0,  1.0,  1.0,
+   0.5, -0.5, -0.5,  1.0,  0.0,  0.0,  0.0,  1.0,
+   0.5, -0.5, -0.5,  1.0,  0.0,  0.0,  0.0,  1.0,
+   0.5, -0.5,  0.5,  1.0,  0.0,  0.0,  0.0,  0.0,
+   0.5,  0.5,  0.5,  1.0,  0.0,  0.0,  1.0,  0.0,
 
-  -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
-   0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
-   0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
-   0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
-  -0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
-  -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
+  -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  0.0,  1.0,
+   0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  1.0,  1.0,
+   0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  1.0,  0.0,
+   0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  1.0,  0.0,
+  -0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  0.0,  0.0,
+  -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  0.0,  1.0,
 
-  -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,
-   0.5,  0.5, -0.5,  0.0,  1.0,  0.0,
-   0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
-   0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
-  -0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
-  -0.5,  0.5, -0.5,  0.0,  1.0,  0.0
+  -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  0.0,  1.0,
+   0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  1.0,  1.0,
+   0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  1.0,  0.0,
+   0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  1.0,  0.0,
+  -0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  0.0,  0.0,
+  -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  0.0,  1.0
   ]);
   var n = 36; // The number of vertices
 
@@ -314,23 +312,32 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
 
   var FSIZE = verticesTexCoords.BYTES_PER_ELEMENT;
   //Get the storage location of a_Position, assign and enable buffer
-  var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+  var a_Position = gl.getAttribLocation(gl.program, 'aPos');
   if (a_Position < 0) {
-    console.log('Failed to get the storage location of a_Position');
+    console.log('Failed to get the storage location of aPos');
     return -1;
   }
-  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 6, 0);
+  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 8, 0);
   gl.enableVertexAttribArray(a_Position);  // Enable the assignment of the buffer object
 
   if(gl.program === program1){
-    var a_Normal = gl.getAttribLocation(gl.program, 'a_Normal');
+    var a_Normal = gl.getAttribLocation(gl.program, 'aNormal');
     if (a_Normal < 0) {
-      console.log('Failed to get the storage location of a_Position');
+      console.log('Failed to get the storage location of aNormal');
       return -1;
     }
-    gl.vertexAttribPointer(a_Normal, 3, gl.FLOAT, false, FSIZE * 6, FSIZE * 3);
+    gl.vertexAttribPointer(a_Normal, 3, gl.FLOAT, false, FSIZE * 8, FSIZE * 3);
     gl.enableVertexAttribArray(a_Normal);  // Enable the assignment of the buffer object
 
+    // Get the storage location of a_TexCoord
+    var a_TexCoord = gl.getAttribLocation(gl.program, 'aTexCoords');
+    if (a_TexCoord < 0) {
+      console.log('Failed to get the storage location of aTexCoords');
+      return -1;
+    }
+    // Assign the buffer object to a_TexCoord variable
+    gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, FSIZE * 8, FSIZE * 6);
+    gl.enableVertexAttribArray(a_TexCoord);
   }
 
 
@@ -350,7 +357,7 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
 
 function startDraw(gl: WebGLRenderingContext, n: number){
   console.log(' draw ');
-  gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);   // Clear <canvas>
   gl.drawArrays(gl.TRIANGLES, 0, n); // Draw the rectangle
 }
 
@@ -389,21 +396,24 @@ function updateMVPMatrix(gl: WebGLRenderingContext,
   // Calculate the model view projection matrix
   // mvpMatrix.set(projMatrix).multiply(viewMatrix).multiply(modelMatrix);
 
-  var u_model = gl.getUniformLocation(gl.program, 'u_model');
+  var u_model = gl.getUniformLocation(gl.program, 'model');
   if (!u_model) {
     console.log('Failed to get the storage location of u_MvpMatrix4', u_model);
     return -1;
   }
   gl.uniformMatrix4fv(u_model, false, modelMatrix.elements)
 
-  var u_view = gl.getUniformLocation(gl.program, 'u_view');
+
+
+
+  var u_view = gl.getUniformLocation(gl.program, 'view');
   if (!u_view) {
     console.log('Failed to get the storage location of u_view', u_view);
     return -1;
   }
   gl.uniformMatrix4fv(u_view, false, viewMatrix.elements)
 
-  var u_projection = gl.getUniformLocation(gl.program, 'u_projection');
+  var u_projection = gl.getUniformLocation(gl.program, 'projection');
   if (!u_projection) {
     console.log('Failed to get the storage location of u_projection', u_projection);
     return -1;
@@ -411,22 +421,6 @@ function updateMVPMatrix(gl: WebGLRenderingContext,
   gl.uniformMatrix4fv(u_projection, false, projMatrix.elements)
 
   if(gl.program === program1){
-
-    // var u_objectColor = gl.getUniformLocation(gl.program, 'u_objectColor');
-    // if (!u_objectColor) {
-    //   console.log('Failed to get the storage location of u_objectColor');
-    //   return -1;
-    // }
-    // gl.uniform3f(u_objectColor, r, g, b)
-
-    // var u_lightColor = gl.getUniformLocation(gl.program, 'u_lightColor');
-    // if (!u_lightColor) {
-    //   console.log('Failed to get the storage location of u_lightColor');
-    //   return -1;
-    // }
-    // const [r1,g1,b1] = lightColor
-    // gl.uniform3f(u_lightColor, r1,g1,b1)
-
 /**
  *
  struct Material {
@@ -437,19 +431,24 @@ function updateMVPMatrix(gl: WebGLRenderingContext,
 };
 uniform Material material;
  */
-    var materialambient = gl.getUniformLocation(gl.program, 'material.ambient');
-    if (!materialambient) {
-      console.log('Failed to get the storage location of materialambient');
-      return -1;
-    }
-    gl.uniform3f(materialambient, ...material.ambient)
 
-    var materialdiffuse = gl.getUniformLocation(gl.program, 'material.diffuse');
-    if (!materialdiffuse) {
-      console.log('Failed to get the storage location of materialdiffuse');
+    var u_model = gl.getUniformLocation(gl.program, 'transposeInversModel');
+    if (!u_model) {
+      console.log('Failed to get the storage location of u_MvpMatrix4', u_model);
       return -1;
     }
-    gl.uniform3f(materialdiffuse, ...material.diffuse)
+    const newMat = new Matrix4(modelMatrix)
+    newMat.invert()
+    newMat.transpose()
+    gl.uniformMatrix4fv(u_model, false, newMat.elements)
+
+
+    // var materialambient = gl.getUniformLocation(gl.program, 'material.ambient');
+    // if (!materialambient) {
+    //   console.log('Failed to get the storage location of materialambient');
+    //   return -1;
+    // }
+    // gl.uniform3f(materialambient, ...material.ambient)
 
     var materialspecular = gl.getUniformLocation(gl.program, 'material.specular');
     if (!materialspecular) {
@@ -502,6 +501,92 @@ uniform Material material;
 
   }
   //Get the storage location of a_Position, assign and enable buffer
+}
+
+function initTextures(
+  gl: WebGLRenderingContext,
+  textIndex: number,
+  sampleNameInShader: string,
+  src: string,
+  loadEndCallback = ()=>{
+  //
+}) {
+  var texture = gl.createTexture();   // Create a texture object
+  if (!texture) {
+    console.log('Failed to create the texture object');
+    return false;
+  }
+  // Get the storage location of u_Sampler
+  var u_Sampler = gl.getUniformLocation(gl.program, sampleNameInShader);
+  console.log('u_Sampler', u_Sampler);
+  if (!u_Sampler) {
+    console.log('Failed to get the storage location of u_Sampler: ' + sampleNameInShader);
+    return false;
+  }
+  var image = new Image();  // Create the image object
+  if (!image) {
+    console.log('Failed to create the image object');
+    return false;
+  }
+  // Register the event handler to be called on loading an image
+  image.onload = function () { loadTexture(gl, textIndex, texture, u_Sampler, image, loadEndCallback); };
+  // Tell the browser to load an image
+  image.src = src;
+
+  return true;
+}
+function loadTexture(
+  gl: WebGLRenderingContext,
+  textIndex: number, texture: WebGLTexture | null,
+  u_Sampler: WebGLUniformLocation | null ,
+  image: HTMLImageElement,
+  loadEndCallback=()=>{
+  //
+}) {
+  console.log(' image ', image, u_Sampler);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
+  // Enable texture unit0
+  gl.activeTexture(gl.TEXTURE0 + textIndex);
+  // Bind the texture object to the target
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+  /** second texture
+  gl.activeTexture(gl.TEXTURE1);
+  gl.bindTexture(gl.TEXTURE_2D, texture1);
+   * */
+
+//
+//  // set the texture wrapping parameters
+//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); // note that we set the container wrapping method to gl.CLAMP_TO_EDGE
+//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+//  // set texture filtering parameters
+//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); // set texture filtering to nearest neighbor to clearly see the texels/pixels
+//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+// 图片纹理的宽高尺寸必须是 2的幂  不是的话必须用下面的设置
+// 否则的话 返回的是纯黑图片纹理 并且多级纹理 不支持 非2的幂
+
+// gl.NEAREST is also allowed, instead of gl.LINEAR, as neither mipmap.
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+// Prevents s-coordinate wrapping (repeating).
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+// Prevents t-coordinate wrapping (repeating).
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  // Set the texture parameters
+  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  // // s t direction  repeat
+  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+  // Set the texture image
+
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+  // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 500, 500, 0, gl.RGBA, gl.UNSIGNED_BYTE, );
+  // gl.generateMipmap(gl.TEXTURE_2D);
+  // Set the texture unit 0 to the sampler
+  gl.uniform1i(u_Sampler, textIndex);
+  console.log(gl.getError());
+  console.log(' cool ');
+  loadEndCallback()
 }
 
 

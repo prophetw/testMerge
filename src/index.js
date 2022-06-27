@@ -55,6 +55,8 @@ import {
   LOGLEulerAngle,
   LOGLLightScene,
   LOGLMaterial,
+  LOGLLightingMapping,
+  LOGLDiffuseMapping,
 } from '../learnopengl'
 
 
@@ -94,7 +96,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLMaterial
+const ExampleFn = LOGLDiffuseMapping
 
 initSpector(ExampleFn)
 

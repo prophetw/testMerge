@@ -15,6 +15,8 @@ import LOGLEulerAngle from './Camere/EulerAngle'
 
 import LOGLLightScene from './LightScene/first'
 import LOGLMaterial from './Materials/first'
+import LOGLLightingMapping from './LightMapping/TexturesWoodBox3D'
+import LOGLDiffuseMapping from './LightMapping/DiffuseMapping'
 
 
 export {
@@ -31,4 +33,6 @@ export {
   LOGLEulerAngle,
   LOGLLightScene,
   LOGLMaterial,
+  LOGLLightingMapping,
+  LOGLDiffuseMapping,
 }
