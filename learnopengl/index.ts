@@ -14,6 +14,7 @@ import LOGLMovingCamere from './Camere/MovingCamera'
 import LOGLEulerAngle from './Camere/EulerAngle'
 
 import LOGLLightScene from './LightScene/first'
+import LOGLMaterial from './Materials/first'
 
 
 export {
@@ -28,6 +29,6 @@ export {
   LOGLTextures10WoodBox3D,
   LOGLMovingCamere,
   LOGLEulerAngle,
-  LOGLLightScene
-
+  LOGLLightScene,
+  LOGLMaterial,
 }

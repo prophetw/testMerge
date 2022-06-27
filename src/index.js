@@ -54,6 +54,7 @@ import {
   LOGLMovingCamere,
   LOGLEulerAngle,
   LOGLLightScene,
+  LOGLMaterial,
 } from '../learnopengl'
 
 
@@ -93,7 +94,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = CoordinateSystem
+const ExampleFn = LOGLMaterial
 
 initSpector(ExampleFn)
 

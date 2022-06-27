@@ -15,11 +15,81 @@ type TranslateXYZ = [number, number, number]
 type VertexOptions = [...TranslateXYZ, Angle, AngelType, ...ColorRGB]
 
 // cube transform  [x,y,z,angle,angelType]
-const lightColor: ColorRGB = [0.0, 1.0, 0.0]
-const lightPosi: TranslateXYZ = [-1.5, -2.2, -20]
+// const lightColor: ColorRGB = [Math.sin(Date.now()*2.0), Math.sin(Date.now()*0.7), Math.sin(Date.now()*1.3)]
+const lightColor: ColorRGB = [1.0, 1.0,1.0]
+
+console.log('lightColor', lightColor);
+const lightDiffuse: ColorRGB = [lightColor[0]*0.5,lightColor[1]*0.5,lightColor[2]*0.5]
+const lightAmbient: ColorRGB = [lightDiffuse[0]*0.2,lightDiffuse[1]*0.2,lightDiffuse[2]*0.2]
+const lightPosi: TranslateXYZ = [1.2, 1.0, 2.0]
+const cubePosition: TranslateXYZ = [0.0,0.0,-0.0]
 const cubeColor: ColorRGB = [1.0, 0.5, 1.0]
+
+/**
+ *
+struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+struct Light {
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+ */
+
+// green plastic
+const material: {
+  ambient: [number, number, number]
+  diffuse: [number, number, number]
+  specular: [number, number, number]
+  shininess: number
+} = {
+
+  // gold
+  ambient: [0.24725,0.1995,	0.0745],
+  diffuse: [0.75164	,0.60648	,0.22648	],
+  specular: [0.628281	,0.555802	,0.366065],
+  shininess: 0.4
+
+  // jade
+  // ambient: [0.135, 0.2225, 0.1575],
+  // diffuse: [0.54,0.89,0.63],
+  // specular: [0.31,0.31,0.31,],
+  // shininess: 0.1
+
+  // green plastic
+  // ambient: [0,0,0],
+  // diffuse: [	0.1	,0.35	,0.1],
+  // specular: [0.45	,0.55,	0.45],
+  // shininess: 0.24
+}
+// const material: {
+//   ambient: [number, number, number]
+//   diffuse: [number, number, number]
+//   specular: [number, number, number]
+//   shininess: number
+// } = {
+// }
+const lightSource: {
+  ambient: [number, number, number]
+  diffuse: [number, number, number]
+  specular: [number, number, number]
+  position: [number, number, number]
+} = {
+  ambient: [...lightAmbient],
+  diffuse: [...lightDiffuse],
+  specular: [1.0,1.0,1.0],
+  position: lightPosi
+}
+
+
+
 const cubePosi: VertexOptions[] = [
-  [ 0.0,  0.0,  0.0, 0, AngelType.X, ...cubeColor],
+  [ ...cubePosition, 0, AngelType.X, ...cubeColor],
   [...lightPosi, 0, AngelType.X, ...lightColor], // this is the light source
 ]
 const defaultCameraPosition = {
@@ -334,30 +404,86 @@ function updateMVPMatrix(gl: WebGLRenderingContext,
 
   if(gl.program === program1){
 
-    var u_objectColor = gl.getUniformLocation(gl.program, 'u_objectColor');
-    if (!u_objectColor) {
-      console.log('Failed to get the storage location of u_objectColor');
+    // var u_objectColor = gl.getUniformLocation(gl.program, 'u_objectColor');
+    // if (!u_objectColor) {
+    //   console.log('Failed to get the storage location of u_objectColor');
+    //   return -1;
+    // }
+    // gl.uniform3f(u_objectColor, r, g, b)
+
+    // var u_lightColor = gl.getUniformLocation(gl.program, 'u_lightColor');
+    // if (!u_lightColor) {
+    //   console.log('Failed to get the storage location of u_lightColor');
+    //   return -1;
+    // }
+    // const [r1,g1,b1] = lightColor
+    // gl.uniform3f(u_lightColor, r1,g1,b1)
+
+/**
+ *
+ struct Material {
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+    float shininess;
+};
+uniform Material material;
+ */
+    var materialambient = gl.getUniformLocation(gl.program, 'material.ambient');
+    if (!materialambient) {
+      console.log('Failed to get the storage location of materialambient');
       return -1;
     }
-    gl.uniform3f(u_objectColor, r, g, b)
+    gl.uniform3f(materialambient, ...material.ambient)
 
-    var u_lightColor = gl.getUniformLocation(gl.program, 'u_lightColor');
-    if (!u_lightColor) {
-      console.log('Failed to get the storage location of u_lightColor');
+    var materialdiffuse = gl.getUniformLocation(gl.program, 'material.diffuse');
+    if (!materialdiffuse) {
+      console.log('Failed to get the storage location of materialdiffuse');
       return -1;
     }
-    const [r1,g1,b1] = lightColor
-    gl.uniform3f(u_lightColor, r1,g1,b1)
+    gl.uniform3f(materialdiffuse, ...material.diffuse)
 
-
-    var u_lightPos = gl.getUniformLocation(gl.program, 'u_lightPos');
-    if (!u_lightPos) {
-      console.log('Failed to get the storage location of u_lightPos');
+    var materialspecular = gl.getUniformLocation(gl.program, 'material.specular');
+    if (!materialspecular) {
+      console.log('Failed to get the storage location of materialspecular');
       return -1;
     }
-    const [x,y,z] = lightPosi
-    gl.uniform3f(u_lightPos, x,y,z)
+    gl.uniform3f(materialspecular, ...material.specular)
 
+    var materialshininess = gl.getUniformLocation(gl.program, 'material.shininess');
+    if (!materialshininess) {
+      console.log('Failed to get the storage location of materialshininess');
+      return -1;
+    }
+    gl.uniform1f(materialshininess, material.shininess)
+
+    var lightambient = gl.getUniformLocation(gl.program, 'light.ambient');
+    if (!lightambient) {
+      console.log('Failed to get the storage location of lightambient');
+      return -1;
+    }
+    gl.uniform3f(lightambient, ...lightSource.ambient)
+
+    var lightdiffuse = gl.getUniformLocation(gl.program, 'light.diffuse');
+    if (!lightdiffuse) {
+      console.log('Failed to get the storage location of lightdiffuse');
+      return -1;
+    }
+    gl.uniform3f(lightdiffuse, ...lightSource.diffuse)
+
+    var lightspecular = gl.getUniformLocation(gl.program, 'light.specular');
+    if (!lightspecular) {
+      console.log('Failed to get the storage location of lightspecular');
+      return -1;
+    }
+    gl.uniform3f(lightspecular, ...lightSource.specular)
+
+    var lightposition = gl.getUniformLocation(gl.program, 'light.position');
+    if (!lightposition) {
+      console.log('Failed to get the storage location of lightposition');
+      return -1;
+    }
+    gl.uniform3f(lightposition, ...lightSource.position)
 
     var u_viewPos = gl.getUniformLocation(gl.program, 'u_viewPos');
     if (!u_viewPos) {
