@@ -44,6 +44,7 @@ let program2: WebGLProgram // for point light
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl') as HTMLCanvasElement;
+  document.title = 'diffuse + ambient 漫反射+环境光'
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
