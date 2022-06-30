@@ -14,10 +14,16 @@ git clone https://github.com/prophetw/WebGLTuturialSourceCode.git WebGLexamples
 # use Spector to debug gl instructions
 git clone https://github.com/BabylonJS/Spector.js.git
 cd Spector.js 
+yarn 
 yarn link
 
 cd WebGLexamples
 yarn link 'spectorjs'
+
+# if you want to debug webgl commands 
+```js
+window.spector.startCapture(document.getElementById('canvasId'), commandCount)
+```
 
 ```
 
