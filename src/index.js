@@ -59,7 +59,7 @@ import {
   LOGLLightingMapping,
   LOGLDiffuseMapping,
 } from '../learnopengl'
-import { LOGLAmbient, LOGLDiffuse } from '../learnopengl/BasicLighting'
+import { LOGLAmbient, LOGLDiffuse, LOGLSpecular } from '../learnopengl/BasicLighting'
 
 
 
@@ -98,7 +98,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLDiffuse
+const ExampleFn = LOGLSpecular
 
 initSpector(ExampleFn)
 

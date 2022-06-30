@@ -7,3 +7,6 @@
 
 ### diffuse lighting
 > 漫反射光照(Diffuse Lighting)：模拟光源对物体的方向性影响(Directional Impact)。它是冯氏光照模型中视觉上最显著的分量。物体的某一部分越是正对着光源，它就会越亮。
+
+### Specular lighting
+> 高光
