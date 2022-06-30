@@ -166,7 +166,7 @@ function injectUI(gl: WebGLRenderingContext){
   document.body.appendChild(div)
   const ambient = document.getElementById('ambient')
   if(ambient){
-    ambient.addEventListener('change', e=>{
+    ambient.addEventListener('change', (e)=>{
       if(e && e.target && e.target.value){
         console.log(' ambient ', e.target.value);
         ambientNumber = e.target.value
@@ -354,6 +354,17 @@ function updateMVPMatrix(gl: WebGLRenderingContext,
   gl.uniformMatrix4fv(u_projection, false, projMatrix.elements)
 
   if(gl.program === program1){
+    const normalMatrix4 = new window.Matrix4()
+    normalMatrix4.setInverseOf(modelMatrix)
+    normalMatrix4.transpose()
+
+    var u_normalMat4 = gl.getUniformLocation(gl.program, 'normalMat4');
+    if (!u_normalMat4) {
+      console.log('Failed to get the storage location of u_normalMat4', u_normalMat4);
+      return -1;
+    }
+    gl.uniformMatrix4fv(u_normalMat4, false, normalMatrix4.elements)
+
 
     var u_objectColor = gl.getUniformLocation(gl.program, 'objectColor');
     if (!u_objectColor) {
