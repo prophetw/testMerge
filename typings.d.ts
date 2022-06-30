@@ -1,4 +1,6 @@
 declare module '*.glsl'
+declare module '*.vert'
+declare module '*.frag'
 interface Window {
   getWebGLContext: (htmlDomEle: HTMLCanvasElement)=> WebGLRenderingContext
   initShaders: (gl: WebGLRenderingContext, VSHADER_SOURCE: string, FSHADER_SOURCE: string)=>boolean

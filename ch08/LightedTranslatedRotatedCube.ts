@@ -1,44 +1,9 @@
 import FSHADER_SOURCE from './LightedTranslatedRotatedCube.frag.glsl'
 import VSHADER_SOURCE from './LightedTranslatedRotatedCube.vert.glsl'
-// LightedTranslatedRotatedCube.js (c) 2012 matsuda
-// Vertex shader program
-// var VSHADER_SOURCE =
-//   'attribute vec4 a_Position;\n' +
-//   'attribute vec4 a_Color;\n' +
-//   'attribute vec4 a_Normal;\n' +
-//   'uniform mat4 u_MvpMatrix;\n' +
-//   'uniform mat4 u_NormalMatrix;\n' +   // Transformation matrix of the normal
-//   'uniform vec3 u_LightColor;\n' +     // Light color
-//   'uniform vec3 u_LightDirection;\n' + // Light direction (in the world coordinate, normalized)
-//   'uniform vec3 u_AmbientLight;\n' +   // Ambient light color
-//   'varying vec4 v_Color;\n' +
-//   'void main() {\n' +
-//   '  gl_Position = u_MvpMatrix * a_Position;\n' +
-//      // Recalculate the normal based on the model matrix and make its length 1.
-//   '  vec3 normal = normalize(vec3(u_NormalMatrix * a_Normal));\n' +
-//      // Calculate the dot product of the light direction and the orientation of a surface (the normal)
-//   '  float nDotL = max(dot(u_LightDirection, normal), 0.0);\n' +
-//      // Calculate the color due to diffuse reflection
-//   '  vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;\n' +
-//      // Calculate the color due to ambient reflection
-//   '  vec3 ambient = u_AmbientLight * a_Color.rgb;\n' +
-//      // Add the surface colors due to diffuse reflection and ambient reflection
-//   '  v_Color = vec4(diffuse + ambient, a_Color.a);\n' +
-//   '}\n';
-
-// // Fragment shader program
-// var FSHADER_SOURCE =
-//   '#ifdef GL_ES\n' +
-//   'precision mediump float;\n' +
-//   '#endif\n' +
-//   'varying vec4 v_Color;\n' +
-//   'void main() {\n' +
-//   '  gl_FragColor = v_Color;\n' +
-//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
@@ -84,16 +49,16 @@ function main() {
   // Set the ambient light
   gl.uniform3f(u_AmbientLight, 0.2, 0.2, 0.2);
 
-  var modelMatrix = new Matrix4();  // Model matrix
-  var mvpMatrix = new Matrix4();    // Model view projection matrix
-  var normalMatrix = new Matrix4(); // Transformation matrix for normals
+  var modelMatrix = new window.Matrix4();  // Model matrix
+  var mvpMatrix = new window.Matrix4();    // Model view projection matrix
+  var normalMatrix = new window.Matrix4(); // Transformation matrix for normals
 
   // Calculate the model matrix
-  modelMatrix.setTranslate(0, 0.9, 0); // Translate to the y-axis direction
-  modelMatrix.rotate(90, 0, 0, 1);     // Rotate 90 degree around the z-axis
+  modelMatrix.setTranslate(0, 0, 0); // Translate to the y-axis direction
+  modelMatrix.rotate(0, 0, 0, 1);     // Rotate 90 degree around the z-axis
   // Calculate the view projection matrix
   mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
-  mvpMatrix.lookAt(3, 3, 7, 0, 0, 0, 0, 1, 0);
+  mvpMatrix.lookAt(6, 5, 5, 0, 0, 0, 0, 1, 0);
   mvpMatrix.multiply(modelMatrix);
   // Pass the model view projection matrix to u_MvpMatrix
   gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
@@ -180,7 +145,11 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
   return indices.length;
 }
 
-function initArrayBuffer(gl, attribute, data, num) {
+function initArrayBuffer(
+  gl: WebGLRenderingContext,
+  attribute: string,
+  data: BufferSource,
+  num: number) {
   // Create a buffer object
   var buffer = gl.createBuffer();
   if (!buffer) {

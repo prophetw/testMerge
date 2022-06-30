@@ -25,7 +25,7 @@ varying vec2 v_TexCoord;
 
 void main()
 {
- // ambient
+    // ambient
     vec3 ambient = light.ambient * texture2D(material.diffuse, v_TexCoord).rgb;
 
     // diffuse

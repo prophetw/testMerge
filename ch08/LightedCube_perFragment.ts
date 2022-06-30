@@ -1,35 +1,9 @@
 import FSHADER_SOURCE from './LightedCube_perFragment.frag.glsl'
 import VSHADER_SOURCE from './LightedCube_perFragment.vert.glsl'
-// LightedCube_perFragment.js (c) 2012 matsuda
-// Vertex shader program
-// var VSHADER_SOURCE =
-//   'attribute vec4 a_Position;\n' +
-//   'attribute vec4 a_Color;\n' +
-//   'attribute vec4 a_Normal;\n' +
-//   'uniform mat4 u_mvpMatrix;\n' +
-//   'uniform mat4 u_normalMatrix;\n' +
-//   'uniform vec3 u_LightDir;\n' +
-//   'varying vec4 v_Color;\n' +
-//   'varying float v_Dot;\n' +
-//   'void main() {\n' +
-//   '  gl_Position = u_mvpMatrix * a_Position;\n' +
-//   '  v_Color = a_Color;\n' +
-//   '  vec4 normal = u_normalMatrix * a_Normal;\n' +
-//   '  v_Dot = max(dot(normalize(normal.xyz), u_LightDir), 0.0);\n' +
-//   '}\n';
-
-// // Fragment shader program
-// var FSHADER_SOURCE =
-//   'precision mediump float;\n' +
-//   'varying vec4 v_Color;\n' +
-//   'varying float v_Dot;\n' +
-//   'void main() {\n' +
-//   '  gl_FragColor = vec4(v_Color.xyz * v_Dot, v_Color.a);\n' +
-//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
@@ -45,6 +19,7 @@ function main() {
   }
 
   //
+  window.spector.startCapture(canvas, 150)
   var n = initVertexBuffers(gl);
   if (n < 0) {
     console.log('Failed to initialize buffers');
@@ -65,13 +40,13 @@ function main() {
   }
 
   // Set the viewing volume
-  var viewMatrix = new Matrix4();   // View matrix
-  var mvpMatrix = new Matrix4();    // Model view projection matrix
-  var mvMatrix = new Matrix4();     // Model matrix
-  var normalMatrix = new Matrix4(); // Transformation matrix for normals
+  var viewMatrix = new window.Matrix4();   // View matrix
+  var mvpMatrix = new window.Matrix4();    // Model view projection matrix
+  var mvMatrix = new window.Matrix4();     // Model matrix
+  var normalMatrix = new window.Matrix4(); // Transformation matrix for normals
 
   // Calculate the view matrix
-  viewMatrix.setLookAt(0, 3, 10, 0, 0, 0, 0, 1, 0);
+  viewMatrix.setLookAt(0, 3, 3, 0, 0, 0, 0, 1, 0);
   mvMatrix.set(viewMatrix).rotate(60, 0, 1, 0); // Rotate 60 degree around the y-axis
   // Calculate the model view projection matrix
   mvpMatrix.setPerspective(30, 1, 1, 100);
@@ -97,7 +72,7 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // Draw the cube
-  gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+  gl.drawElements(gl.TRIANGLE_FAN, n, gl.UNSIGNED_BYTE, 0);
 }
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
@@ -161,7 +136,7 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
   var indexBuffer = gl.createBuffer();
   if (!indexBuffer) {
     console.log('Failed to create the buffer object');
-    return false;
+    return -1;
   }
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
@@ -169,7 +144,11 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
   return indices.length;
 }
 
-function initArrayBuffer(gl, data, num, attribute) {
+function initArrayBuffer(
+  gl: WebGLRenderingContext,
+  data: BufferSource,
+  num: number,
+  attribute: string) {
   // Create a buffer object
   var buffer = gl.createBuffer();
   if (!buffer) {
@@ -178,7 +157,7 @@ function initArrayBuffer(gl, data, num, attribute) {
   }
   // Write date into the buffer object
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW );
   // Assign the buffer object to the attribute variable
   var a_attribute = gl.getAttribLocation(gl.program, attribute);
   if (a_attribute < 0) {

@@ -8,4 +8,5 @@ import PointLightedCube_animation from './PointLightedCube_animation'
 import PointLightedCube_perFragment from './PointLightedCube_perFragment'
 import PointLightedSphere from './PointLightedSphere'
 import PointLightedSphere_perFragment from './PointLightedSphere_perFragment'
-export {LightedCube,LightedCube_ambient,LightedCube_animation,LightedCube_perFragment,LightedTranslatedRotatedCube,PointLightedCube,PointLightedCube_animation,PointLightedCube_perFragment,PointLightedSphere,PointLightedSphere_perFragment}
+import LightSource from './LightSource'
+export {LightedCube,LightedCube_ambient,LightedCube_animation,LightedCube_perFragment,LightedTranslatedRotatedCube,PointLightedCube,PointLightedCube_animation,PointLightedCube_perFragment,PointLightedSphere,PointLightedSphere_perFragment,LightSource}

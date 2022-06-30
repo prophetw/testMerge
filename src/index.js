@@ -28,6 +28,7 @@ import {
 import {
   LightedCube,LightedCube_ambient,
   LightedCube_animation,LightedCube_perFragment,LightedTranslatedRotatedCube,
+  LightSource,
   PointLightedCube,PointLightedCube_animation,PointLightedCube_perFragment,
   PointLightedSphere,PointLightedSphere_perFragment
 } from '../ch08'
@@ -58,6 +59,7 @@ import {
   LOGLLightingMapping,
   LOGLDiffuseMapping,
 } from '../learnopengl'
+import { LOGLAmbient, LOGLDiffuse } from '../learnopengl/BasicLighting'
 
 
 
@@ -83,7 +85,7 @@ const initSpector = (callback=()=>{
     if (!spector.resultView) {
       spector.getResultUI();
       spector.onCapture.add((capture) => {
-        capture.commands = capture.commands.filter(command=>command.name!=='getError')
+        // capture.commands = capture.commands.filter(command=>command.name!=='getError')
 	      console.log(' ---- capture result ', capture);
         spector.resultView.display();
         spector.resultView.addCapture(capture);
@@ -96,7 +98,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLDiffuseMapping
+const ExampleFn = LOGLDiffuse
 
 initSpector(ExampleFn)
 

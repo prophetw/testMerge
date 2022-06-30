@@ -1,9 +1,7 @@
-import FSHADER_SOURCE from './LightedCube.frag.glsl'
-import VSHADER_SOURCE from './LightedCube.vert.glsl'
-import initLightSource from './LightSource'
+import FSHADER_SOURCE from './lightSource.frag.glsl'
+import VSHADER_SOURCE from './lightSource.vert.glsl'
 
-function main() {
-
+function LightSource() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
@@ -31,35 +29,33 @@ function main() {
   gl.clearColor(0, 0, 0, 1);
   gl.enable(gl.DEPTH_TEST);
 
-  console.log(' gl is: ', gl);
-
-
   // Get the storage locations of uniform variables and so on
-  var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
-  var u_LightColor = gl.getUniformLocation(gl.program, 'u_LightColor');
-  var u_LightDirection = gl.getUniformLocation(gl.program, 'u_LightDirection');
-  if (!u_MvpMatrix || !u_LightColor || !u_LightDirection) {
+  var model = gl.getUniformLocation(gl.program, 'model');
+  var view = gl.getUniformLocation(gl.program, 'view');
+  var projection = gl.getUniformLocation(gl.program, 'projection');
+  if (!projection || !view || !model) {
     console.log('Failed to get the storage location');
     return;
   }
 
-  // Set the light color (white)
-  gl.uniform3f(u_LightColor, 1.0, 1.0, 1.0);
-  // Set the light direction (in the world coordinate)
-  var lightDirection = new Vector3([0.5, 3.0, 4.0]);
-  lightDirection.normalize();     // Normalize
-  console.log(' lightDirection ', lightDirection);
-  gl.uniform3fv(u_LightDirection, lightDirection.elements);
+
+  const lightModelMat = new window.Matrix4()
+  const viewMat = new window.Matrix4()
+  const projectionMat = new window.Matrix4()
 
   // Calculate the view projection matrix
-  var mvpMatrix = new window.Matrix4();    // Model view projection matrix
-  mvpMatrix.setPerspective(30, canvas.width / canvas.height, 1, 100);
-  mvpMatrix.lookAt(3, 3, 7, 0, 0, 0, 0, 1, 0);
-  // Pass the model view projection matrix to the variable u_MvpMatrix
-  gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements);
+  lightModelMat.setScale(0.2,0.2,0.2)
+  lightModelMat.translate(10, 10, -5)
+
+  projectionMat.setPerspective(30, canvas.width / canvas.height, 1, 100);
+  viewMat.lookAt(3, 3, 10, 0, 0, 0, 0, 1, 0);
+  gl.uniformMatrix4fv(model, false, lightModelMat.elements);
+  gl.uniformMatrix4fv(view, false, viewMat.elements);
+  gl.uniformMatrix4fv(projection, false, projectionMat.elements);
 
   // Clear color and depth buffer
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);   // Draw the cube
 }
 
@@ -81,27 +77,6 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
     1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0  // v4-v7-v6-v5 back
   ]);
 
-
-  var colors = new Float32Array([    // Colors
-    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,     // v0-v1-v2-v3 front
-    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,     // v0-v3-v4-v5 right
-    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,     // v0-v5-v6-v1 up
-    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,     // v1-v6-v7-v2 left
-    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,     // v7-v4-v3-v2 down
-    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0      // v4-v7-v6-v5 back
-  ]);
-
-
-  var normals = new Float32Array([    // Normal 法向量
-    0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0,  // v0-v1-v2-v3 front
-    1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,  // v0-v3-v4-v5 right
-    0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,  // v0-v5-v6-v1 up
-    -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0,  // v1-v6-v7-v2 left
-    0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0,  // v7-v4-v3-v2 down
-    0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0   // v4-v7-v6-v5 back
-  ]);
-
-
   // Indices of the vertices
   var indices = new Uint8Array([
     0, 1, 2, 0, 2, 3,    // front
@@ -114,15 +89,13 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
 
 
   // Write the vertex property to buffers (coordinates, colors and normals)
-  if (!initArrayBuffer(gl, 'a_Position', vertices, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Color', colors, 3, gl.FLOAT)) return -1;
-  if (!initArrayBuffer(gl, 'a_Normal', normals, 3, gl.FLOAT)) return -1;
+  if (!initArrayBuffer(gl, 'aPos', vertices, 3, gl.FLOAT)) return -1;
 
   // Write the indices to the buffer object
   var indexBuffer = gl.createBuffer();
   if (!indexBuffer) {
     console.log('Failed to create the buffer object');
-    return false;
+    return -1;
   }
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -141,7 +114,7 @@ function initArrayBuffer(
   var buffer = gl.createBuffer();
   if (!buffer) {
     console.log('Failed to create the buffer object');
-    return false;
+    return -1;
   }
   // Write date into the buffer object
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -161,4 +134,4 @@ function initArrayBuffer(
   return true;
 }
 
-export default main
+export default LightSource
