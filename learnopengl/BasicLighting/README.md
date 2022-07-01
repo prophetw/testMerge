@@ -10,3 +10,5 @@
 
 ### Specular lighting
 > 高光
+> 入射角（光源向片源） + 片元的法向量  计算出 反射向量   reflect(lightDir, normal)
+> 反射向量 与 片元向视点的向量  的角度对光线的影响 
