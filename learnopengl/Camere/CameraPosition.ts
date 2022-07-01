@@ -21,6 +21,7 @@ let program2: WebGLProgram
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl') as HTMLCanvasElement;
+  document.title = 'Camera/View Space'
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);

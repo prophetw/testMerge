@@ -61,7 +61,8 @@ import {
 
   LOGLCameraPosition,
   LOGLCameraRotate,
-  LOGLCamereMoving,
+  LOGLCameraMoving,
+  LOGLAxis,
 } from '../learnopengl'
 import { LOGLAmbient, LOGLDiffuse, LOGLSpecular } from '../learnopengl/BasicLighting'
 
@@ -102,7 +103,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLCameraPosition
+const ExampleFn = LOGLAxis
 
 initSpector(ExampleFn)
 
