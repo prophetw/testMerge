@@ -174,7 +174,7 @@ function injectOptions (gl:WebGLRenderingContext, n: number){
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
   var verticesColors = new Float32Array([
-    // 坐标线
+    // 坐标线            color
      0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // X
      1.0,  0.0,   0.0,  1.0,  0.0,  0.0,
      0.0,  0.0,   0.0,  1.0,  1.0,  1.0,  // Y

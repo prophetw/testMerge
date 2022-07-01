@@ -7,6 +7,7 @@ import LIGHT_FS_SOURCE from './lightSource.frag';
 // 漫反射光照(Diffuse Lighting)：模拟光源对物体的方向性影响(Directional Impact)。它是冯氏光照模型中视觉上最显著的分量。物体的某一部分越是正对着光源，它就会越亮。
 let ambientNumber = 0.1; // 环境光系数 越大受环境光 影响越大
 let specularStrength = 0.5; // 高光强度
+let shininessVal = 32.0;
 
 enum AngelType {
   'X','Y','Z'
@@ -112,6 +113,16 @@ function enableCameraMoving(canvas: HTMLCanvasElement, gl: WebGLRenderingContext
       redraw(gl, cubePosi)
     }
   })
+  document.addEventListener('keyup', (e: KeyboardEvent)=>{
+    const {key} = e
+    switch(key){
+      case 'w': defaultCameraPosition.y -= 0.1; redraw(gl, cubePosi); break;
+      case 's': defaultCameraPosition.y += 0.1; redraw(gl, cubePosi); break;
+      case 'a': defaultCameraPosition.x += 0.1; redraw(gl, cubePosi); break;
+      case 'q': defaultCameraPosition.x -= 0.1; redraw(gl, cubePosi); break;
+      default: break;
+    }
+  })
 
 }
 
@@ -143,13 +154,15 @@ function injectUI(gl: WebGLRenderingContext){
   <label for="ambient" style="width: 410px" class="form-label"> ambient: <span id="ambientNumber">${ambientNumber}</span></label>
   <input type="range" class="form-range" value="${ambientNumber}" step="0.01" min="0" max="1" id="ambient">
   <label for="lightX" style="width: 410px" class="form-label"> lightX: <span id="lightXV">${lightPosi[0]}</span></label>
-  <input type="range" class="form-range" value="${lightPosi[0]}" step="1" min="-20" max="20" id="lightX">
+  <input type="range" class="form-range" value="${lightPosi[0]}" step="1" min="-100" max="100" id="lightX">
   <label for="lightY" style="width: 410px" class="form-label"> lightY: <span id="lightYV">${lightPosi[1]}</span></label>
-  <input type="range" class="form-range" value="${lightPosi[1]}" step="1" min="-20" max="20" id="lightY">
+  <input type="range" class="form-range" value="${lightPosi[1]}" step="1" min="-100" max="100" id="lightY">
   <label for="lightZ" style="width: 410px" class="form-label"> lightZ: <span id="lightZV">${lightPosi[2]}</span></label>
-  <input type="range" class="form-range" value="${lightPosi[2]}" step="1" min="-20" max="20" id="lightZ">
+  <input type="range" class="form-range" value="${lightPosi[2]}" step="1" min="-100" max="100" id="lightZ">
   <label for="specular" style="width: 410px" class="form-label">specular strength: <span id="specularV">${specularStrength}</span></label>
   <input type="range" class="form-range" value="${specularStrength}" step="0.01" min="0" max="1" id="specular">
+  <label for="shininess" style="width: 410px" class="form-label">shininess: <span id="shininessV">${shininessVal}</span></label>
+  <input type="range" class="form-range" value="${shininessVal}" step="1" min="0" max="512" id="shininess">
 
   <label for="viewX" style="width: 410px" class="form-label"> viewX: <span id="viewXV">${defaultCameraPosition.x}</span></label>
   <input type="range" class="form-range" value="${defaultCameraPosition.x}" step="0.1" min="-101" max="101" id="viewX">
@@ -162,7 +175,8 @@ function injectUI(gl: WebGLRenderingContext){
   const div = document.createElement('div')
   div.innerHTML = html
   div.style.position = 'absolute'
-  div.style.top = '410px'
+  div.style.top = '0px'
+  div.style.width = '410px'
   div.style.right = '0px'
   document.body.appendChild(div)
   const ambient = document.getElementById('ambient')
@@ -219,6 +233,17 @@ function injectUI(gl: WebGLRenderingContext){
         console.log(' lightZ ', e.target.value);
         specularStrength = +e.target.value
         updateUI('specularV', ''+specularStrength)
+        redraw(gl, cubePosi)
+      }
+    })
+  }
+  const shininess = document.getElementById('shininess')
+  if(shininess){
+    shininess.addEventListener('change', e=>{
+      if(e && e.target && e.target.value){
+        console.log(' shininessVal ', e.target.value);
+        shininessVal = +e.target.value
+        updateUI('shininessV', ''+shininessVal)
         redraw(gl, cubePosi)
       }
     })
@@ -454,6 +479,13 @@ function updateMVPMatrix(gl: WebGLRenderingContext,
       return -1;
     }
     gl.uniform1f(u_specularStrength, specularStrength)
+
+    var u_shininess = gl.getUniformLocation(gl.program, 'shininess');
+    if (!u_shininess) {
+      console.log('Failed to get the storage location of shininess');
+      return -1;
+    }
+    gl.uniform1f(u_shininess, shininessVal)
   }
 }
 

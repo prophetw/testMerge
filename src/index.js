@@ -47,17 +47,21 @@ import {
   LOGLHelloRectangle,
   LOGLTexturesTriangle,
   LOGLTexturesWoodBox,
-  LOGLCameraPosition,
   LOGLCoodSysFirst,
   LOGLCoodSysDraw,
   LOGLTexturesWoodBox3D,
   LOGLTextures10WoodBox3D,
-  LOGLMovingCamere,
-  LOGLEulerAngle,
+
   LOGLLightScene,
+
   LOGLMaterial,
+
   LOGLLightingMapping,
   LOGLDiffuseMapping,
+
+  LOGLCameraPosition,
+  LOGLCameraRotate,
+  LOGLCamereMoving,
 } from '../learnopengl'
 import { LOGLAmbient, LOGLDiffuse, LOGLSpecular } from '../learnopengl/BasicLighting'
 
@@ -98,7 +102,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLSpecular
+const ExampleFn = LOGLCameraPosition
 
 initSpector(ExampleFn)
 

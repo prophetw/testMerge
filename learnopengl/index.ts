@@ -9,9 +9,9 @@ import LOGLTextures10WoodBox3D from './textures/Textures10WoodBox3D'
 import LOGLCoodSysFirst from './CoodSystem/First'
 import LOGLCoodSysDraw from './CoodSystem/DrawCoodSystem'
 
-import LOGLCameraPosition from './Camere/FirstTriangle'
-import LOGLMovingCamere from './Camere/MovingCamera'
-import LOGLEulerAngle from './Camere/EulerAngle'
+import LOGLCameraPosition from './Camere/CameraPosition'
+import LOGLCamereMoving from './Camere/CameraMoving'
+import LOGLCameraRotate from './Camere/CameraRotate'
 
 import LOGLLightScene from './LightScene/first'
 import LOGLMaterial from './Materials/first'
@@ -29,8 +29,8 @@ export {
   LOGLCoodSysDraw,
   LOGLTexturesWoodBox3D,
   LOGLTextures10WoodBox3D,
-  LOGLMovingCamere,
-  LOGLEulerAngle,
+  LOGLCamereMoving,
+  LOGLCameraRotate,
   LOGLLightScene,
   LOGLMaterial,
   LOGLLightingMapping,

@@ -1,10 +1,7 @@
-import FSHADER_SOURCE from './EulerAngle.frag.glsl'
-import VSHADER_SOURCE from './EulerAngle.vert.glsl'
-
-
+import FSHADER_SOURCE from './CameraMoving.frag'
+import VSHADER_SOURCE from './CameraMoving.vert'
 
 type AngelType = 'X' | 'Y' | 'Z'
-
 // cube transform  [x,y,z,angle,angelType]
 const cubePosi: [number,number,number, number, AngelType][] = [
   [ 0.0,  0.0,  0.0, 15, 'X'],
@@ -23,18 +20,13 @@ const defaultCameraPosition = {
   y: 0,
   z: 5
 }
-// 单位向量 表示方向 方便计算
-const cameraUp = [0,1,0]
-const cameraFront = [0,0,-1]
-
-// camera look at somePoint 视点 viewPoint
-const viewPoint = {
+// camera look at somePoint
+const targetPosition = {
   x: 0,
   y: 0,
   z: -100
 }
 
-// perspective options
 const perspectiveOptions = {
   fov: 45,
   aspect: 1,
@@ -42,12 +34,11 @@ const perspectiveOptions = {
   far: 100
 }
 
-
-
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
+  document.title='moving camera'
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
   if (!gl) {
@@ -77,65 +68,180 @@ function main() {
   const imagesSrcAry = ['./resources/container.jpg', './resources/awesomeface.png']
   // boxWood
   // const imagesSrcAry = ['./resources/container.jpg']
-  let dftMixVal = 0.2
-  document.addEventListener('keyup', e=>{
-    if(e.code === "ArrowUp"){
-      //
-      var u_MixVal = gl.getUniformLocation(gl.program, 'u_MixVal');
-      if (!u_MixVal) {
-        console.log('Failed to get the storage location of u_MixVal: ' + u_MixVal);
-        return false;
-      }
-      dftMixVal+=0.1
-      gl.uniform1f(u_MixVal, dftMixVal)
-      startDraw(gl, 4)
-    }
-    if(e.code === "ArrowDown"){
-      //
-      var u_MixVal = gl.getUniformLocation(gl.program, 'u_MixVal');
-      if (!u_MixVal) {
-        console.log('Failed to get the storage location of u_MixVal: ' + u_MixVal);
-        return false;
-      }
-      dftMixVal-=0.1
-      gl.uniform1f(u_MixVal, dftMixVal)
-      startDraw(gl, 4)
-    }
-  })
   let count = 0
   imagesSrcAry.map((src, index)=>{
     const initResult = initTextures(gl, index, src, ()=>{
-      count ++
-      if(count === 2){
-        startDraw(gl, 4)
+      count++
+      if(count===2){
+        startDraw(gl, 36)
       }
     })
     return initResult
   })
+
+
+  // scroll event   => change camera z
+  canvas.addEventListener('wheel', (e)=>{
+    const {deltaY} = e
+    const step = 5
+    if(deltaY>0){
+      // zoom out
+      // defaultCameraPosition.z += 0.1
+      const newFov = perspectiveOptions.fov + step
+      perspectiveOptions.fov = Math.min(45, newFov)
+      updateAll(gl, cubePosi, defaultCameraPosition, perspectiveOptions)
+    }else{
+      // zoom in
+      // defaultCameraPosition.z -= 0.1
+      const newFov = perspectiveOptions.fov-step
+      perspectiveOptions.fov = Math.max(1, newFov)
+      updateAll(gl, cubePosi, defaultCameraPosition, perspectiveOptions)
+    }
+  })
+  // arrow left right up down
+  document.addEventListener('keyup', (e: KeyboardEvent)=>{
+    const {key} = e
+    switch(key){
+      case 'ArrowLeft': defaultCameraPosition.x -= 0.1; updateAll(gl, cubePosi, defaultCameraPosition, perspectiveOptions); break;
+      case 'ArrowRight': defaultCameraPosition.x += 0.1; updateAll(gl, cubePosi, defaultCameraPosition, perspectiveOptions); break;
+      case 'ArrowUp': defaultCameraPosition.y += 0.1; updateAll(gl, cubePosi, defaultCameraPosition, perspectiveOptions); break;
+      case 'ArrowDown': defaultCameraPosition.y -= 0.1; updateAll(gl, cubePosi, defaultCameraPosition, perspectiveOptions); break;
+      default: break;
+    }
+  })
+
   // if (!initTextures(gl, n, sr)) {
   //   console.log('Failed to intialize the texture.');
   //   return;
   // }
+  injectUI(gl)
+}
+
+function injectUI(gl: WebGLRenderingContext){
+  const div = document.createElement('div')
+  const html = `
+    <button id="resetCamera">resetCamera</button>
+  `
+  div.innerHTML = html
+  document.body.appendChild(div)
+  document.getElementById('resetCamera')?.addEventListener('click', ()=>{
+    resetCameraPosition(gl, cubePosi)
+  })
+}
+
+function resetCameraPosition(gl: WebGLRenderingContext, cubePosi: [number,number,number, number, AngelType][]){
+  defaultCameraPosition.x = 0
+  defaultCameraPosition.y = 0
+  defaultCameraPosition.z = 5
+  perspectiveOptions.near = 30
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
+  for(let i=0; i<cubePosi.length; i++){
+    updateMVPMatrix(gl, cubePosi[i], defaultCameraPosition)
+    gl.drawArrays(gl.TRIANGLES, 0, 36);
+  }
+}
+function updateAll(gl: WebGLRenderingContext,
+  cubePosi: [number,number,number, number, AngelType][],
+  cameraPosition: {x: number,y: number,z: number}, perspectiveOptions: {
+  fov: number;
+  aspect: number;
+  near: number;
+  far: number;
+}){
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
+  for(let i=0; i<cubePosi.length; i++){
+    updateMVPMatrix(gl, cubePosi[i], cameraPosition, perspectiveOptions)
+    gl.drawArrays(gl.TRIANGLES, 0, 36);
+  }
+}
+
+function updateMVPMatrix(gl: WebGLRenderingContext,
+  translate: [number,number,number, number, AngelType],
+  cameraPosition={
+    x: 0,
+    y: 0,
+    z: 5
+  },
+  perspectiveOptions = {
+    fov: 45,
+    aspect: 1,
+    near: 0.1,
+    far: 100
+  }
+  ){
+
+  var modelMatrix = new window.Matrix4(); // Model matrix
+  var viewMatrix = new window.Matrix4();  // View matrix
+  var projMatrix = new window.Matrix4();  // Projection matrix
+  var mvpMatrix = new window.Matrix4();   // Model view projection matrix
+  // Calculate the model, view and projection matrices
+  const [x, y, z, angle, angleType] = translate
+  switch(angleType){
+    case 'X': modelMatrix.rotate(angle, 1, 0, 0); break;
+    case 'Y': modelMatrix.rotate(angle, 0, 1, 0); break;
+    case 'Z': modelMatrix.rotate(angle, 0, 0, 1); break;
+    default: break;
+  }
+  modelMatrix.translate(x, y, z);
+  viewMatrix.setLookAt(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0, 0, -100, 0, 1, 0);
+  projMatrix.setPerspective(perspectiveOptions.fov, perspectiveOptions.aspect, perspectiveOptions.near, perspectiveOptions.far);
+  // Calculate the model view projection matrix
+  mvpMatrix.set(projMatrix).multiply(viewMatrix).multiply(modelMatrix);
+  var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix4');
+  if (!u_MvpMatrix) {
+    console.log('Failed to get the storage location of u_MvpMatrix4', u_MvpMatrix);
+    return -1;
+  }
+  gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements)
 }
 
 function initVertexBuffers(gl: WebGLRenderingContext) {
   var verticesTexCoords = new Float32Array([
     //    Vertex,           Color           texture coordinate
    //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-        0.5,  0.5, 0.0,   1.0, 0.0, 0.0,   1.0, 1.0,   // 右上
-        0.5, -0.5, 0.0,   0.0, 1.0, 0.0,   1.0, 0.0,   // 右下
-        -0.5, -0.5, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0,   // 左下
-        -0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.0, 1.0,    // 左上
-          // 0.5,  0.5, 0.0,   1.0, 0.0, 0.0,   2.0, 2.0,   // 右上  // 缩小两倍
-          // 0.5, -0.5, 0.0,   0.0, 1.0, 0.0,   2.0, 0.0,   // 右下
-          // -0.5, -0.5, 0.0,   0.0, 0.0, 1.0,   0.0, 0.0,   // 左下
-          // -0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.0, 2.0,    // 左上
-        //   0.5,  0.5, 0.0,   1.0, 0.0, 0.0,   0.55, 0.55, // top right // 0.10 放大到
-        //  0.5, -0.5, 0.0,   0.0, 1.0, 0.0,   0.55, 0.45, // bottom right
-        // -0.5, -0.5, 0.0,   0.0, 0.0, 1.0,   0.45, 0.45, // bottom let
-        // -0.5,  0.5, 0.0,   1.0, 1.0, 0.0,   0.45, 0.55  // top let
+   -0.5, -0.5, -0.5,  0.0, 0.0,
+   0.5, -0.5, -0.5,  1.0, 0.0,
+   0.5,  0.5, -0.5,  1.0, 1.0,
+   0.5,  0.5, -0.5,  1.0, 1.0,
+  -0.5,  0.5, -0.5,  0.0, 1.0,
+  -0.5, -0.5, -0.5,  0.0, 0.0,
+
+  -0.5, -0.5,  0.5,  0.0, 0.0,
+   0.5, -0.5,  0.5,  1.0, 0.0,
+   0.5,  0.5,  0.5,  1.0, 1.0,
+   0.5,  0.5,  0.5,  1.0, 1.0,
+  -0.5,  0.5,  0.5,  0.0, 1.0,
+  -0.5, -0.5,  0.5,  0.0, 0.0,
+
+  -0.5,  0.5,  0.5,  1.0, 0.0,
+  -0.5,  0.5, -0.5,  1.0, 1.0,
+  -0.5, -0.5, -0.5,  0.0, 1.0,
+  -0.5, -0.5, -0.5,  0.0, 1.0,
+  -0.5, -0.5,  0.5,  0.0, 0.0,
+  -0.5,  0.5,  0.5,  1.0, 0.0,
+
+   0.5,  0.5,  0.5,  1.0, 0.0,
+   0.5,  0.5, -0.5,  1.0, 1.0,
+   0.5, -0.5, -0.5,  0.0, 1.0,
+   0.5, -0.5, -0.5,  0.0, 1.0,
+   0.5, -0.5,  0.5,  0.0, 0.0,
+   0.5,  0.5,  0.5,  1.0, 0.0,
+
+  -0.5, -0.5, -0.5,  0.0, 1.0,
+   0.5, -0.5, -0.5,  1.0, 1.0,
+   0.5, -0.5,  0.5,  1.0, 0.0,
+   0.5, -0.5,  0.5,  1.0, 0.0,
+  -0.5, -0.5,  0.5,  0.0, 0.0,
+  -0.5, -0.5, -0.5,  0.0, 1.0,
+
+  -0.5,  0.5, -0.5,  0.0, 1.0,
+   0.5,  0.5, -0.5,  1.0, 1.0,
+   0.5,  0.5,  0.5,  1.0, 0.0,
+   0.5,  0.5,  0.5,  1.0, 0.0,
+  -0.5,  0.5,  0.5,  0.0, 0.0,
+  -0.5,  0.5, -0.5,  0.0, 1.0
   ]);
-  var n = 4; // The number of vertices
+  var n = 36; // The number of vertices
 
   // Create the buffer object
   var vertexTexCoordBuffer = gl.createBuffer();
@@ -155,18 +261,8 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
     console.log('Failed to get the storage location of a_Position');
     return -1;
   }
-  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 8, 0);
+  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 5, 0);
   gl.enableVertexAttribArray(a_Position);  // Enable the assignment of the buffer object
-
-  // Get the storage location of a_Color
-  var a_Color = gl.getAttribLocation(gl.program, 'a_Color');
-  if (a_Color < 0) {
-    console.log('Failed to get the storage location of a_TexCoord');
-    return -1;
-  }
-  // Assign the buffer object to a_Color variable
-  gl.vertexAttribPointer(a_Color, 3, gl.FLOAT, false, FSIZE * 8, FSIZE * 3);
-  gl.enableVertexAttribArray(a_Color);  // Enable the assignment of the buffer object
 
   // Get the storage location of a_TexCoord
   var a_TexCoord = gl.getAttribLocation(gl.program, 'a_TexCoord');
@@ -175,7 +271,7 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
     return -1;
   }
   // Assign the buffer object to a_TexCoord variable
-  gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, FSIZE * 8, FSIZE * 6);
+  gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, FSIZE * 5, FSIZE * 3);
   gl.enableVertexAttribArray(a_TexCoord);  // Enable the assignment of the buffer object
 
   var u_MixVal = gl.getUniformLocation(gl.program, 'u_MixVal');
@@ -184,6 +280,7 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
     return false;
   }
   gl.uniform1f(u_MixVal, 0.2)
+
 
   return n;
 }
@@ -216,6 +313,7 @@ function initTextures(gl: WebGLRenderingContext, textIndex: number, src: string,
 
   return true;
 }
+
 function loadTexture(gl: WebGLRenderingContext, textIndex: number, texture: WebGLTexture | null, u_Sampler: WebGLUniformLocation | null , image: HTMLImageElement, loadEndCallback=()=>{
   //
 }) {
@@ -253,50 +351,17 @@ function loadTexture(gl: WebGLRenderingContext, textIndex: number, texture: WebG
 }
 
 function startDraw(gl: WebGLRenderingContext, n: number){
-  console.log(' draw ');
-  gl.clear(gl.COLOR_BUFFER_BIT);   // Clear <canvas>
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, n); // Draw the rectangle
-}
+  console.log(' draw');
 
+  gl.enable(gl.DEPTH_TEST)
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);   // Clear <canvas>
+  // gl.drawArrays(gl.TRIANGLES, 0, n); // Draw the rectangle
 
-function updateMVPMatrix(gl: WebGLRenderingContext,
-  translate: [number,number,number, number, AngelType],
-  cameraPosition={
-    x: 0,
-    y: 0,
-    z: 5
-  },
-  perspectiveOptions = {
-    fov: 45,
-    aspect: 1,
-    near: 0.1,
-    far: 100
+  for(let i=0; i<cubePosi.length; i++){
+    updateMVPMatrix(gl, cubePosi[i], defaultCameraPosition)
+    gl.drawArrays(gl.TRIANGLES, 0, n);
   }
-  ){
 
-  var modelMatrix = new Matrix4(); // Model matrix
-  var viewMatrix = new Matrix4();  // View matrix
-  var projMatrix = new Matrix4();  // Projection matrix
-  var mvpMatrix = new Matrix4();   // Model view projection matrix
-  // Calculate the model, view and projection matrices
-  const [x, y, z, angle, angleType] = translate
-  switch(angleType){
-    case 'X': modelMatrix.rotate(angle, 1, 0, 0); break;
-    case 'Y': modelMatrix.rotate(angle, 0, 1, 0); break;
-    case 'Z': modelMatrix.rotate(angle, 0, 0, 1); break;
-    default: break;
-  }
-  modelMatrix.translate(x, y, z);
-  viewMatrix.setLookAt(cameraPosition.x, cameraPosition.y, cameraPosition.z, 0, 0, -100, 0, 1, 0);
-  projMatrix.setPerspective(perspectiveOptions.fov, perspectiveOptions.aspect, perspectiveOptions.near, perspectiveOptions.far);
-  // Calculate the model view projection matrix
-  mvpMatrix.set(projMatrix).multiply(viewMatrix).multiply(modelMatrix);
-  var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix4');
-  if (!u_MvpMatrix) {
-    console.log('Failed to get the storage location of u_MvpMatrix4', u_MvpMatrix);
-    return -1;
-  }
-  gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements)
 }
 
 
