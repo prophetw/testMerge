@@ -14,6 +14,7 @@ import LOGLCoodSysFirst from './CoodSystem/First'
 import LOGLCoodSysDraw from './CoodSystem/DrawCoodSystem'
 
 import LOGLCameraPosition from './Camere/CameraPosition'
+import LOGLCameraPositionTwgl from './Camere/CameraPosition.twgl'
 import LOGLCameraMoving from './Camere/CameraMoving'
 import LOGLCameraRotate from './Camere/CameraRotate'
 import LOGLAxis from './Camere/Axis'
@@ -41,6 +42,7 @@ export {
   LOGLTextures10WoodBox3DTwgl,
 
   LOGLCameraPosition,
+  LOGLCameraPositionTwgl,
   LOGLCameraMoving,
   LOGLCameraRotate,
 

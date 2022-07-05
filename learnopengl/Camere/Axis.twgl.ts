@@ -95,12 +95,10 @@ function drawFlat (gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo, vie
 }
 
 function drawAxis(gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo, viewMatrix: twgl.m4.Mat4){
-
-  console.log(' ---- programInfo', programInfo);
+  console.log(' --- drawAxis programInfo',  programInfo);
   const {program, attribSetters, uniformSetters} = programInfo
   gl.useProgram(program)
   gl.program = program
-
   // twgl.resizeCanvasToDisplaySize(gl.canvas);
   // gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -135,12 +133,8 @@ function drawAxis(gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo, view
   }
   const attrBuffer = twgl.createBufferInfoFromArrays(gl, attribs)
   twgl.setBuffersAndAttributes(gl, attribSetters, attrBuffer)
-
   twgl.setUniforms(uniformSetters, uniforms)
-
   twgl.drawBufferInfo(gl, attrBuffer, gl.LINES)
-
-
 }
 export {
   drawAxis,
