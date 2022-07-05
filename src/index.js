@@ -68,6 +68,7 @@ import {
   LOGLAxisTWGLV,
   LOGLTexturesTriangleTWGLV,
   LOGLTexturesWoodBoxTwgl,
+  LOGLTexturesWoodBox3DTwgl,
 } from '../learnopengl'
 import { LOGLAmbient, LOGLDiffuse, LOGLSpecular } from '../learnopengl/BasicLighting'
 
@@ -108,7 +109,7 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLTexturesWoodBoxTwgl
+const ExampleFn = LOGLTexturesWoodBox3DTwgl
 // const ExampleFn = LOGLTexturesTriangle
 
 initSpector(ExampleFn)

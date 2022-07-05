@@ -1,5 +1,28 @@
-import FSHADER_SOURCE from './Textures10WoodBox3D.frag.glsl'
-import VSHADER_SOURCE from './Textures10WoodBox3D.vert.glsl'
+import FSHADER_SOURCE from './Textures10WoodBox3D.frag'
+import VSHADER_SOURCE from './Textures10WoodBox3D.vert'
+import * as twgl from 'twgl.js'
+import { angleToRads } from '../../lib/utils'
+const Matrix4 = twgl.m4
+const Vector3 = twgl.v3
+
+
+type AngelType = 'X' | 'Y' | 'Z'
+type Angle= number
+
+let dftMixVal = 0.2
+let u_MvpMatrix = Matrix4.identity()
+const cubePosi: [number,number,number, AngelType, Angle][] = [
+  [ 0.0,  0.0,  0.0, 'X', 10],
+  [ 2.0,  5.0, -15.0, 'Z', 10],
+  [-1.5, -2.2, -2.5, 'Y', 10],
+  [-3.8, -2.0, -12.3, 'X', 70],
+  [ 2.4, -0.4, -3.5, 'Z', 45],
+  [-1.7,  3.0, -7.5, 'Y', 40],
+  [ 1.3, -2.0, -2.5, 'X', 20],
+  [ 1.5,  2.0, -2.5, 'Y', 10],
+  [ 1.5,  0.2, -1.5, 'Z', 60],
+  [-1.3,  1.0, -1.5, 'X', 10]
+]
 
 function main() {
   // Retrieve <canvas> element
@@ -12,274 +35,190 @@ function main() {
     return;
   }
 
+  const programInfo = twgl.createProgramInfo(gl, [VSHADER_SOURCE, FSHADER_SOURCE])
+  console.log(' programInfo ==== ', programInfo);
+
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.enable(gl.DEPTH_TEST)
 
-  // Set texture
-
-  // boxWood and smileface
-  const imagesSrcAry = ['./resources/container.jpg', './resources/awesomeface.png']
-  // boxWood
-  // const imagesSrcAry = ['./resources/container.jpg']
-  let dftMixVal = 0.2
-  document.addEventListener('keyup', e=>{
-    if(e.code === "ArrowUp"){
-      //
-      var u_MixVal = gl.getUniformLocation(gl.program, 'u_MixVal');
-      if (!u_MixVal) {
-        console.log('Failed to get the storage location of u_MixVal: ' + u_MixVal);
-        return false;
-      }
-      dftMixVal+=0.1
-      console.log( 'texture mix val: ', dftMixVal);
-      gl.uniform1f(u_MixVal, dftMixVal)
-      startDraw(gl, 36)
-    }
-    if(e.code === "ArrowDown"){
-      //
-      var u_MixVal = gl.getUniformLocation(gl.program, 'u_MixVal');
-      if (!u_MixVal) {
-        console.log('Failed to get the storage location of u_MixVal: ' + u_MixVal);
-        return false;
-      }
-      dftMixVal-=0.1
-      console.log( 'texture mix val: ', dftMixVal);
-      gl.uniform1f(u_MixVal, dftMixVal)
-      startDraw(gl, 36)
-    }
-  })
-  let count = 0
-  imagesSrcAry.map((src, index)=>{
-    const initResult = initTextures(gl, index, src, ()=>{
-      count++
-      if(count===2){
-        startDraw(gl, 36)
-      }
-    })
-    return initResult
-  })
-
-
-
-  // if (!initTextures(gl, n, sr)) {
-  //   console.log('Failed to intialize the texture.');
-  //   return;
-  // }
+  changeMixVal(gl, programInfo)
+  draw(gl, programInfo)
 }
 
-type AngelType = 'X' | 'Y' | 'Z'
-function updateMVPMatrix(gl: WebGLRenderingContext, translate: [number,number,number]){
+function changeMixVal(gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo){
+  document.addEventListener('keyup', e=>{
+    if(e.code === "ArrowUp"){
+      dftMixVal+=0.1
+      draw(gl, programInfo)
+    }
+    if(e.code === "ArrowDown"){
+      dftMixVal-=0.1
+      draw(gl, programInfo)
+    }
+  })
 
-  var modelMatrix = new Matrix4(); // Model matrix
-  var viewMatrix = new Matrix4();  // View matrix
-  var projMatrix = new Matrix4();  // Projection matrix
-  var mvpMatrix = new Matrix4();   // Model view projection matrix
-  const angle = Math.floor(Math.random() * 360 )
-  const angleType: AngelType = ['X','Y','Z'][Math.floor(Math.random() * 3)]
-  console.log(angle, angleType);
-  switch(angleType){
-    case 'X': modelMatrix.setRotate(angle, 1, 0, 0); break;
-    case 'Y': modelMatrix.setRotate(angle, 0, 1, 0); break;
-    case 'Z': modelMatrix.setRotate(angle, 0, 0, 1); break;
+}
+
+function draw(gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo){
+  gl.useProgram(programInfo.program)
+  const attribData = {
+    a_Position: {
+      data: [
+        -0.5, -0.5, -0.5,
+        0.5, -0.5, -0.5,
+        0.5,  0.5, -0.5,
+        0.5,  0.5, -0.5,
+        -0.5,  0.5, -0.5,
+        -0.5, -0.5, -0.5,
+
+        -0.5, -0.5,  0.5,
+        0.5, -0.5,  0.5,
+        0.5,  0.5,  0.5,
+        0.5,  0.5,  0.5,
+        -0.5,  0.5,  0.5,
+        -0.5, -0.5,  0.5,
+
+        -0.5,  0.5,  0.5,
+        -0.5,  0.5, -0.5,
+        -0.5, -0.5, -0.5,
+        -0.5, -0.5, -0.5,
+        -0.5, -0.5,  0.5,
+        -0.5,  0.5,  0.5,
+
+        0.5,  0.5,  0.5,
+        0.5,  0.5, -0.5,
+        0.5, -0.5, -0.5,
+        0.5, -0.5, -0.5,
+        0.5, -0.5,  0.5,
+        0.5,  0.5,  0.5,
+
+        -0.5, -0.5, -0.5,
+        0.5, -0.5, -0.5,
+        0.5, -0.5,  0.5,
+        0.5, -0.5,  0.5,
+        -0.5, -0.5,  0.5,
+        -0.5, -0.5, -0.5,
+
+        -0.5,  0.5, -0.5,
+        0.5,  0.5, -0.5,
+        0.5,  0.5,  0.5,
+        0.5,  0.5,  0.5,
+        -0.5,  0.5,  0.5,
+        -0.5,  0.5, -0.5,
+      ],
+      size: 3
+    },
+    a_TexCoord: {
+      data: [
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+        1.0, 1.0,
+        0.0, 1.0,
+        0.0, 0.0,
+
+        0.0, 0.0,
+        1.0, 0.0,
+        1.0, 1.0,
+        1.0, 1.0,
+        0.0, 1.0,
+      - 0.0, 0.0,
+
+        1.0, 0.0,
+        1.0, 1.0,
+      - 0.0, 1.0,
+      - 0.0, 1.0,
+      - 0.0, 0.0,
+        1.0, 0.0,
+
+        1.0, 0.0,
+        1.0, 1.0,
+        0.0, 1.0,
+        0.0, 1.0,
+        0.0, 0.0,
+        1.0, 0.0,
+
+        0.0, 1.0,
+        1.0, 1.0,
+        1.0, 0.0,
+        1.0, 0.0,
+        0.0, 0.0,
+        0.0, 1.0,
+
+        0.0, 1.0,
+        1.0, 1.0,
+        1.0, 0.0,
+        1.0, 0.0,
+        0.0, 0.0,
+        0.0, 1.0
+      ],
+      size: 2
+    }
+  }
+  const bufferInfo = twgl.createBufferInfoFromArrays(gl, attribData)
+  twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo)
+
+  twgl.createTextures(gl, {
+    wood: {
+      src: './resources/container.jpg',
+      flipY: 1,
+      min: gl.LINEAR,
+      mag: gl.LINEAR,
+      wrapS: gl.REPEAT,
+      wrapT: gl.REPEAT,
+    },
+    face: {
+      src: './resources/awesomeface.png',
+    }
+  }, (err, textures)=>{
+    if(err){
+      throw new Error(' createTextures error ')
+    }
+
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    for(let i=0; i<cubePosi.length; i++){
+      updateMVPMatrix(cubePosi[i])
+      const uniformData = {
+        u_MixVal: dftMixVal,
+        u_Sampler0: textures.wood,
+        u_Sampler1: textures.face,
+        u_MvpMatrix4: u_MvpMatrix
+      }
+      twgl.setUniforms(programInfo, uniformData)
+      twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLES)
+    }
+  })
+
+}
+
+
+function updateMVPMatrix(translate: [number,number,number, AngelType, number]){
+  var modelMatrix = Matrix4.identity(); // Model matrix
+  let viewMatrix = Matrix4.identity();  // View matrix
+  var projMatrix = Matrix4.identity();  // Projection matrix
+
+  const [x, y, z, type, angle] = translate
+  switch(type){
+    case 'X': Matrix4.rotateX(modelMatrix, angleToRads(angle), modelMatrix); break;
+    case 'Y': Matrix4.rotateY(modelMatrix, angleToRads(angle), modelMatrix); break;
+    case 'Z': Matrix4.rotateY(modelMatrix, angleToRads(angle), modelMatrix); break;
     default: break;
   }
   // Calculate the model, view and projection matrices
-  const [x, y, z] = translate
-  modelMatrix.translate(x, y, z);
-  console.log(modelMatrix.elements);
+  const trans = Vector3.create(x, y, z)
+  Matrix4.translate(modelMatrix, trans, modelMatrix);
 
+  const eye = Vector3.create(0, 0, 5)
+  const target = Vector3.create(0, 0, -100)
+  const cameraUp = Vector3.create(0, 1, 0)
 
-  viewMatrix.setLookAt(0, 0, 5, 0, 0, -100, 0, 1, 0);
-  projMatrix.setPerspective(45, 1, 1, 100);
+  Matrix4.lookAt(eye, target, cameraUp, viewMatrix);
+  viewMatrix = Matrix4.inverse(viewMatrix)
+  Matrix4.perspective(angleToRads(45), 1, 1, 100, projMatrix);
   // Calculate the model view projection matrix
-  mvpMatrix.set(projMatrix).multiply(viewMatrix).multiply(modelMatrix);
-  var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix4');
-  if (!u_MvpMatrix) {
-    console.log('Failed to get the storage location of u_MvpMatrix4', u_MvpMatrix);
-    return -1;
-  }
-  gl.uniformMatrix4fv(u_MvpMatrix, false, mvpMatrix.elements)
-}
-
-function initVertexBuffers(gl: WebGLRenderingContext) {
-  var verticesTexCoords = new Float32Array([
-    //    Vertex,           Color           texture coordinate
-   //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-   -0.5, -0.5, -0.5,  0.0, 0.0,
-   0.5, -0.5, -0.5,  1.0, 0.0,
-   0.5,  0.5, -0.5,  1.0, 1.0,
-   0.5,  0.5, -0.5,  1.0, 1.0,
-  -0.5,  0.5, -0.5,  0.0, 1.0,
-  -0.5, -0.5, -0.5,  0.0, 0.0,
-
-  -0.5, -0.5,  0.5,  0.0, 0.0,
-   0.5, -0.5,  0.5,  1.0, 0.0,
-   0.5,  0.5,  0.5,  1.0, 1.0,
-   0.5,  0.5,  0.5,  1.0, 1.0,
-  -0.5,  0.5,  0.5,  0.0, 1.0,
-  -0.5, -0.5,  0.5,  0.0, 0.0,
-
-  -0.5,  0.5,  0.5,  1.0, 0.0,
-  -0.5,  0.5, -0.5,  1.0, 1.0,
-  -0.5, -0.5, -0.5,  0.0, 1.0,
-  -0.5, -0.5, -0.5,  0.0, 1.0,
-  -0.5, -0.5,  0.5,  0.0, 0.0,
-  -0.5,  0.5,  0.5,  1.0, 0.0,
-
-   0.5,  0.5,  0.5,  1.0, 0.0,
-   0.5,  0.5, -0.5,  1.0, 1.0,
-   0.5, -0.5, -0.5,  0.0, 1.0,
-   0.5, -0.5, -0.5,  0.0, 1.0,
-   0.5, -0.5,  0.5,  0.0, 0.0,
-   0.5,  0.5,  0.5,  1.0, 0.0,
-
-  -0.5, -0.5, -0.5,  0.0, 1.0,
-   0.5, -0.5, -0.5,  1.0, 1.0,
-   0.5, -0.5,  0.5,  1.0, 0.0,
-   0.5, -0.5,  0.5,  1.0, 0.0,
-  -0.5, -0.5,  0.5,  0.0, 0.0,
-  -0.5, -0.5, -0.5,  0.0, 1.0,
-
-  -0.5,  0.5, -0.5,  0.0, 1.0,
-   0.5,  0.5, -0.5,  1.0, 1.0,
-   0.5,  0.5,  0.5,  1.0, 0.0,
-   0.5,  0.5,  0.5,  1.0, 0.0,
-  -0.5,  0.5,  0.5,  0.0, 0.0,
-  -0.5,  0.5, -0.5,  0.0, 1.0
-  ]);
-  var n = 36; // The number of vertices
-
-  // Create the buffer object
-  var vertexTexCoordBuffer = gl.createBuffer();
-  if (!vertexTexCoordBuffer) {
-    console.log('Failed to create the buffer object');
-    return -1;
-  }
-
-  // Bind the buffer object to target
-  gl.bindBuffer(gl.ARRAY_BUFFER, vertexTexCoordBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, verticesTexCoords, gl.STATIC_DRAW);
-
-  var FSIZE = verticesTexCoords.BYTES_PER_ELEMENT;
-  //Get the storage location of a_Position, assign and enable buffer
-  var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-  if (a_Position < 0) {
-    console.log('Failed to get the storage location of a_Position');
-    return -1;
-  }
-  gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, FSIZE * 5, 0);
-  gl.enableVertexAttribArray(a_Position);  // Enable the assignment of the buffer object
-
-  // Get the storage location of a_TexCoord
-  var a_TexCoord = gl.getAttribLocation(gl.program, 'a_TexCoord');
-  if (a_TexCoord < 0) {
-    console.log('Failed to get the storage location of a_TexCoord');
-    return -1;
-  }
-  // Assign the buffer object to a_TexCoord variable
-  gl.vertexAttribPointer(a_TexCoord, 2, gl.FLOAT, false, FSIZE * 5, FSIZE * 3);
-  gl.enableVertexAttribArray(a_TexCoord);  // Enable the assignment of the buffer object
-
-  var u_MixVal = gl.getUniformLocation(gl.program, 'u_MixVal');
-  if (!u_MixVal) {
-    console.log('Failed to get the storage location of u_Sampler: ' + u_MixVal);
-    return false;
-  }
-  gl.uniform1f(u_MixVal, 0.2)
-
-
-  return n;
-}
-
-function initTextures(gl: WebGLRenderingContext, textIndex: number, src: string, loadEndCallback = ()=>{
-  //
-}) {
-  var texture = gl.createTexture();   // Create a texture object
-  if (!texture) {
-    console.log('Failed to create the texture object');
-    return false;
-  }
-
-  const uniform_Sampler = 'u_Sampler' + textIndex
-  // Get the storage location of u_Sampler
-  var u_Sampler = gl.getUniformLocation(gl.program, uniform_Sampler);
-  if (!u_Sampler) {
-    console.log('Failed to get the storage location of u_Sampler: ' + uniform_Sampler);
-    return false;
-  }
-  var image = new Image();  // Create the image object
-  if (!image) {
-    console.log('Failed to create the image object');
-    return false;
-  }
-  // Register the event handler to be called on loading an image
-  image.onload = function () { loadTexture(gl, textIndex, texture, u_Sampler, image, loadEndCallback); };
-  // Tell the browser to load an image
-  image.src = src;
-
-  return true;
-}
-function loadTexture(gl: WebGLRenderingContext, textIndex: number, texture: WebGLTexture | null, u_Sampler: WebGLUniformLocation | null , image: HTMLImageElement, loadEndCallback=()=>{
-  //
-}) {
-  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1); // Flip the image's y axis
-  // Enable texture unit0
-  gl.activeTexture(gl.TEXTURE0 + textIndex);
-  // Bind the texture object to the target
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  /** second texture
-  gl.activeTexture(gl.TEXTURE1);
-  gl.bindTexture(gl.TEXTURE_2D, texture1);
-   * */
-
-//
-//  // set the texture wrapping parameters
-//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); // note that we set the container wrapping method to gl.CLAMP_TO_EDGE
-//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-//  // set texture filtering parameters
-//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST); // set texture filtering to nearest neighbor to clearly see the texels/pixels
-//  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-
-  // Set the texture parameters
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  // s t direction  repeat
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-  // Set the texture image
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
-
-  // Set the texture unit 0 to the sampler
-  gl.uniform1i(u_Sampler, textIndex);
-  loadEndCallback()
-}
-
-function startDraw(gl: WebGLRenderingContext, n: number){
-  console.log(' draw');
-
-
-  gl.enable(gl.DEPTH_TEST)
-  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);   // Clear <canvas>
-  // gl.drawArrays(gl.TRIANGLES, 0, n); // Draw the rectangle
-
-  const cubePosi: [number,number,number][] = [
-    [ 0.0,  0.0,  0.0],
-    [ 2.0,  5.0, -15.0],
-    [-1.5, -2.2, -2.5],
-    [-3.8, -2.0, -12.3],
-    [ 2.4, -0.4, -3.5],
-    [-1.7,  3.0, -7.5],
-    [ 1.3, -2.0, -2.5],
-    [ 1.5,  2.0, -2.5],
-    [ 1.5,  0.2, -1.5],
-    [-1.3,  1.0, -1.5]
-  ]
-  for(let i=0; i<cubePosi.length; i++){
-    updateMVPMatrix(gl, cubePosi[i])
-    gl.drawArrays(gl.TRIANGLES, 0, n);
-  }
-
+  const temp = Matrix4.multiply(projMatrix, viewMatrix)
+  u_MvpMatrix = Matrix4.multiply(temp, modelMatrix)
 }
 
 

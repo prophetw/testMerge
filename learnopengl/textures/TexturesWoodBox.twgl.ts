@@ -39,6 +39,7 @@ function changeMixVal(gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo){
   })
 
 }
+
 function draw(gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo){
   gl.useProgram(programInfo.program)
   const attribData = {
