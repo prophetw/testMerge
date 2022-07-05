@@ -22,7 +22,8 @@
   "homepage": "https://github.com/prophetw/WebGLTuturialSourceCode#readme",
   "dependencies": {
     "parcel": "^2.3.2",
-    "spectorjs": "^0.9.27"
+    "spectorjs": "^0.9.27",
+    "twgl.js": "^4.23.2"
   },
   "devDependencies": {
     "@parcel/transformer-glsl": "2.3.2",

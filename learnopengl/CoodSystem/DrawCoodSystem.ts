@@ -51,11 +51,11 @@ function main() {
   }
 
   // Set the matrix to be used for to set the camera view
-  var viewMatrix = new Matrix4();
+  var viewMatrix = new window.Matrix4();
   viewMatrix.setLookAt(0.20, 0.25, 0.25, 0, 0, 0, 0, 1, 0);
 
   // Calculate matrix for rotate
-  var modelMatrix = new Matrix4();
+  var modelMatrix = new window.Matrix4();
   modelMatrix.setRotate(-10, 0, 0, 1); // Rotate around z-axis
 
   // Pass the view projection matrix and model matrix
@@ -86,7 +86,7 @@ function changeViewModel(gl:WebGLRenderingContext){
   }
 
   // Set the matrix to be used for to set the camera view
-  var viewMatrix = new Matrix4();
+  var viewMatrix = new window.Matrix4();
   const {eyeX, eyeY, eyeZ, x,y,z,upX,upY,upZ} = viewModel
   viewMatrix.setLookAt(eyeX, eyeY, eyeZ, x,y,z,upX,upY,upZ);
 
@@ -104,7 +104,7 @@ function changeAngle(gl:WebGLRenderingContext){
   }
 
   // Set the matrix to be used for to set the camera view
-  var modelMatrix = new Matrix4();
+  var modelMatrix = new window.Matrix4();
   const {angle} = viewModel
   modelMatrix.setRotate(angle, 0, 0, 1); // Rotate around z-axis
 

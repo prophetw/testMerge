@@ -5,16 +5,16 @@ const angleToRads = (deg: number) => (deg * Math.PI) / 180.0;
 
 const radsToAngle = (rad: number) => rad * 180 / Math.PI;
 
-
-
+//  gl.vertexAttribPointer(
+  // index, b.numComponents || b.size, b.type || gl.FLOAT, b.normalize || false, b.stride || 0, b.offset || 0)
 interface AttribPointerParams {
-  numComponents: number
+  numComponents?: number
   size: number // same as numComponents
   buffer: WebGLBuffer // gl.createBuffer
-  type: number // gl data type
-  normalize: boolean //
-  stride: number
-  offset: number
+  type?: number // gl data type
+  normalize?: boolean //
+  stride?: number
+  offset?: number
   value?: Float32Array
 }
 /**
@@ -28,14 +28,14 @@ interface AttribPointerParams {
    */
 function createAttributeSetters(gl: WebGLRenderingContext, program: WebGLProgram) {
   const attribSetters: {
-    [key: string]: any
-  } = {
+    [key: string]: (b: AttribPointerParams) => void } = {
   };
 
+  // function createAttribSetter(index: number): (b: {value: Float32Array})=>void;
+  function createAttribSetter(index: number): (b: AttribPointerParams)=>void;
   function createAttribSetter(index: number) {
-    return function(b: any) {
+    return function(b: AttribPointerParams) {
         if (b.value) {
-          b = b as {value: Float32Array}
           gl.disableVertexAttribArray(index);
           switch (b.value.length) {
             case 4:
@@ -140,13 +140,11 @@ function setAttributes(setters, attribs) {
   });
 }
 
-
 function getBindPointForSamplerType(gl: WebGLRenderingContext, type: number) {
   if (type === gl.SAMPLER_2D)   return gl.TEXTURE_2D;        // eslint-disable-line
   if (type === gl.SAMPLER_CUBE) return gl.TEXTURE_CUBE_MAP;  // eslint-disable-line
   return undefined;
 }
-
 
 function createUniformSetters(gl: WebGLRenderingContext, program: WebGLProgram) {
   let textureUnit = 0;
@@ -164,27 +162,27 @@ function createUniformSetters(gl: WebGLRenderingContext, program: WebGLProgram) 
     // Check if this uniform is an array
     const isArray = (uniformInfo.size > 1 && uniformInfo.name.substr(-3) === '[0]');
     if (type === gl.FLOAT && isArray) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform1fv(location, v);
       };
     }
     if (type === gl.FLOAT) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform1f(location, v);
       };
     }
     if (type === gl.FLOAT_VEC2) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform2fv(location, v);
       };
     }
     if (type === gl.FLOAT_VEC3) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform3fv(location, v);
       };
     }
     if (type === gl.FLOAT_VEC4) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform4fv(location, v);
       };
     }
@@ -194,63 +192,63 @@ function createUniformSetters(gl: WebGLRenderingContext, program: WebGLProgram) 
       };
     }
     if (type === gl.INT) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform1i(location, v);
       };
     }
     if (type === gl.INT_VEC2) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform2iv(location, v);
       };
     }
     if (type === gl.INT_VEC3) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform3iv(location, v);
       };
     }
     if (type === gl.INT_VEC4) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform4iv(location, v);
       };
     }
     if (type === gl.BOOL) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform1iv(location, v);
       };
     }
     if (type === gl.BOOL_VEC2) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform2iv(location, v);
       };
     }
     if (type === gl.BOOL_VEC3) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform3iv(location, v);
       };
     }
     if (type === gl.BOOL_VEC4) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniform4iv(location, v);
       };
     }
     if (type === gl.FLOAT_MAT2) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniformMatrix2fv(location, false, v);
       };
     }
     if (type === gl.FLOAT_MAT3) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniformMatrix3fv(location, false, v);
       };
     }
     if (type === gl.FLOAT_MAT4) {
-      return function(v) {
+      return function(v: Float32Array) {
         gl.uniformMatrix4fv(location, false, v);
       };
     }
     if ((type === gl.SAMPLER_2D || type === gl.SAMPLER_CUBE) && isArray) {
       const units = [];
-      for (let ii = 0; ii < info.size; ++ii) {
+      for (let ii = 0; ii < uniformInfo.size; ++ii) {
         units.push(textureUnit++);
       }
       return function(bindPoint: number | undefined, units) {
@@ -278,7 +276,7 @@ function createUniformSetters(gl: WebGLRenderingContext, program: WebGLProgram) 
   }
 
   const uniformSetters: {
-    [key: string]: any
+    [key: string]: (uniformVal: Float32Array) => void
   } = { };
   const numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 
@@ -432,6 +430,46 @@ function setUniforms(setters, ...values) {
   }
 }
 
+const printUsedVariables = (gl: WebGLRenderingContext, program: WebGLProgram)=>{
+  const varObj: {
+    attribute: {
+      [key: string]: WebGLActiveInfo | null
+    }
+    uniform: {
+      [key: string]: WebGLActiveInfo | null
+    }
+  } = {
+    attribute: {},
+    uniform: {}
+  }
+
+  const numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
+  for (let ii = 0; ii < numAttribs; ++ii) {
+    const attribInfo = gl.getActiveAttrib(program, ii);
+    if (!attribInfo) {
+      break;
+    }
+    varObj.attribute[attribInfo.name] = attribInfo;
+  }
+
+  const numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
+
+  for (let ii = 0; ii < numUniforms; ++ii) {
+    const uniformInfo = gl.getActiveUniform(program, ii);
+    if (!uniformInfo) {
+      break;
+    }
+    let name = uniformInfo.name;
+    // remove the array suffix.
+    if (name.substr(-3) === '[0]') {
+      name = name.substr(0, name.length - 3);
+    }
+    varObj.uniform[name] = uniformInfo;
+  }
+
+  return varObj;
+
+}
 
 export {
   angleToRads,
@@ -441,6 +479,9 @@ export {
   setUniforms,
   setAttributes,
   setBuffersAndAttributes,
+  printUsedVariables,
+
+
   AttribPointerParams,
   AngelType
 }

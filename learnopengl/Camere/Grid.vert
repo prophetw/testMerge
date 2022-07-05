@@ -9,6 +9,6 @@ varying vec3 v_Color;
 void main(){
 
   gl_Position = viewMat4 * a_Position;
-  // gl_Position =  a_Position;
+  // gl_Position =  vec4(a_Position, 1.0);
   v_Color = a_Color;
 }

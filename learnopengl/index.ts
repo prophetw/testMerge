@@ -13,6 +13,7 @@ import LOGLCameraPosition from './Camere/CameraPosition'
 import LOGLCameraMoving from './Camere/CameraMoving'
 import LOGLCameraRotate from './Camere/CameraRotate'
 import LOGLAxis from './Camere/Axis'
+import LOGLGrid from './Camere/Grid'
 
 import LOGLLightScene from './LightScene/first'
 import LOGLMaterial from './Materials/first'
@@ -34,6 +35,7 @@ export {
   LOGLCameraRotate,
 
   LOGLAxis,
+  LOGLGrid,
 
   LOGLCoodSysFirst,
   LOGLCoodSysDraw,
