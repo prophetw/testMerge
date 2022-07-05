@@ -6,8 +6,9 @@ import LOGLTexturesTriangleTWGLV from './textures/FirstTriangle.twgl'
 import LOGLTexturesWoodBox from './textures/TexturesWoodBox'
 import LOGLTexturesWoodBoxTwgl from './textures/TexturesWoodBox.twgl'
 import LOGLTexturesWoodBox3D from './textures/TexturesWoodBox3D'
-import LOGLTexturesWoodBox3DTwgl from './textures/Textures10WoodBox3D.twgl'
+import LOGLTexturesWoodBox3DTwgl from './textures/TexturesWoodBox3D.twgl'
 import LOGLTextures10WoodBox3D from './textures/Textures10WoodBox3D'
+import LOGLTextures10WoodBox3DTwgl from './textures/Textures10WoodBox3D.twgl'
 
 import LOGLCoodSysFirst from './CoodSystem/First'
 import LOGLCoodSysDraw from './CoodSystem/DrawCoodSystem'
@@ -37,6 +38,7 @@ export {
   LOGLTexturesWoodBox3D,
   LOGLTexturesWoodBox3DTwgl,
   LOGLTextures10WoodBox3D,
+  LOGLTextures10WoodBox3DTwgl,
 
   LOGLCameraPosition,
   LOGLCameraMoving,
