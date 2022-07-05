@@ -1,5 +1,5 @@
-import FSHADER_SOURCE from './TexturesWoodBox.frag.glsl'
-import VSHADER_SOURCE from './TexturesWoodBox.vert.glsl'
+import FSHADER_SOURCE from './TexturesWoodBox.frag'
+import VSHADER_SOURCE from './TexturesWoodBox.vert'
 import * as twgl from 'twgl.js'
 
 let dftMixVal = 0.2

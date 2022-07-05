@@ -1,5 +1,5 @@
-import FSHADER_SOURCE from './FirstTriangle.frag.glsl'
-import VSHADER_SOURCE from './FirstTriangle.vert.glsl'
+import FSHADER_SOURCE from './FirstTriangle.frag'
+import VSHADER_SOURCE from './FirstTriangle.vert'
 
 function main() {
   // Retrieve <canvas> element
