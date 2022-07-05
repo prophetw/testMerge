@@ -6,14 +6,8 @@ import { angleToRads } from '../../lib/utils'
 const Matrix4 = twgl.m4
 const Vector3 = twgl.v3
 
-type AngelType = 'X' | 'Y' | 'Z'
-type Angle= number
+let u_MvpMatrix4 = Matrix4.identity() // model view project matrix4
 
-let dftMixVal = 0.2
-let u_MvpMatrix4 = Matrix4.identity()
-const modelPosition = [0,0,0]
-
-var angleY = 30
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl') as HTMLCanvasElement;
