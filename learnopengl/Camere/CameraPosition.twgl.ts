@@ -9,6 +9,12 @@ const Matrix4 = twgl.m4
 const Vector3 = twgl.v3
 
 const mvpMat = Matrix4.identity()
+const modelMat = Matrix4.identity()
+
+let uniformData:{
+  [key: string]: any;
+}
+let bufferInfo: twgl.BufferInfo
 
 const viewModel = {
   eyeX: 3.0,
@@ -44,18 +50,28 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT)
   const newMvpMat = changeViewModel()
   draw(gl, programInfo, newMvpMat, ()=>{
-    // drawAxis(gl, programAxisInfo, newMvpMat)
+    console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
+    drawAxis(gl, programAxisInfo, newMvpMat)
+    console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
   })
   redraw = ()=>{
     const newMvp = changeViewModel()
-    gl.clear(gl.COLOR_BUFFER_BIT)
-    const uniform = {
+    // draw(gl, programInfo, newMvp, ()=>{
+    //   drawAxis(gl, programAxisInfo, newMvp)
+    // })
+    gl.useProgram(programInfo.program)
+    const uniform ={
       u_ViewMatrix: newMvp
     }
     twgl.setUniforms(programInfo, uniform)
-    gl.useProgram(programInfo.program)
+    // TODO: 有个疑问 如果补重新设置顶点数据 那么program1 的顶点数据 就会是
+    twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo)
+    console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
+    // twgl.drawBufferInfo(gl, bufferInfo)
+    gl.clear(gl.COLOR_BUFFER_BIT)
     gl.drawArrays(gl.TRIANGLES, 0, 3)
-    drawAxis(gl, programAxisInfo, newMvpMat)
+    drawAxis(gl, programAxisInfo, newMvp)
+    console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
   }
 
   injectOptions(gl, 3)
@@ -73,24 +89,12 @@ function draw (gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo, mvp = M
     -0.5, -0.5, 0.0,   // left bottom
     0.5, -0.5,  0.0,    // right bottom
     0.0, 0.5,   0.0,   // top middle
-    // axis            color
-    0.0,  0.0,   0.0,    // X
-    1.0,  0.0,   0.0,
-    0.0,  0.0,   0.0,    // Y
-    0.0,  1.0,   0.0,
-    0.0,  0.0,   0.0,    // Z
-    0.0,  0.0,   1.0,
+
     ]
     const texCoord = [
       0.0, 0.0,
       1.0, 0.0,
       0.5, 1.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      1.0,  0.0,
-      1.0,  1.0,
-      1.0,  0.0,
     ]
     const attrData = {
       a_Position: {
@@ -100,7 +104,7 @@ function draw (gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo, mvp = M
         data: texCoord, size: 2
       }
     }
-    const bufferInfo = twgl.createBufferInfoFromArrays(gl, attrData)
+    bufferInfo = twgl.createBufferInfoFromArrays(gl, attrData)
     twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo)
 
     twgl.createTexture(gl, {
@@ -109,7 +113,7 @@ function draw (gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo, mvp = M
       if(err){
         throw new Error(' twgl.createTexture ')
       }
-      const uniformData = {
+      uniformData = {
         u_Sampler: texture,
         u_ViewMatrix: mvp
       }
@@ -127,9 +131,11 @@ function changeViewModel(){
   const target = Vector3.create(x,y,z)
   const cameraUp = Vector3.create(upX,upY,upZ)
   const camera = Matrix4.lookAt(eye, target, cameraUp)
-  const projection = Matrix4.perspective(angleToRads(30), 1, 1, 100)
   const viewMat = Matrix4.inverse(camera)
-  const pv = Matrix4.multiply(projection, viewMat)
+
+  const vm = Matrix4.multiply(viewMat, modelMat)
+  const projection = Matrix4.perspective(angleToRads(30), 1, 0.1, 100)
+  const pv = Matrix4.multiply(projection, vm)
   return pv
 }
 
