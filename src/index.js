@@ -64,6 +64,10 @@ import {
   LOGLCameraMoving,
   LOGLAxis,
   LOGLGrid,
+  LOGLGridTWGLV,
+  LOGLAxisTWGLV,
+  LOGLTexturesTriangleTWGLV,
+  LOGLTexturesWoodBoxTwgl,
 } from '../learnopengl'
 import { LOGLAmbient, LOGLDiffuse, LOGLSpecular } from '../learnopengl/BasicLighting'
 
@@ -91,7 +95,7 @@ const initSpector = (callback=()=>{
     if (!spector.resultView) {
       spector.getResultUI();
       spector.onCapture.add((capture) => {
-        // capture.commands = capture.commands.filter(command=>command.name!=='getError')
+        capture.commands = capture.commands.filter(command=>command.name!=='getError')
 	      console.log(' ---- capture result ', capture);
         spector.resultView.display();
         spector.resultView.addCapture(capture);
@@ -104,7 +108,8 @@ const initSpector = (callback=()=>{
 
 
 
-const ExampleFn = LOGLGrid
+const ExampleFn = LOGLTexturesWoodBoxTwgl
+// const ExampleFn = LOGLTexturesTriangle
 
 initSpector(ExampleFn)
 

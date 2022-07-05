@@ -6,7 +6,6 @@ uniform sampler2D u_Sampler1;
 uniform float u_MixVal;
 
 varying vec2 v_TexCoord;
-varying float v_MixVal;
 void main() {
   // only box
   // gl_FragColor = texture2D(u_Sampler0, v_TexCoord);

@@ -30,6 +30,7 @@ function main() {
 
   // Set texture
 
+  window.spector.startCapture(canvas, 50)
   if (!initTextures(gl, n)) {
     console.log('Failed to intialize the texture.');
     return;

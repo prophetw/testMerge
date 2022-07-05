@@ -2,7 +2,9 @@ import LOGLHelloTriangle from './helloTriangle'
 import LOGLHelloRectangle from './helloRectangle'
 
 import LOGLTexturesTriangle from './textures/FirstTriangle'
+import LOGLTexturesTriangleTWGLV from './textures/FirstTriangle.twgl'
 import LOGLTexturesWoodBox from './textures/TexturesWoodBox'
+import LOGLTexturesWoodBoxTwgl from './textures/TexturesWoodBox.twgl'
 import LOGLTexturesWoodBox3D from './textures/TexturesWoodBox3D'
 import LOGLTextures10WoodBox3D from './textures/Textures10WoodBox3D'
 
@@ -14,6 +16,8 @@ import LOGLCameraMoving from './Camere/CameraMoving'
 import LOGLCameraRotate from './Camere/CameraRotate'
 import LOGLAxis from './Camere/Axis'
 import LOGLGrid from './Camere/Grid'
+import LOGLAxisTWGLV from './Camere/Axis.twgl'
+import LOGLGridTWGLV from './Camere/Grid.twgl'
 
 import LOGLLightScene from './LightScene/first'
 import LOGLMaterial from './Materials/first'
@@ -26,7 +30,9 @@ export {
   LOGLHelloRectangle,
 
   LOGLTexturesTriangle,
+  LOGLTexturesTriangleTWGLV,
   LOGLTexturesWoodBox,
+  LOGLTexturesWoodBoxTwgl,
   LOGLTexturesWoodBox3D,
   LOGLTextures10WoodBox3D,
 
@@ -36,6 +42,8 @@ export {
 
   LOGLAxis,
   LOGLGrid,
+  LOGLAxisTWGLV,
+  LOGLGridTWGLV,
 
   LOGLCoodSysFirst,
   LOGLCoodSysDraw,
