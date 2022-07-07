@@ -110,7 +110,7 @@ const initSpector = (callback=()=>{
 }
 
 
-const ExampleFn = LOGLCameraPositionTwgl
+const ExampleFn = LOGLCameraMoving
 // const ExampleFn = LOGLTexturesTriangle
 
 initSpector(ExampleFn)

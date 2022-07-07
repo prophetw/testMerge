@@ -98,7 +98,6 @@ function drawAxis(gl: WebGLRenderingContext, programInfo: twgl.ProgramInfo, view
   console.log(' --- drawAxis programInfo',  programInfo);
   const {program, attribSetters, uniformSetters} = programInfo
   gl.useProgram(program)
-  gl.program = program
   // twgl.resizeCanvasToDisplaySize(gl.canvas);
   // gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 

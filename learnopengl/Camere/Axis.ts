@@ -44,6 +44,8 @@ function drawFlat (gl: WebGLRenderingContext, program: WebGLProgram, viewMatrix:
 
   gl.useProgram(program)
   gl.program = program
+  console.log(' drawFlat a_Position: ', gl.getAttribLocation(program, 'a_Position'));
+  console.log(' drawFlat a_Color: ', gl.getAttribLocation(program, 'a_Color'));
 
 
   console.table(printUsedVariables(gl, program))

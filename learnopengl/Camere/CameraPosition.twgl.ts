@@ -47,18 +47,15 @@ function main() {
 
 
   const programAxisInfo = twgl.createProgramInfo(gl, [AXIS_VS, AXIS_FS])
+  console.log(' ---- programAxisInfo ---- ', programAxisInfo );
   gl.clear(gl.COLOR_BUFFER_BIT)
   const newMvpMat = changeViewModel()
   draw(gl, programInfo, newMvpMat, ()=>{
-    console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
     drawAxis(gl, programAxisInfo, newMvpMat)
-    console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
+    console.log(canvas.toDataURL());
   })
   redraw = ()=>{
     const newMvp = changeViewModel()
-    // draw(gl, programInfo, newMvp, ()=>{
-    //   drawAxis(gl, programAxisInfo, newMvp)
-    // })
     gl.useProgram(programInfo.program)
     const uniform ={
       u_ViewMatrix: newMvp
@@ -66,12 +63,9 @@ function main() {
     twgl.setUniforms(programInfo, uniform)
     // TODO: 有个疑问 如果补重新设置顶点数据 那么program1 的顶点数据 就会是
     twgl.setBuffersAndAttributes(gl, programInfo, bufferInfo)
-    console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
-    // twgl.drawBufferInfo(gl, bufferInfo)
     gl.clear(gl.COLOR_BUFFER_BIT)
     gl.drawArrays(gl.TRIANGLES, 0, 3)
     drawAxis(gl, programAxisInfo, newMvp)
-    console.log(gl.getBufferParameter(gl.ARRAY_BUFFER, gl.BUFFER_SIZE));
   }
 
   injectOptions(gl, 3)
