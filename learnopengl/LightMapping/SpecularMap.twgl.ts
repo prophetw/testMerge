@@ -1,10 +1,13 @@
-import FSHADER_SOURCE from './cube.vert'
-import VSHADER_SOURCE from './cube.frag'
+import FSHADER_SOURCE from './specularCube.frag'
+import VSHADER_SOURCE from './specularCube.vert'
 import * as twgl from 'twgl.js'
 import { angleToRads } from '../../lib/utils'
 const Matrix4 = twgl.m4
 const Vector3 = twgl.v3
 
+
+type ColorRGB = [number, number, number]
+type TranslateXYZ = [number, number, number]
 type AngelType = 'X' | 'Y' | 'Z'
 type CubeInfo = [number,number,number, number, AngelType]
 // cube transform  [x,y,z,angle,angelType]
@@ -41,11 +44,25 @@ const perspectiveOptions = {
   far: 100
 }
 
+const lightColor: ColorRGB = [1.0, 1.0,1.0]
+
+console.log('lightColor', lightColor);
+const lightDiffuse: ColorRGB = [lightColor[0]*0.5,lightColor[1]*0.5,lightColor[2]*0.5]
+const lightAmbient: ColorRGB = [lightDiffuse[0]*0.2,lightDiffuse[1]*0.2,lightDiffuse[2]*0.2]
+const lightPosi: TranslateXYZ = [0, 0, -5.0]
+let lightSourceProp = {
+  position: Vector3.create(...lightPosi),
+  ambient: Vector3.create(...lightAmbient),
+  diffuse: Vector3.create(...lightDiffuse),
+  specular: Vector3.create(1.0,1.0,1.0),
+}
+
+
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
-  document.title='moving camera twgl '
+  document.title='Specular Maps'
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
   if (!gl) {
@@ -89,8 +106,12 @@ function updateMVP(
   const model = Matrix4.setTranslation(Matrix4.identity(), Vector3.create(x,y,z))
   const view = Matrix4.inverse(Matrix4.lookAt(cameraPos, Vector3.add(cameraPos, cameraFront), cameraUp))
   const projection = Matrix4.perspective(angleToRads(perspectiveOptions.fov), perspectiveOptions.aspect, perspectiveOptions.near, perspectiveOptions.far)
+  const transposeInversModel = Matrix4.transpose(Matrix4.inverse(model))
   const uniformData = {
-    u_MvpMatrix4: Matrix4.multiply(projection,Matrix4.multiply(view, model)),
+    model,
+    view,
+    projection,
+    transposeInversModel
   }
   twgl.setUniforms(pInfo, uniformData)
 }
@@ -99,67 +120,71 @@ function updateMVP(
 function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
 
   gl.useProgram(pInfo.program)
-  // gl.clear(gl.COLOR_BUFFER_BIT)
-
   var verticesTexCoords = [
-    //    Vertex,           Color           texture coordinate
-   //     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-   -0.5, -0.5, -0.5,  0.0, 0.0,
-   0.5, -0.5, -0.5,  1.0, 0.0,
-   0.5,  0.5, -0.5,  1.0, 1.0,
-   0.5,  0.5, -0.5,  1.0, 1.0,
-  -0.5,  0.5, -0.5,  0.0, 1.0,
-  -0.5, -0.5, -0.5,  0.0, 0.0,
+   // Vertex          // normals           // texture coords
+   -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  0.0,
+   0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  0.0,
+   0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  1.0,
+   0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  1.0,
+  -0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  1.0,
+  -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  0.0,
 
-  -0.5, -0.5,  0.5,  0.0, 0.0,
-   0.5, -0.5,  0.5,  1.0, 0.0,
-   0.5,  0.5,  0.5,  1.0, 1.0,
-   0.5,  0.5,  0.5,  1.0, 1.0,
-  -0.5,  0.5,  0.5,  0.0, 1.0,
-  -0.5, -0.5,  0.5,  0.0, 0.0,
+  -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  0.0,
+   0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  0.0,
+   0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  1.0,
+   0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  1.0,
+  -0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  1.0,
+  -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  0.0,
 
-  -0.5,  0.5,  0.5,  1.0, 0.0,
-  -0.5,  0.5, -0.5,  1.0, 1.0,
-  -0.5, -0.5, -0.5,  0.0, 1.0,
-  -0.5, -0.5, -0.5,  0.0, 1.0,
-  -0.5, -0.5,  0.5,  0.0, 0.0,
-  -0.5,  0.5,  0.5,  1.0, 0.0,
+  -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,  1.0,  0.0,
+  -0.5,  0.5, -0.5, -1.0,  0.0,  0.0,  1.0,  1.0,
+  -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,  0.0,  1.0,
+  -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,  0.0,  1.0,
+  -0.5, -0.5,  0.5, -1.0,  0.0,  0.0,  0.0,  0.0,
+  -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,  1.0,  0.0,
 
-   0.5,  0.5,  0.5,  1.0, 0.0,
-   0.5,  0.5, -0.5,  1.0, 1.0,
-   0.5, -0.5, -0.5,  0.0, 1.0,
-   0.5, -0.5, -0.5,  0.0, 1.0,
-   0.5, -0.5,  0.5,  0.0, 0.0,
-   0.5,  0.5,  0.5,  1.0, 0.0,
+   0.5,  0.5,  0.5,  1.0,  0.0,  0.0,  1.0,  0.0,
+   0.5,  0.5, -0.5,  1.0,  0.0,  0.0,  1.0,  1.0,
+   0.5, -0.5, -0.5,  1.0,  0.0,  0.0,  0.0,  1.0,
+   0.5, -0.5, -0.5,  1.0,  0.0,  0.0,  0.0,  1.0,
+   0.5, -0.5,  0.5,  1.0,  0.0,  0.0,  0.0,  0.0,
+   0.5,  0.5,  0.5,  1.0,  0.0,  0.0,  1.0,  0.0,
 
-  -0.5, -0.5, -0.5,  0.0, 1.0,
-   0.5, -0.5, -0.5,  1.0, 1.0,
-   0.5, -0.5,  0.5,  1.0, 0.0,
-   0.5, -0.5,  0.5,  1.0, 0.0,
-  -0.5, -0.5,  0.5,  0.0, 0.0,
-  -0.5, -0.5, -0.5,  0.0, 1.0,
+  -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  0.0,  1.0,
+   0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  1.0,  1.0,
+   0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  1.0,  0.0,
+   0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  1.0,  0.0,
+  -0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  0.0,  0.0,
+  -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  0.0,  1.0,
 
-  -0.5,  0.5, -0.5,  0.0, 1.0,
-   0.5,  0.5, -0.5,  1.0, 1.0,
-   0.5,  0.5,  0.5,  1.0, 0.0,
-   0.5,  0.5,  0.5,  1.0, 0.0,
-  -0.5,  0.5,  0.5,  0.0, 0.0,
-  -0.5,  0.5, -0.5,  0.0, 1.0
+  -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  0.0,  1.0,
+   0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  1.0,  1.0,
+   0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  1.0,  0.0,
+   0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  1.0,  0.0,
+  -0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  0.0,  0.0,
+  -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  0.0,  1.0
   ];
+
   var n = 36;
   const elementSize = new Float32Array().BYTES_PER_ELEMENT
   const attrbs: twgl.Arrays = {
-    a_Position: {
+    aPos: {
       data: verticesTexCoords,
       size: 3,
-      stride: 5 * elementSize,
+      stride: 8 * elementSize,
       offset: 0
     },
-    a_TexCoord: {
+    aNormal: {
+      data: verticesTexCoords,
+      size: 3,
+      stride: 8 * elementSize,
+      offset: 3 * elementSize
+    },
+    aTexCoords: {
       data: verticesTexCoords,
       size: 2,
-      stride: 5 * elementSize,
-      offset: 3 * elementSize
+      stride: 8 * elementSize,
+      offset: 6 * elementSize
     }
   }
   const bufferInfo = twgl.createBufferInfoFromArrays(gl, attrbs)
@@ -167,15 +192,20 @@ function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
 
   twgl.createTextures(gl, {
     wood: {
-      src: './resources/container.jpg',
+      src: './resources/container2.png',
       flipY: 1,
       min: gl.LINEAR,
       mag: gl.LINEAR,
-      wrapS: gl.REPEAT,
-      wrapT: gl.REPEAT,
+      wrapS: gl.CLAMP_TO_EDGE,
+      wrapT: gl.CLAMP_TO_EDGE,
     },
-    face: {
-      src: './resources/awesomeface.png',
+    iron: {
+      src: './resources/container2_specular.png',
+      flipY: 1,
+      min: gl.LINEAR,
+      mag: gl.LINEAR,
+      wrapS: gl.CLAMP_TO_EDGE,
+      wrapT: gl.CLAMP_TO_EDGE,
     }
 
   }, (err, textures)=>{
@@ -183,9 +213,16 @@ function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
       return console.error(err);
     }
     const uniformData = {
-      u_MixVal: 0.2,
-      u_Sampler0: textures.wood,
-      u_Sampler1: textures.face,
+      material: {
+        diffuse: textures.wood,
+        // diffuse: textures.face,
+        specular: textures.iron,
+        // specular: Vector3.create(0.508273, 0.508273 ,0.508273),
+        shininess: 64.0,
+      },
+      light: lightSourceProp,
+      u_viewPos: Vector3.create(defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z)
+      // u_Sampler1: textures.face,
     }
     twgl.setUniforms(pInfo, uniformData)
     redraw(gl, pInfo)

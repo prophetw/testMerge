@@ -74,6 +74,7 @@ import {
   LOGLCameraMovingTwgl,
 } from '../learnopengl'
 import { LOGLAmbient, LOGLDiffuse, LOGLSpecular } from '../learnopengl/BasicLighting'
+import { LOGLSpecularMaps } from '../learnopengl/LightMapping'
 
 
 
@@ -111,7 +112,7 @@ const initSpector = (callback=()=>{
 }
 
 
-const ExampleFn = LOGLCameraMovingTwgl
+const ExampleFn = LOGLSpecularMaps
 // const ExampleFn = LOGLTexturesTriangle
 
 initSpector(ExampleFn)

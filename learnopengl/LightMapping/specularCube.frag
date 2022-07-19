@@ -3,7 +3,7 @@ precision mediump float;
 // #endif
 struct Material {
     sampler2D diffuse;
-    vec3 specular;
+    sampler2D specular;
     float shininess;
 };
 
@@ -24,23 +24,19 @@ varying vec2 v_TexCoord;
 
 void main()
 {
-    // ambient
-    vec3 ambient = light.ambient * texture2D(material.diffuse, v_TexCoord).rgb;
+    vec3 ambient  = light.ambient  * vec3(texture2D(material.diffuse, v_TexCoord));
 
     // diffuse
     vec3 norm = normalize(v_Normal);
     vec3 lightDir = normalize(light.position - v_fragPos);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * texture2D(material.diffuse, v_TexCoord).rgb;
+    vec3 diffuse  = light.diffuse  * diff * vec3(texture2D(material.diffuse, v_TexCoord));
 
     // specular
     vec3 viewDir = normalize(u_viewPos - v_fragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * (spec * material.specular);
-
-    vec3 result = ambient + diffuse + specular;
-    gl_FragColor = vec4(result, 1.0);
-    // gl_FragColor = texture2D(material.diffuse, v_TexCoord);
+    vec3 specular = light.specular * spec * vec3(texture2D(material.specular, v_TexCoord));
+    gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
 
 }
