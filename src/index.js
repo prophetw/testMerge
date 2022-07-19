@@ -71,6 +71,7 @@ import {
   LOGLTexturesWoodBox3DTwgl,
   LOGLTextures10WoodBox3DTwgl,
   LOGLCameraPositionTwgl,
+  LOGLCameraMovingTwgl,
 } from '../learnopengl'
 import { LOGLAmbient, LOGLDiffuse, LOGLSpecular } from '../learnopengl/BasicLighting'
 
@@ -110,7 +111,7 @@ const initSpector = (callback=()=>{
 }
 
 
-const ExampleFn = LOGLCameraMoving
+const ExampleFn = LOGLCameraMovingTwgl
 // const ExampleFn = LOGLTexturesTriangle
 
 initSpector(ExampleFn)

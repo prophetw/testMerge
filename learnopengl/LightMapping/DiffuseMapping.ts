@@ -1,8 +1,8 @@
-import FSHADER_SOURCE from './cube.frag.glsl'
-import VSHADER_SOURCE from './cube.vert.glsl'
+import FSHADER_SOURCE from './cube.frag'
+import VSHADER_SOURCE from './cube.vert'
 
-import LightSourceFS from './lightSource.frag.glsl'
-import LightSourceVS from './lightSource.vert.glsl'
+import LightSourceFS from './lightSource.frag'
+import LightSourceVS from './lightSource.vert'
 
 
 // material params  http://devernay.free.fr/cours/opengl/materials.html

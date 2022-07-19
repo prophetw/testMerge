@@ -1,8 +1,8 @@
-import FSHADER_SOURCE from './TexturesWoodBox3D.frag.glsl'
-import VSHADER_SOURCE from './TexturesWoodBox3D.vert.glsl'
+import FSHADER_SOURCE from './TexturesWoodBox3D.frag'
+import VSHADER_SOURCE from './TexturesWoodBox3D.vert'
 
-import LightSourceFS from './lightSource.frag.glsl'
-import LightSourceVS from './lightSource.vert.glsl'
+import LightSourceFS from './lightSource.frag'
+import LightSourceVS from './lightSource.vert'
 
 function main() {
   // Retrieve <canvas> element

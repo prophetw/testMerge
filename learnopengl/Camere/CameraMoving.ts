@@ -94,7 +94,7 @@ function main() {
       // zoom in
       // defaultCameraPosition.z -= 0.1
       const newFov = perspectiveOptions.fov-step
-      perspectiveOptions.fov = Math.max(1, newFov)
+      perspectiveOptions.fov = Math.max(30, newFov)
       updateAll(gl, cubePosi, defaultCameraPosition, perspectiveOptions)
     }
   })
