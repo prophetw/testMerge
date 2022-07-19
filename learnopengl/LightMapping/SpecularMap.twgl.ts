@@ -1,5 +1,7 @@
 import FSHADER_SOURCE from './specularCube.frag'
 import VSHADER_SOURCE from './specularCube.vert'
+import LIGHT_F from './lightSource.frag'
+import LIGHT_V from './lightSource.vert'
 import * as twgl from 'twgl.js'
 import { angleToRads } from '../../lib/utils'
 const Matrix4 = twgl.m4
@@ -12,7 +14,7 @@ type AngelType = 'X' | 'Y' | 'Z'
 type CubeInfo = [number,number,number, number, AngelType]
 // cube transform  [x,y,z,angle,angelType]
 const cubePosi: CubeInfo[] = [
-  [ 0.0,  0.0,  0.0, 15, 'X'],
+  // [ 0.0,  0.0,  0.0, 15, 'X'],
   [ 2.0,  5.0, -15.0, 30, 'Y'],
   [-1.5, -2.2, -2.5, 60, 'Z'],
   [-3.8, -2.0, -12.3, 10, 'Y'],
@@ -45,8 +47,6 @@ const perspectiveOptions = {
 }
 
 const lightColor: ColorRGB = [1.0, 1.0,1.0]
-
-console.log('lightColor', lightColor);
 const lightDiffuse: ColorRGB = [lightColor[0]*0.5,lightColor[1]*0.5,lightColor[2]*0.5]
 const lightAmbient: ColorRGB = [lightDiffuse[0]*0.2,lightDiffuse[1]*0.2,lightDiffuse[2]*0.2]
 const lightPosi: TranslateXYZ = [0, 0, -5.0]
@@ -57,6 +57,9 @@ let lightSourceProp = {
   specular: Vector3.create(1.0,1.0,1.0),
 }
 
+let programInfo: twgl.ProgramInfo
+let programInfo2: twgl.ProgramInfo
+let glBufferInfo: twgl.BufferInfo
 
 function main() {
   // Retrieve <canvas> element
@@ -70,9 +73,10 @@ function main() {
     return;
   }
 
-  const programInfo = twgl.createProgramInfo(gl, [VSHADER_SOURCE, FSHADER_SOURCE])
+  programInfo = twgl.createProgramInfo(gl, [VSHADER_SOURCE, FSHADER_SOURCE])
   console.log(' --- programInfo', programInfo);
 
+  programInfo2 = twgl.createProgramInfo(gl, [LIGHT_V, LIGHT_F])
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   // depth test
@@ -80,6 +84,7 @@ function main() {
 
 
   draw(gl, programInfo)
+  // drawLightCube(gl, programInfo2)
 
   enableCamera(canvas, gl, programInfo)
   injectUI(gl, programInfo)
@@ -88,11 +93,14 @@ function main() {
 function redraw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
     gl.enable(gl.DEPTH_TEST)
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    gl.useProgram(pInfo.program)
+    twgl.setBuffersAndAttributes(gl, pInfo, glBufferInfo)
     for(let i=0;i<cubePosi.length;i++){
       let cubInfo = cubePosi[i]
       updateMVP(gl, pInfo, cubInfo)
       gl.drawArrays(gl.TRIANGLES, 0, 36)
     }
+    drawLightCube(gl, programInfo2)
 }
 
 function updateMVP(
@@ -111,9 +119,92 @@ function updateMVP(
     model,
     view,
     projection,
-    transposeInversModel
+    transposeInversModel,
+    u_viewPos: Vector3.create(defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z)
   }
   twgl.setUniforms(pInfo, uniformData)
+}
+
+
+function updateLightMVP(
+  gl: WebGLRenderingContext,
+  pInfo: twgl.ProgramInfo,
+  ){
+  const cameraPos = Vector3.create(defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z)
+  const cameraUp = Vector3.create(0,1,0)
+  const model = Matrix4.setTranslation(Matrix4.identity(), Vector3.create(...lightPosi))
+  const view = Matrix4.inverse(Matrix4.lookAt(cameraPos, Vector3.add(cameraPos, cameraFront), cameraUp))
+  const projection = Matrix4.perspective(angleToRads(perspectiveOptions.fov), perspectiveOptions.aspect, perspectiveOptions.near, perspectiveOptions.far)
+  const uniformData = {
+    model,
+    view,
+    projection
+  }
+  twgl.setUniforms(pInfo, uniformData)
+}
+
+function drawLightCube (gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
+  gl.useProgram(pInfo.program)
+  var verticesTexCoords = [
+    // Vertex          // normals           // texture coords
+    -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  0.0,
+    0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  0.0,
+    0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  1.0,
+    0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  1.0,
+   -0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  1.0,
+   -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  0.0,
+
+   -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  0.0,
+    0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  0.0,
+    0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  1.0,
+    0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  1.0,
+   -0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  1.0,
+   -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  0.0,
+
+   -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,  1.0,  0.0,
+   -0.5,  0.5, -0.5, -1.0,  0.0,  0.0,  1.0,  1.0,
+   -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,  0.0,  1.0,
+   -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,  0.0,  1.0,
+   -0.5, -0.5,  0.5, -1.0,  0.0,  0.0,  0.0,  0.0,
+   -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,  1.0,  0.0,
+
+    0.5,  0.5,  0.5,  1.0,  0.0,  0.0,  1.0,  0.0,
+    0.5,  0.5, -0.5,  1.0,  0.0,  0.0,  1.0,  1.0,
+    0.5, -0.5, -0.5,  1.0,  0.0,  0.0,  0.0,  1.0,
+    0.5, -0.5, -0.5,  1.0,  0.0,  0.0,  0.0,  1.0,
+    0.5, -0.5,  0.5,  1.0,  0.0,  0.0,  0.0,  0.0,
+    0.5,  0.5,  0.5,  1.0,  0.0,  0.0,  1.0,  0.0,
+
+   -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  0.0,  1.0,
+    0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  1.0,  1.0,
+    0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  1.0,  0.0,
+    0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  1.0,  0.0,
+   -0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  0.0,  0.0,
+   -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  0.0,  1.0,
+
+   -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  0.0,  1.0,
+    0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  1.0,  1.0,
+    0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  1.0,  0.0,
+    0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  1.0,  0.0,
+   -0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  0.0,  0.0,
+   -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  0.0,  1.0
+   ];
+
+   var n = 36;
+   const elementSize = new Float32Array().BYTES_PER_ELEMENT
+   const attrbs: twgl.Arrays = {
+     aPos: {
+       data: verticesTexCoords,
+       size: 3,
+       stride: 8 * elementSize,
+       offset: 0
+     }
+   }
+   const bufferInfo = twgl.createBufferInfoFromArrays(gl, attrbs)
+   twgl.setBuffersAndAttributes(gl, pInfo, bufferInfo)
+   updateLightMVP(gl, pInfo)
+  //  gl.clear(gl.COLOR_BUFFER_BIT)
+   gl.drawArrays(gl.TRIANGLES, 0, 36)
 }
 
 
@@ -187,8 +278,8 @@ function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
       offset: 6 * elementSize
     }
   }
-  const bufferInfo = twgl.createBufferInfoFromArrays(gl, attrbs)
-  twgl.setBuffersAndAttributes(gl, pInfo, bufferInfo)
+  glBufferInfo = twgl.createBufferInfoFromArrays(gl, attrbs)
+  twgl.setBuffersAndAttributes(gl, pInfo, glBufferInfo)
 
   twgl.createTextures(gl, {
     wood: {
@@ -220,8 +311,7 @@ function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
         // specular: Vector3.create(0.508273, 0.508273 ,0.508273),
         shininess: 64.0,
       },
-      light: lightSourceProp,
-      u_viewPos: Vector3.create(defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z)
+      light: lightSourceProp
       // u_Sampler1: textures.face,
     }
     twgl.setUniforms(pInfo, uniformData)
