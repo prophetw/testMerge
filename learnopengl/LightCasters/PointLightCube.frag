@@ -47,6 +47,11 @@ void main()
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * vec3(texture2D(material.specular, v_TexCoord));
-    gl_FragColor = vec4(attenuation * (ambient + diffuse + specular), 1.0);
+
+    // 光衰系数应用到 环境光 + 漫反射 + 高光
+    ambient*=attenuation;
+    diffuse*=attenuation;
+    specular*=attenuation;
+    gl_FragColor = vec4(ambient + diffuse + specular, 1.0);
 
 }
