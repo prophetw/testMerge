@@ -49,18 +49,7 @@ const perspectiveOptions = {
 const lightColor: ColorRGB = [1.0, 1.0,1.0]
 const lightDiffuse: ColorRGB = [lightColor[0]*0.5,lightColor[1]*0.5,lightColor[2]*0.5]
 const lightAmbient: ColorRGB = [lightDiffuse[0]*0.2,lightDiffuse[1]*0.2,lightDiffuse[2]*0.2]
-const lightPosi: TranslateXYZ = [0, 0, -10.0]
-let lightSourceProp = {
-  position: Vector3.create(...lightPosi),
-  // direction: Vector3.create(-1, -1.0, -1.0),
-  ambient: Vector3.create(...lightAmbient),
-  diffuse: Vector3.create(...lightDiffuse),
-  specular: Vector3.create(1.0,1.0,1.0),
-  // 点光源的衰减系数
-  constant: 1.0,
-  linear: 0.09,
-  quadratic: 0.032
-}
+const lightPosi: TranslateXYZ = [0.1, -0.2, -4.3]
 
 let programInfo: twgl.ProgramInfo
 let programInfo2: twgl.ProgramInfo
@@ -96,6 +85,7 @@ function main() {
 
   enableCamera(canvas, gl, programInfo)
   injectUI(gl, programInfo)
+  injectOptions(gl, programInfo)
 }
 
 function redraw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
@@ -123,12 +113,24 @@ function updateMVP(
   const view = Matrix4.inverse(Matrix4.lookAt(cameraPos, Vector3.add(cameraPos, cameraFront), cameraUp))
   const projection = Matrix4.perspective(angleToRads(perspectiveOptions.fov), perspectiveOptions.aspect, perspectiveOptions.near, perspectiveOptions.far)
   const transposeInversModel = Matrix4.transpose(Matrix4.inverse(model))
+  const lightSourceProp = {
+    position: Vector3.create(...lightPosi),
+    // direction: Vector3.create(-1, -1.0, -1.0),
+    ambient: Vector3.create(...lightAmbient),
+    diffuse: Vector3.create(...lightDiffuse),
+    specular: Vector3.create(1.0,1.0,1.0),
+    // 点光源的衰减系数
+    constant: 1.0,
+    linear: 0.09,
+    quadratic: 0.032
+  }
   const uniformData = {
     model,
     view,
     projection,
     transposeInversModel,
-    u_viewPos: Vector3.create(defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z)
+    u_viewPos: Vector3.create(defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z),
+    light: lightSourceProp
   }
   twgl.setUniforms(pInfo, uniformData)
 }
@@ -216,7 +218,6 @@ function drawLightCube (gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
 
 
 function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
-
   gl.useProgram(pInfo.program)
   var verticesTexCoords = [
    // Vertex          // normals           // texture coords
@@ -317,9 +318,7 @@ function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
         specular: textures.iron,
         // specular: Vector3.create(0.508273, 0.508273 ,0.508273),
         shininess: 64.0,
-      },
-      light: lightSourceProp
-      // u_Sampler1: textures.face,
+      }
     }
     twgl.setUniforms(pInfo, uniformData)
     redraw(gl, pInfo)
@@ -435,6 +434,60 @@ function resetCameraPosition(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo)
   defaultCameraPosition.z = 5
   perspectiveOptions.fov = 45
   redraw(gl, pInfo);
+}
+
+
+function injectOptions (gl:WebGLRenderingContext, pInfo: twgl.ProgramInfo){
+  const updateUI = (id: string, text: string)=>{
+    const dom = document.getElementById(id)
+    if(dom!==null){
+      dom.innerHTML = ''+text
+    }
+  }
+  const html = `
+      <label for="eyeX" class="form-label">lightX: <span id="lightX">${lightPosi[0]}</span></label>
+      <input type="range" class="form-range" value="${lightPosi[0]}" step="0.1" min="-10" max="10" id="eyeX">
+      <label for="eyeY" class="form-label">lightY: <span id="lightY">${lightPosi[1]}</span></label>
+      <input type="range" class="form-range" value="${lightPosi[1]}" step="0.1" min="-10" max="10" id="eyeY">
+      <label for="eyeZ" class="form-label">lightZ: <span id="lightZ">${lightPosi[2]}</span></label>
+      <input type="range" class="form-range" value="${lightPosi[2]}" step="0.1" min="-10" max="10" id="eyeZ">
+  `
+  const div = document.createElement('div')
+  div.innerHTML = html
+  div.style.position = 'absolute'
+  div.style.top = '0px'
+  div.style.width = '410px'
+  div.style.right = '0px'
+  document.body.appendChild(div)
+  const eyeX = document.getElementById('eyeX')
+  if(eyeX){
+    eyeX.addEventListener('change', e=>{
+      if(e && e.target && e.target.value){
+        console.log(e.target.value);
+        lightPosi[0]= e.target.value
+        updateUI('lightX', ''+lightPosi[0])
+        redraw(gl, pInfo)
+      }
+    })
+  }
+  const eyeY = document.getElementById('eyeY')
+  if(eyeY){
+    eyeY.addEventListener('change', e=>{
+      console.log(e.target.value);
+      lightPosi[1]= e.target.value
+      updateUI('lightY', ''+lightPosi[1])
+      redraw(gl, pInfo)
+    })
+  }
+  const eyeZ = document.getElementById('eyeZ')
+  if(eyeZ){
+    eyeZ.addEventListener('change', e=>{
+      console.log(e.target.value);
+      lightPosi[2]= e.target.value
+      updateUI('lightZ', ''+lightPosi[2])
+        redraw(gl, pInfo)
+    })
+  }
 }
 
 
