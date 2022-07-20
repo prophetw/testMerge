@@ -121,6 +121,7 @@ function updateMVP(
 
     //
     cutOff: Math.cos(angleToRads(12.5)),
+    outerCutOff: Math.cos(angleToRads(17.5)), // demo2
 
     ambient: Vector3.create(...lightAmbient),
     diffuse: Vector3.create(...lightDiffuse),
