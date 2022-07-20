@@ -75,6 +75,7 @@ import {
 } from '../learnopengl'
 import { LOGLAmbient, LOGLDiffuse, LOGLSpecular } from '../learnopengl/BasicLighting'
 import { LOGLSpecularMaps } from '../learnopengl/LightMapping'
+import { LOGLDirectionLight, LOGLPointLight } from '../learnopengl/LightCasters'
 
 
 
@@ -112,7 +113,7 @@ const initSpector = (callback=()=>{
 }
 
 
-const ExampleFn = LOGLSpecularMaps
+const ExampleFn = LOGLPointLight
 // const ExampleFn = LOGLTexturesTriangle
 
 initSpector(ExampleFn)
