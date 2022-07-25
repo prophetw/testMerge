@@ -1,5 +1,7 @@
 import FSHADER_SOURCE from './Skybox.frag'
 import VSHADER_SOURCE from './Skybox.vert'
+import CUBE_FS from './cube.frag'
+import CUBE_VS from './cube.vert'
 import * as twgl from 'twgl.js'
 import { angleToRads } from '../../lib/utils'
 const Matrix4 = twgl.m4
@@ -12,7 +14,7 @@ type AngelType = 'X' | 'Y' | 'Z'
 type CubeInfo = [number,number,number, number, AngelType]
 // cube transform  [x,y,z,angle,angelType]
 const cubePosi: CubeInfo[] = [
-  // [ 0.0,  0.0,  0.0, 15, 'X'],
+  [ 0.0,  0.0,  0.0, 15, 'X'],
   [ 2.0,  5.0, -15.0, 30, 'Y'],
   [-1.5, -2.2, -2.5, 60, 'Z'],
   [-3.8, -2.0, -12.3, 10, 'Y'],
@@ -26,7 +28,7 @@ const cubePosi: CubeInfo[] = [
 const defaultCameraPosition = {
   x: 0,
   y: 0,
-  z: 0
+  z: 3
 }
 // camera look at somePoint
 const targetPosition = {
@@ -39,7 +41,7 @@ const cameraFrontVec = [0,0,-1]
 let cameraFront = Vector3.create(...cameraFrontVec)
 
 const perspectiveOptions = {
-  fov: 45,
+  fov: 30,
   aspect: 1,
   near: 0.1,
   far: 100
@@ -51,8 +53,10 @@ const lightAmbient: ColorRGB = [lightColor[0]*0.1,lightColor[1]*0.1,lightColor[2
 const lightPosi: TranslateXYZ = [defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z]
 const lightDir = cameraFront
 
-let programInfo: twgl.ProgramInfo
+let skyboxProgramInfo: twgl.ProgramInfo // skybox program
+let cubeProgramInfo: twgl.ProgramInfo
 let glBufferInfo: twgl.BufferInfo
+let glCubeBufferInfo: twgl.BufferInfo
 
 function main() {
   // Retrieve <canvas> element
@@ -66,42 +70,96 @@ function main() {
     return;
   }
 
-  programInfo = twgl.createProgramInfo(gl, [VSHADER_SOURCE, FSHADER_SOURCE])
-  console.log(' --- programInfo', programInfo);
+  skyboxProgramInfo = twgl.createProgramInfo(gl, [VSHADER_SOURCE, FSHADER_SOURCE])
+  console.log(' --- programInfo', skyboxProgramInfo);
 
+  cubeProgramInfo = twgl.createProgramInfo(gl, [CUBE_VS, CUBE_FS ])
   // Specify the color for clearing <canvas>
-  gl.clearColor(0.1, 0.1, 0.1, 1.0);
+  gl.enable(gl.DEPTH_TEST)
+  // gl.clearColor(0.1, 0.1, 0.1, 1.0);
+  // gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
   // depth test
   // gl.enable(gl.DEPTH_TEST)
-
-
-  gl.depthMask(false)
-  draw(gl, programInfo)
-  gl.depthMask(true)
+  drawCube(gl, cubeProgramInfo, ()=>{
+    console.log(' draw end ');
+    drawSkybox(gl,skyboxProgramInfo)
+  })
+  // drawSkybox(gl,skyboxProgramInfo , ()=>{
+  //   console.log(' draw end ');
+  //   drawCube(gl,cubeProgramInfo)
+  // })
   // window.spector.startCapture(canvas, 100)
   // drawLightCube(gl, programInfo2)
 
-  enableCamera(canvas, gl, programInfo)
-  injectUI(gl, programInfo)
+  enableCamera(canvas, gl)
+  injectUI(gl)
 }
 
-function redraw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
-    gl.enable(gl.DEPTH_TEST)
-    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+function redrawSkybox(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
+    // gl.depthFunc(gl.LEQUAL);
     gl.useProgram(pInfo.program)
+    // gl.enable(gl.DEPTH_TEST)
+    // gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     twgl.setBuffersAndAttributes(gl, pInfo, glBufferInfo)
     // for(let i=0;i<cubePosi.length;i++){
-      let cubInfo = cubePosi[0]
-      updateMVP(gl, pInfo, cubInfo)
-      gl.drawArrays(gl.TRIANGLES, 0, 36)
+    let cubInfo = cubePosi[0]
+    updateSkyboxMVP(gl, pInfo, cubInfo)
+    gl.drawArrays(gl.TRIANGLES, 0, 36)
+    gl.depthFunc(gl.LESS);
     // }
 }
 
-function updateMVP(
+
+function redrawCube(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
+  gl.useProgram(pInfo.program)
+  gl.enable(gl.DEPTH_TEST)
+  gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  twgl.setBuffersAndAttributes(gl, pInfo, glCubeBufferInfo)
+  // for(let i=0;i<cubePosi.length;i++){
+  let cubInfo = cubePosi[0]
+  updateCubeMVP(gl, pInfo, cubInfo)
+  gl.drawArrays(gl.TRIANGLES, 0, 36)
+  // }
+}
+
+
+
+function updateSkyboxMVP(
   gl: WebGLRenderingContext,
   pInfo: twgl.ProgramInfo,
   cubeInfo: CubeInfo
   ){
+  const cameraPos = Vector3.create(defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z)
+  const cameraUp = Vector3.create(0,1,0)
+  const [x,y,z,angle, angleType] = cubeInfo
+  const mt4RmTranslations = (mt4: twgl.m4.Mat4)=>{
+    mt4[3]=0
+    mt4[7]=0
+    mt4[11]=0
+    mt4[15]=1
+    mt4[12]=0
+    mt4[13]=0
+    mt4[14]=0
+    return mt4
+  }
+  let view = Matrix4.inverse(Matrix4.lookAt(cameraPos, Vector3.add(cameraPos, cameraFront), cameraUp))
+  view = mt4RmTranslations(view)
+  const projection = Matrix4.perspective(angleToRads(perspectiveOptions.fov), perspectiveOptions.aspect, perspectiveOptions.near, perspectiveOptions.far)
+
+  const uniformData = {
+    view,
+    projection,
+  }
+  twgl.setUniforms(pInfo, uniformData)
+}
+
+
+function updateCubeMVP(
+  gl: WebGLRenderingContext,
+  pInfo: twgl.ProgramInfo,
+  cubeInfo: CubeInfo
+  ){
+
   const cameraPos = Vector3.create(defaultCameraPosition.x, defaultCameraPosition.y, defaultCameraPosition.z)
   const cameraUp = Vector3.create(0,1,0)
   const [x,y,z,angle, angleType] = cubeInfo
@@ -117,7 +175,101 @@ function updateMVP(
   twgl.setUniforms(pInfo, uniformData)
 }
 
-function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
+
+function drawCube(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, afterDraw = ()=>{
+  //
+}){
+  gl.useProgram(pInfo.program)
+
+  const vertics = [
+    // vert            // texture Coords
+    -0.5, -0.5, -0.5,  0.0, 0.0,
+    0.5, -0.5, -0.5,  1.0, 0.0,
+    0.5,  0.5, -0.5,  1.0, 1.0,
+    0.5,  0.5, -0.5,  1.0, 1.0,
+   -0.5,  0.5, -0.5,  0.0, 1.0,
+   -0.5, -0.5, -0.5,  0.0, 0.0,
+
+   -0.5, -0.5,  0.5,  0.0, 0.0,
+    0.5, -0.5,  0.5,  1.0, 0.0,
+    0.5,  0.5,  0.5,  1.0, 1.0,
+    0.5,  0.5,  0.5,  1.0, 1.0,
+   -0.5,  0.5,  0.5,  0.0, 1.0,
+   -0.5, -0.5,  0.5,  0.0, 0.0,
+
+   -0.5,  0.5,  0.5,  1.0, 0.0,
+   -0.5,  0.5, -0.5,  1.0, 1.0,
+   -0.5, -0.5, -0.5,  0.0, 1.0,
+   -0.5, -0.5, -0.5,  0.0, 1.0,
+   -0.5, -0.5,  0.5,  0.0, 0.0,
+   -0.5,  0.5,  0.5,  1.0, 0.0,
+
+    0.5,  0.5,  0.5,  1.0, 0.0,
+    0.5,  0.5, -0.5,  1.0, 1.0,
+    0.5, -0.5, -0.5,  0.0, 1.0,
+    0.5, -0.5, -0.5,  0.0, 1.0,
+    0.5, -0.5,  0.5,  0.0, 0.0,
+    0.5,  0.5,  0.5,  1.0, 0.0,
+
+   -0.5, -0.5, -0.5,  0.0, 1.0,
+    0.5, -0.5, -0.5,  1.0, 1.0,
+    0.5, -0.5,  0.5,  1.0, 0.0,
+    0.5, -0.5,  0.5,  1.0, 0.0,
+   -0.5, -0.5,  0.5,  0.0, 0.0,
+   -0.5, -0.5, -0.5,  0.0, 1.0,
+
+   -0.5,  0.5, -0.5,  0.0, 1.0,
+    0.5,  0.5, -0.5,  1.0, 1.0,
+    0.5,  0.5,  0.5,  1.0, 0.0,
+    0.5,  0.5,  0.5,  1.0, 0.0,
+   -0.5,  0.5,  0.5,  0.0, 0.0,
+   -0.5,  0.5, -0.5,  0.0, 1.0
+  ]
+  const byteLen = new Float32Array().BYTES_PER_ELEMENT
+  const attrbs: twgl.Arrays = {
+    aPos: {
+      data: vertics,
+      size: 3,
+      offset: 0,
+      stride: 5 * byteLen
+    },
+    aTexCoords: {
+      data: vertics,
+      size: 2,
+      offset: 3 * byteLen,
+      stride: 5 * byteLen
+    }
+  }
+  glCubeBufferInfo = twgl.createBufferInfoFromArrays(gl, attrbs)
+  twgl.setBuffersAndAttributes(gl, pInfo, glCubeBufferInfo)
+
+  twgl.createTextures(gl, {
+    woodbox: {
+      src: './resources/container.jpg',
+      min: gl.LINEAR_MIPMAP_LINEAR,
+      mag: gl.LINEAR,
+      wrapS: gl.REPEAT,
+      wrapT: gl.REPEAT,
+      // wrapR: gl.CLAMP_TO_EDGE,
+    },
+
+  }, (err, textures)=>{
+    if(err){
+      return console.error(err);
+    }
+    const uniformData = {
+      texture1: textures.woodbox
+    }
+    twgl.setUniforms(pInfo, uniformData)
+    redrawCube(gl, pInfo)
+    afterDraw()
+    // twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLES, 36)
+  })
+}
+
+function drawSkybox(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, succCb=()=>{
+//
+}){
   gl.useProgram(pInfo.program)
   var verticesTexCoords = [
    // Vertex
@@ -173,15 +325,6 @@ function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
   glBufferInfo = twgl.createBufferInfoFromArrays(gl, attrbs)
   twgl.setBuffersAndAttributes(gl, pInfo, glBufferInfo)
 
-  // loads a cubemap texture from 6 individual texture faces
-  // order:
-  // +X (right)
-  // -X (left)
-  // +Y (top)
-  // -Y (bottom)
-  // +Z (front)
-  // -Z (back)
-
   twgl.createTextures(gl, {
     skybox: {
       src: [
@@ -196,6 +339,7 @@ function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
       target: gl.TEXTURE_CUBE_MAP,
       min: gl.LINEAR,
       mag: gl.LINEAR,
+      wrap: gl.CLAMP_TO_EDGE,
       // wrapS: gl.CLAMP_TO_EDGE,
       // wrapT: gl.CLAMP_TO_EDGE,
       // wrapR: gl.CLAMP_TO_EDGE,
@@ -209,16 +353,22 @@ function draw(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
       skybox: textures.skybox
     }
     twgl.setUniforms(pInfo, uniformData)
-    redraw(gl, pInfo)
+    redrawSkybox(gl, pInfo)
+    succCb()
     // twgl.drawBufferInfo(gl, bufferInfo, gl.TRIANGLES, 36)
   })
 
 }
 
+function redrawAll(gl: WebGLRenderingContext){
+  redrawCube(gl, cubeProgramInfo)
+  redrawSkybox(gl, skyboxProgramInfo )
+}
+
+
 function enableCamera (
   canvas: HTMLCanvasElement,
   gl: WebGLRenderingContext,
-  pInfo: twgl.ProgramInfo
   ) {
   console.log(' enable came');
   // scroll event   => change camera z
@@ -230,23 +380,23 @@ function enableCamera (
       // defaultCameraPosition.z += 0.1
       const newFov = perspectiveOptions.fov + step
       perspectiveOptions.fov = Math.min(45, newFov)
-      redraw(gl, pInfo)
+      redrawAll(gl)
     }else{
       // zoom in
       // defaultCameraPosition.z -= 0.1
       const newFov = perspectiveOptions.fov-step
       perspectiveOptions.fov = Math.max(1, newFov)
-      redraw(gl, pInfo)
+      redrawAll(gl)
     }
   })
   // arrow left right up down
   document.addEventListener('keyup', (e: KeyboardEvent)=>{
     const {key} = e
     switch(key){
-      case 'ArrowLeft': defaultCameraPosition.x -= 0.1; redraw(gl, pInfo); break;
-      case 'ArrowRight': defaultCameraPosition.x += 0.1; redraw(gl, pInfo); break;
-      case 'ArrowUp': defaultCameraPosition.z += 0.1; redraw(gl, pInfo); break;
-      case 'ArrowDown': defaultCameraPosition.z -= 0.1; redraw(gl, pInfo); break;
+      case 'ArrowLeft': defaultCameraPosition.x -= 0.1; redrawAll(gl); break;
+      case 'ArrowRight': defaultCameraPosition.x += 0.1; redrawAll(gl); break;
+      case 'ArrowUp': defaultCameraPosition.z += 0.1; redrawAll(gl); break;
+      case 'ArrowDown': defaultCameraPosition.z -= 0.1; redrawAll(gl); break;
       default: break;
     }
   })
@@ -281,7 +431,7 @@ function enableCamera (
       const frontCamVec3 = Vector3.create(frontCamX, frontCamY, frontCamZ)
       const camFront = Vector3.normalize(frontCamVec3)
       cameraFront = camFront
-      redraw(gl, pInfo)
+      redrawAll(gl)
     }else{
       return
     }
@@ -304,7 +454,7 @@ function enableCamera (
 }
 
 
-function injectUI(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
+function injectUI(gl: WebGLRenderingContext){
   const div = document.createElement('div')
   const html = `
     <button id="resetCamera">resetCamera</button>
@@ -312,16 +462,16 @@ function injectUI(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
   div.innerHTML = html
   document.body.appendChild(div)
   document.getElementById('resetCamera')?.addEventListener('click', ()=>{
-    resetCameraPosition(gl, pInfo)
+    resetCameraPosition(gl)
   })
 }
 
-function resetCameraPosition(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo){
+function resetCameraPosition(gl: WebGLRenderingContext){
   defaultCameraPosition.x = 0
   defaultCameraPosition.y = 0
   defaultCameraPosition.z = 0
   perspectiveOptions.fov = 45
-  redraw(gl, pInfo);
+  redrawAll(gl);
 }
 
 
