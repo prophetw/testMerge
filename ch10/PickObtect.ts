@@ -31,7 +31,7 @@ var ANGLE_STEP = 20.0; // Rotation angle (degrees/second)
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
   var gl = window.getWebGLContext(canvas);
@@ -66,7 +66,7 @@ function main() {
   }
 
   // Calculate the view projection matrix
-  var viewProjMatrix = new Matrix4();
+  var viewProjMatrix = new window.Matrix4();
   viewProjMatrix.setPerspective(30.0, canvas.width / canvas.height, 1.0, 100.0);
   viewProjMatrix.lookAt(0.0, 0.0, 7.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
@@ -76,9 +76,9 @@ function main() {
   // Register the event handler
   canvas.onmousedown = function (ev) {   // Mouse is pressed
     var x = ev.clientX, y = ev.clientY;
-    var rect = ev.target.getBoundingClientRect();
+    var rect = canvas.getBoundingClientRect();
     if (rect.left <= x && x < rect.right && rect.top <= y && y < rect.bottom) {
-    spector.startCapture(document.getElementById('webgl'), 50)
+    // spector.startCapture(document.getElementById('webgl'), 50)
       // If pressed position is inside <canvas>, check if it is above object
       var x_in_canvas = x - rect.left, y_in_canvas = rect.bottom - y;
       var picked = check(gl, n, x_in_canvas, y_in_canvas, currentAngle, u_Clicked, viewProjMatrix, u_MvpMatrix);
@@ -178,8 +178,8 @@ function check(gl, n, x, y, currentAngle, u_Clicked, viewProjMatrix, u_MvpMatrix
   return picked;
 }
 
-var g_MvpMatrix = new Matrix4(); // Model view projection matrix
-function draw(gl, n, currentAngle, viewProjMatrix, u_MvpMatrix) {
+var g_MvpMatrix = new window.Matrix4(); // Model view projection matrix
+function draw(gl: WebGLRenderingContext, n: number, currentAngle: number, viewProjMatrix, u_MvpMatrix) {
   // Caliculate The model view projection matrix and pass it to u_MvpMatrix
   g_MvpMatrix.set(viewProjMatrix);
   g_MvpMatrix.rotate(currentAngle, 1.0, 0.0, 0.0); // Rotate appropriately
@@ -192,7 +192,7 @@ function draw(gl, n, currentAngle, viewProjMatrix, u_MvpMatrix) {
 }
 
 var last = Date.now(); // Last time that this function was called
-function animate(angle) {
+function animate(angle: number) {
   var now = Date.now();   // Calculate the elapsed time
   var elapsed = now - last;
   last = now;

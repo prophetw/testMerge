@@ -9,96 +9,15 @@ const Vector3 = twgl.v3
 let u_matrix = Matrix4.identity() // model view project matrix4
 
 
+// 借鉴自 https://webglfundamentals.org/webgl/lessons/webgl-cube-maps.html
 
-function main1() {
-  var canvas = document.getElementById('webgl') as HTMLCanvasElement;
+// 鼠标移入 高亮部分
 
-  // Get the rendering context for WebGL
-  var gl = window.getWebGLContext(canvas);
-  if (!gl) {
-    console.log('Failed to get the rendering context for WebGL');
-    return;
-  }
-  const programInfo = twgl.createProgramInfo(gl, [VSHADER_SOURCE, FSHADER_SOURCE])
-  console.log(' programInfo ==== ', programInfo);
-  const {program} = programInfo
 
-  const ctx = document.createElement("canvas").getContext("2d");
-  if(ctx === null ) return false;
 
-  ctx.canvas.width = 128;
-  ctx.canvas.height = 128;
 
-  const faceInfos = [
-    { target: gl.TEXTURE_CUBE_MAP_POSITIVE_X, faceColor: '#F00', textColor: '#0FF', text: '+X' },
-    { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_X, faceColor: '#FF0', textColor: '#00F', text: '-X' },
-    { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Y, faceColor: '#0F0', textColor: '#F0F', text: '+Y' },
-    { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, faceColor: '#0FF', textColor: '#F00', text: '-Y' },
-    { target: gl.TEXTURE_CUBE_MAP_POSITIVE_Z, faceColor: '#00F', textColor: '#FF0', text: '+Z' },
-    { target: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, faceColor: '#F0F', textColor: '#0F0', text: '-Z' },
-  ];
-  faceInfos.forEach((faceInfo) => {
-    const {target, faceColor, textColor, text} = faceInfo;
-    generateFace(ctx, faceColor, textColor, text);
 
-    // Upload the canvas to the cubemap face.
-    const level = 0;
-    const internalFormat = gl.RGBA;
-    const format = gl.RGBA;
-    const type = gl.UNSIGNED_BYTE;
-    gl.texImage2D(target, level, internalFormat, format, type, ctx.canvas);
-  });
-}
 
-// Fill the buffer with the values that define a cube.
-function setGeo(gl: WebGLRenderingContext) {
-  var positions = new Float32Array(
-    [
-    -0.5, -0.5,  -0.5,
-    -0.5,  0.5,  -0.5,
-     0.5, -0.5,  -0.5,
-    -0.5,  0.5,  -0.5,
-     0.5,  0.5,  -0.5,
-     0.5, -0.5,  -0.5,
-
-    -0.5, -0.5,   0.5,
-     0.5, -0.5,   0.5,
-    -0.5,  0.5,   0.5,
-    -0.5,  0.5,   0.5,
-     0.5, -0.5,   0.5,
-     0.5,  0.5,   0.5,
-
-    -0.5,   0.5, -0.5,
-    -0.5,   0.5,  0.5,
-     0.5,   0.5, -0.5,
-    -0.5,   0.5,  0.5,
-     0.5,   0.5,  0.5,
-     0.5,   0.5, -0.5,
-
-    -0.5,  -0.5, -0.5,
-     0.5,  -0.5, -0.5,
-    -0.5,  -0.5,  0.5,
-    -0.5,  -0.5,  0.5,
-     0.5,  -0.5, -0.5,
-     0.5,  -0.5,  0.5,
-
-    -0.5,  -0.5, -0.5,
-    -0.5,  -0.5,  0.5,
-    -0.5,   0.5, -0.5,
-    -0.5,  -0.5,  0.5,
-    -0.5,   0.5,  0.5,
-    -0.5,   0.5, -0.5,
-
-     0.5,  -0.5, -0.5,
-     0.5,   0.5, -0.5,
-     0.5,  -0.5,  0.5,
-     0.5,  -0.5,  0.5,
-     0.5,   0.5, -0.5,
-     0.5,   0.5,  0.5,
-
-    ]);
-  gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-}
 
 
 async function main() {
@@ -131,19 +50,27 @@ async function main() {
       }
     })
   }
-  const getImgEle = async (ctx: CanvasRenderingContext2D): Promise<HTMLImageElement> => {
+  const getImgEle = async (ctx: CanvasRenderingContext2D): Promise<{imgElement: HTMLImageElement
+    imgUrl: string
+  }> => {
     return new Promise((resolve, reject)=>{
+      const imgUrl = ctx.canvas.toDataURL()
       ctx.canvas.toBlob((blob) => {
         if(blob){
           const img = new Image();
           img.src = URL.createObjectURL(blob);
           // document.body.appendChild(img);
-          resolve(img)
+          img.onload = ()=>{
+            resolve({
+              imgElement: img,
+              imgUrl: imgUrl
+            })
+          }
         }
       });
     })
   }
-  const gImg = async (): Promise<HTMLImageElement[]>=>{
+  const gImg = async (): Promise<{imgElement: HTMLImageElement, imgUrl: string}[]>=>{
     const ctx = document.createElement("canvas").getContext("2d");
     if(ctx ===null) return []
     ctx.canvas.width = 128;
@@ -156,14 +83,14 @@ async function main() {
       { faceColor: '#00F', textColor: '#FFF', text: '前' },
       { faceColor: '#F0F', textColor: '#FFF', text: '后' },
     ];
-    const imgAry: HTMLImageElement[] = []
+    const imgAry: {imgElement: HTMLImageElement, imgUrl: string}[] = []
     await Promise.all(faceInfos.map(async (faceInfo) => {
       const {faceColor, textColor, text} = faceInfo;
-      await generateFace(ctx, faceColor, textColor, text, './resources/container.jpg');
+      await generateFace(ctx, faceColor, textColor, text, './resources/tex4.jpg');
       // show the result
       console.log(' text ----- ', text);
       const img = await getImgEle(ctx)
-      img.alt = text
+      img.imgElement.alt = text
       imgAry.push(img)
     }));
     console.log(' canvas ', imgAry);
@@ -175,7 +102,7 @@ async function main() {
 
   var canvas = document.getElementById('webgl') as HTMLCanvasElement;
   // Get the rendering context for WebGL
-  var gl = window.getWebGLContext(canvas);
+  var gl = canvas.getContext('webgl',  { antialias: false, preserveDrawingBuffer: true});
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
@@ -184,38 +111,60 @@ async function main() {
   console.log(' programInfo ==== ', programInfo);
 
   // Specify the color for clearing <canvas>
+  // window.spector.startCapture(canvas, 200)
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST)
 
   draw(gl, programInfo, imgAry)
 
-  const render = (time: number)=>{
-    updateMVPMatrix(time)
-    twgl.setUniforms(programInfo, {
-      u_matrix
-    })
-    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
-    gl.drawArrays(gl.TRIANGLES, 0, 36)
-    // requestAnimationFrame(render)
-  }
+  canvas.addEventListener('click', (e: MouseEvent)=>{
+    console.log(' click gl is ', gl);
+    const {offsetX, offsetY, clientX, clientY} = e
+    console.log(offsetX, offsetY, clientX, clientY);
+    const rect  = canvas.getBoundingClientRect()
+    const x_in_canvas = clientX - rect.left
+    // 屏幕坐标系统  左上角 （0,0）  右下角 (x,y)
+    // webgl   从左向右  0 => x    从下往上是  0 => y
+    // x 轴是同方向的
+    // y 轴是相反的 需要对 x 轴做镜像反转
+    const y_in_canvas = rect.bottom - clientY
+    console.log(rect);
+    const pix = new Uint8Array(4)
+    draw(gl, programInfo, imgAry);
+
+    console.log(' [x_in_canvas, y_in_canvas] ', [x_in_canvas, y_in_canvas]);
+    gl.readPixels(x_in_canvas, y_in_canvas, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pix)
+    console.log(' pix  ', pix);
+  })
+  // animate cube
+  // const render = (time: number)=>{
+  //   updateMVPMatrix(time)
+  //   twgl.setUniforms(programInfo, {
+  //     u_matrix
+  //   })
+  //   gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT)
+  //   gl.drawArrays(gl.TRIANGLES, 0, 36)
+  //   // requestAnimationFrame(render)
+  // }
   // render()
   // requestAnimationFrame(render)
 }
 
-function getImgEleBy(imgAry: HTMLImageElement[], alt: string){
-  let targetImg: HTMLImageElement = document.createElement('img')
+function getImgEleBy(imgAry: {imgElement: HTMLImageElement, imgUrl: string}[], alt: string){
+  // let targetImg: HTMLImageElement = document.createElement('img')
+  let url = ''
   imgAry.map(img=>{
-    if(img.alt === alt){
-      targetImg = img
+    if(img.imgElement.alt === alt){
+      url = img.imgUrl
     }
   })
-  return targetImg
+  return url
 }
 
 function draw(
   gl: WebGLRenderingContext, programInfo:
   twgl.ProgramInfo,
-  imgAry: HTMLImageElement[]
+  imgAry: {imgElement: HTMLImageElement, imgUrl: string}[]
   ){
   gl.useProgram(programInfo.program)
   const vertics = [

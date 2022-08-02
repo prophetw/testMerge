@@ -1,4 +1,4 @@
-import SPECTOR from './spector'
+// import SPECTOR from './spector'
 import { ClickedPoints, ColoredPoint, DrawRectangle, HelloCanvas, HelloPoint1, HelloPoint2 } from "../ch02"
 import {
   HelloQuad, HelloQuad_FAN, HelloTriangle,
@@ -78,6 +78,7 @@ import { LOGLSpecularMaps } from '../learnopengl/LightMapping'
 import { LOGLDirectionLight, LOGLPointLight, LOGLSpotLight } from '../learnopengl/LightCasters'
 import { LOGLCubuInSkyBox, LOGLSkyBox } from '../learnopengl/SkyBox'
 import { LOGLTexLetter } from '../learnopengl/textures'
+import { LOGLPick, LOGLPickCube, LOGLPickV2 } from "../learnopengl/Pick"
 
 
 
@@ -115,8 +116,7 @@ const initSpector = (callback=()=>{
 }
 
 
-const ExampleFn = LOGLTexLetter
+const ExampleFn = LOGLPickCube
 // const ExampleFn = LOGLTexturesTriangle
-
 initSpector(ExampleFn)
 
