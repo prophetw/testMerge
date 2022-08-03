@@ -95,8 +95,8 @@ function redrawAll(gl: WebGLRenderingContext, cubePInfo: twgl.ProgramInfo){
 
 function gRingVert(){
   // 圆环
-  const r = 0.7
-  const r2 = 0.75
+  const r = 0.8
+  const r2 = 0.85
   const n = 100
   const radius = angleToRads(360/n)
   const result = []
