@@ -4,7 +4,6 @@
   attribute float a_Face;    // Surface number (Cannot use int for attribute variable)
   uniform mat4 u_MvpMatrix;
   uniform int u_PickedFace;  // Surface number of selected face
-  uniform int u_HighlightFace;  // Surface number of highlight face
 
   varying vec4 v_Point;
   varying vec4 v_Color;
@@ -17,8 +16,6 @@
     vec3 color = a_Color.rgb;
     if(
       face == u_PickedFace
-      ||
-      face == u_HighlightFace
     ){
       color = vec3(1.0);
     }

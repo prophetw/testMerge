@@ -1,5 +1,5 @@
 import FSHADER_SOURCE from './PickFace.frag'
-import VSHADER_SOURCE from './PickFace.vert'
+import VSHADER_SOURCE from './PickFace.v1.vert'
 import * as twgl from 'twgl.js'
 import { angleToRads } from '../../lib/utils'
 

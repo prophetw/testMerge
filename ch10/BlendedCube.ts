@@ -1,27 +1,6 @@
 import FSHADER_SOURCE from './BlendedCube.frag.glsl'
 import VSHADER_SOURCE from './BlendedCube.vert.glsl'
 
-// BlendedCube.js (c) 2012 matsuda
-// Vertex shader program
-// var VSHADER_SOURCE =
-//   'attribute vec4 a_Position;\n' +
-//   'attribute vec4 a_Color;\n' +
-//   'uniform mat4 u_MvpMatrix;\n' +
-//   'varying vec4 v_Color;\n' +
-//   'void main() {\n' +
-//   '  gl_Position = u_MvpMatrix * a_Position;\n' +
-//   '  v_Color = a_Color;\n' +
-//   '}\n';
-
-// // Fragment shader program
-// var FSHADER_SOURCE =
-//   '#ifdef GL_ES\n' +
-//   'precision mediump float;\n' +
-//   '#endif\n' +
-//   'varying vec4 v_Color;\n' +
-//   'void main() {\n' +
-//   '  gl_FragColor = v_Color;\n' +
-//   '}\n';
 
 function main() {
   // Retrieve <canvas> element
@@ -40,7 +19,7 @@ function main() {
     return;
   }
 
-  window.spector.startCapture(canvas, 100)
+  // window.spector.startCapture(canvas, 100)
 
   // Set the vertex information
   var n = initVertexBuffers(gl);
@@ -51,13 +30,12 @@ function main() {
 
   // Set the clear color and enable the depth test
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
-  // gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.DEPTH_TEST);
   // Enable alpha blending
   gl.enable(gl.BLEND);
   // Set blending function
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   // gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-
 
   // Get the storage location of u_MvpMatrix
   var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
@@ -77,8 +55,10 @@ function main() {
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+  gl.depthMask(false)
   // Draw the cube
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
+  gl.depthMask(true)
 }
 
 function initVertexBuffers(gl: WebGLRenderingContext) {

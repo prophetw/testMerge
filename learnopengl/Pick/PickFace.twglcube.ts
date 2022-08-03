@@ -569,7 +569,7 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
     8, 8, 8, 8,
     28, 28, 28, 28,
   ]
-  const a_Color = new Array(216*3).fill(0.5)
+  const a_Color = new Array(216*3).fill(0.2)
   const gIndices = (pointCount: number): number[]=>{
     const result = []
     const rectNum = pointCount / 4
@@ -658,7 +658,6 @@ function getFaceId (crossPtOnFace: Point, faceInfo: FaceInfo): number{
       (area.y[0]<=y && y<=area.y[1]) &&
       (area.z[0]<=z && z<=area.z[1])
       ){
-        console.log(' index here ', index);
         result = index
       }
   })
@@ -810,7 +809,9 @@ function enableCamera (
         u_PickedFace: -1,
         u_HighlightFace: faceid
       })
+      gl.depthMask(false)
       twgl.drawBufferInfo(gl, bufferInfo)
+      gl.depthMask(true)
     }else{
       return
     }
@@ -828,7 +829,6 @@ function enableCamera (
     document.addEventListener('mousemove', onMousemove)
     document.addEventListener('mouseup', onMouseUp)
   }
-
   document.addEventListener('mousedown', onMousedown)
 }
 export default main
