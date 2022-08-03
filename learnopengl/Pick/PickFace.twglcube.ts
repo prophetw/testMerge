@@ -6,11 +6,29 @@ import { angleToRads } from '../../lib/utils'
 const Matrix4 = twgl.m4
 const Vector3 = twgl.v3
 
+type FaceType = 'left' | 'right' | 'top' | 'bottom' | 'front' | 'back'
+type Point = [number, number, number]
+type XYZArea = {
+  x: AreaType   // 范围
+  y: AreaType   //
+  z: AreaType
+}
+
+interface FaceInfo {
+  vertex: Point[]
+  faceIdAry: number[];
+  normal: Point;
+  pointOnPlane: Point;
+  name: FaceType
+  area: XYZArea
+  faceArea: XYZArea[]
+}
+
 let u_matrix = Matrix4.identity() // model view project matrix4
 let bufferInfo: twgl.BufferInfo
 // highlight rect v2  5 pts 简介一点的尝试
-
-let cameraPos = Vector3.create(5, 5, 5)
+let leftFaceInfo: FaceInfo, rightFaceInfo: FaceInfo, topFaceInfo: FaceInfo, backFaceInfo: FaceInfo, frontFaceInfo: FaceInfo, bottomFaceInfo: FaceInfo;
+let cameraPos = Vector3.create(5, 6, 5)
 
 function main() {
   // Retrieve <canvas> element
@@ -51,7 +69,6 @@ function main() {
       console.log('FaceId is : ', result);
     }
   })
-
 }
 
 function check(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, x: number, y: number){
@@ -71,9 +88,6 @@ function check(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, x: number, y:
   twgl.drawBufferInfo(gl, bufferInfo)
   return a_Face
 }
-
-type FaceType = 'left' | 'right' | 'top' | 'bottom' | 'front' | 'back'
-type Point = [number, number, number]
 
 function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   gl.useProgram(pInfo.program)
@@ -99,6 +113,7 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
     let result: Point[] = []
     const [x, y, z] = leftTopPt
     const step = 0.1
+    let area: XYZArea[] = [] // 9个正方形 从左往右  从上往下 每个正方形的 xyz 的范围
 
     if(whichFace === 'top' || whichFace === 'bottom'){
       // y 坐标固定
@@ -231,29 +246,49 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
         const r5: Point = [x, y-step, z+len-step]
         result = [r0, r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15]
       }
-
-
-    }
-    if(whichFace === 'top' || whichFace === 'bottom'){
-      // y 坐标固定
-
-    }
-    if(whichFace === 'front' || whichFace === 'back'){
-      // z 坐标固定
-
     }
 
+    area.push(
+      getArea([result[0], result[1], result[2], result[3]]),
+      getArea([result[3], result[2], result[5], result[4]]),
+      getArea([result[4], result[5], result[6], result[7]]),
 
-    return result
+      getArea([result[1], result[2], result[8], result[11]]),
+      getArea([result[2], result[11], result[12], result[5]]),
+      getArea([result[5], result[12], result[15], result[6]]),
+
+      getArea([result[8], result[9], result[10], result[11]]),
+      getArea([result[11], result[10], result[13], result[12]]),
+      getArea([result[12], result[13], result[14], result[15]]),
+    )
+
+
+    return {
+      result,
+      faceArea: area
+    }
   }
 
+  const lfaceInfo = gVertex([-0.5, 0.5, -0.5], 1 , 'left')
+  const rfaceInfo = gVertex([0.5, 0.5, 0.5], 1 , 'right')
+  const bfaceInfo = gVertex([0.5, 0.5, -0.5], 1 , 'back')
+  const ffaceInfo = gVertex([-0.5, 0.5, 0.5], 1 , 'front')
+  const tfaceInfo = gVertex([-0.5, 0.5, -0.5], 1 , 'top')
+  const btmfaceInfo = gVertex([-0.5, -0.5, 0.5], 1 , 'bottom')
 
-  const [l0,l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l13,l14,l15] = gVertex([-0.5, 0.5, -0.5], 1 , 'left')
-  const [r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15] = gVertex([0.5, 0.5, 0.5], 1 , 'right')
-  const [b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15] = gVertex([0.5, 0.5, -0.5], 1 , 'back')
-  const [f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15] = gVertex([-0.5, 0.5, 0.5], 1 , 'front')
-  const [t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15] = gVertex([-0.5, 0.5, -0.5], 1 , 'top')
-  const [d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15] = gVertex([-0.5, -0.5, 0.5], 1 , 'bottom')
+  const [l0,l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l13,l14,l15] = lfaceInfo.result
+  const [r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15] = rfaceInfo.result
+  const [b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15] = bfaceInfo.result
+  const [f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15] = ffaceInfo.result
+  const [t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15] = tfaceInfo.result
+  const [d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15] = btmfaceInfo.result
+
+  const lFaceVert = [l0,l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l13,l14,l15]
+  const rFaceVert = [r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15]
+  const backFaceVert = [b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15]
+  const frontFaceVert = [f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15]
+  const topFaceVert = [t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15]
+  const bottomFaceVert = [d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15]
 
   // const r0 = [-0.5, 0.5, -0.5]
   // const r1 = [0.5, 0.5, -0.5]
@@ -368,6 +403,110 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
           中边正方形总共 24个 相邻为一组  12组  记作1~12
  */
 
+  const mid1 = 31
+  const mid2 = 32
+  const mid3 = 33
+  const mid4 = 34
+  const mid5 = 35
+  const mid6 = 36
+  const corner1 = 21
+  const corner2 = 22
+  const corner3 = 23
+  const corner4 = 24
+  const corner5 = 25
+  const corner6 = 26
+  const corner7 = 27
+  const corner8 = 28
+  const midcorner1 = 1
+  const midcorner2 = 2
+  const midcorner3 = 3
+  const midcorner4 = 4
+  const midcorner5 = 5
+  const midcorner6 = 6
+  const midcorner7 = 7
+  const midcorner8 = 8
+  const midcorner9 = 9
+  const midcorner10 = 10
+  const midcorner11 = 11
+  const midcorner12 = 12
+  leftFaceInfo  = {
+    vertex: lFaceVert,
+    faceIdAry: [
+      corner1,midcorner1,corner3,
+      midcorner12,mid1,midcorner9,
+      corner7,midcorner6,corner5,
+    ],
+    normal: [-1,0,0],
+    pointOnPlane: [-0.5,0,0], // pointOnPlane
+    name: 'left',
+    area: getArea(lFaceVert),
+    faceArea: lfaceInfo.faceArea
+  }
+  rightFaceInfo = {
+    vertex: rFaceVert,
+    faceIdAry: [
+      corner4,midcorner4, corner2,
+      midcorner10, mid2,midcorner11,
+      corner6,midcorner7,corner8,
+    ],
+    normal: [1,0,0],
+    pointOnPlane: [0.5,0,0],
+    name: 'right',
+    area: getArea(rFaceVert),
+    faceArea: rfaceInfo.faceArea
+  }
+  topFaceInfo = {
+    vertex: topFaceVert,
+    faceIdAry: [
+      corner1,midcorner3,corner2,
+      midcorner1,mid5,midcorner4,
+      corner3,midcorner2,corner4,
+    ],
+    normal: [0,1,0],
+    pointOnPlane: [0,0.5,0],
+    name: 'top',
+    area: getArea(topFaceVert),
+    faceArea: tfaceInfo.faceArea
+  }
+  bottomFaceInfo = {
+    vertex: bottomFaceVert,
+    faceIdAry: [
+      corner5,midcorner5,corner6,
+      midcorner6,mid6,midcorner7,
+      corner7,midcorner8,corner8,
+    ],
+    normal: [0,-1,0],
+    pointOnPlane: [0,-0.5,0],
+    name: 'bottom',
+    area: getArea(bottomFaceVert),
+    faceArea: btmfaceInfo.faceArea
+  }
+  frontFaceInfo = {
+    vertex: frontFaceVert,
+    faceIdAry: [
+      corner3, midcorner2, corner4,
+      midcorner9, mid3, midcorner10,
+      corner5, midcorner5, corner6
+    ],
+    normal: [0,0,1],
+    pointOnPlane: [0,0,0.5],
+    name: 'front',
+    area: getArea(frontFaceVert),
+    faceArea: ffaceInfo.faceArea
+  }
+  backFaceInfo = {
+    vertex: backFaceVert,
+    faceIdAry: [
+      corner2, midcorner3, corner1,
+      midcorner11, mid4, midcorner12,
+      corner8, midcorner8, corner7
+    ],
+    normal: [0,0,-1],
+    pointOnPlane: [0,0,-0.5],
+    name: 'back',
+    area: getArea(backFaceVert),
+    faceArea: bfaceInfo.faceArea
+  }
   const a_Face = [ // 点所在的面的 索引
     21, 21, 21, 21,   // left
     1, 1, 1, 1,
@@ -462,10 +601,12 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   // console.log(' bufferInfo ', bufferInfo);
   twgl.setBuffersAndAttributes(gl, pInfo,  bufferInfo)
   updateMVPMatrix(0)
+  const highlightFaceId = updateHighlightFaceId()
   const unif = {
     u_MvpMatrix: u_matrix,
     u_CameraPos: cameraPos,
     u_PickedFace: -1,
+    u_HighlightFace: highlightFaceId
   }
   twgl.setUniforms(pInfo, unif)
   // const indexBuffer = gl.createBuffer()
@@ -475,6 +616,103 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
   // gl.drawElements(gl.TRIANGLES, 324, gl.UNSIGNED_BYTE,0)
   twgl.drawBufferInfo(gl, bufferInfo)
+}
+
+function updateHighlightFaceId(){
+  let faceid = -1
+  const face = getFace([cameraPos[0],cameraPos[1],cameraPos[2]], [leftFaceInfo, rightFaceInfo, topFaceInfo, backFaceInfo, frontFaceInfo, bottomFaceInfo])
+  if(face){
+    const crossPt = calcPlaneLineCrossPoint(
+    [cameraPos[0],cameraPos[1],cameraPos[2]],
+    [cameraPos[0],cameraPos[1],cameraPos[2]], face.pointOnPlane, face.normal)
+    if(crossPt){
+      const faceIndex = getFaceId(crossPt, face)
+      const faceId = face.faceIdAry[faceIndex]
+      faceid = faceId
+    }
+  }
+  return faceid
+}
+
+
+/**
+ 正方体某一个面的 图形结构
+
+       1      2     3
+       4      5     6
+       7      8     9
+       ______________
+      |_|_________|_|
+      | |         | |
+      | |         | |    中心正放心 总共6个 记作31~36
+      |_|_________|_|
+      |_|_________|_|    角落正方形总共24个 3个面一组 8组   记作 21~28
+          中边正方形总共 24个 相邻为一组  12组  记作1~12
+ */
+function getFaceId (crossPtOnFace: Point, faceInfo: FaceInfo): number{
+  let result = -1
+  const [x,y,z] = crossPtOnFace
+  faceInfo.faceArea.map((area: XYZArea, index: number)=>{
+    if(
+      (area.x[0]<=x && x<=area.x[1]) &&
+      (area.y[0]<=y && y<=area.y[1]) &&
+      (area.z[0]<=z && z<=area.z[1])
+      ){
+        console.log(' index here ', index);
+        result = index
+      }
+  })
+
+  return result
+}
+
+function getFace(position: Point, faceInfoAry: FaceInfo[]): FaceInfo | undefined{
+  let face = undefined
+  faceInfoAry.map((faceInfo)=>{
+    const crosPt = calcPlaneLineCrossPoint(position, position, faceInfo.pointOnPlane, faceInfo.normal)
+    if(crosPt){
+      const [x1, y1, z1] = position
+      const [x,y,z] = crosPt
+      if(x1*x>=0 && y1*y>=0&&z1*z>=0){
+        const area = faceInfo.area
+        if(
+          (area.x[0]<=x && x<=area.x[1]) &&
+          (area.y[0]<=y && y<=area.y[1]) &&
+          (area.z[0]<=z && z<=area.z[1])
+          ){
+            face = faceInfo
+          }
+      }
+    }
+  })
+  return face
+}
+type AreaType = [number, number]
+function getArea(pointAry: Point[]): {
+  x: AreaType
+  y: AreaType
+  z: AreaType
+}{
+  let minX = +Infinity
+  let maxX = -Infinity
+  let minY = +Infinity
+  let maxY = -Infinity
+  let minZ = +Infinity
+  let maxZ = -Infinity
+  pointAry.map(pt=>{
+    const [x,y,z] = pt
+    minX = Math.min(x, minX)
+    maxX = Math.max(x, maxX)
+    minY = Math.min(y, minY)
+    maxY = Math.max(y, maxY)
+    minZ = Math.min(z, minZ)
+    maxZ = Math.max(z, maxZ)
+  })
+  return {
+    x: [minX, maxX],
+    y: [minY, maxY],
+    z: [minZ, maxZ]
+  }
 }
 
 function updateMVPMatrix(time: number){
@@ -496,6 +734,28 @@ function updateMVPMatrix(time: number){
 }
 
 
+function calcPlaneLineCrossPoint (
+  pointOnLine: Point,
+  lineDirection: Point,
+  pointOnPlane: Point,
+  planeNormalDirection: Point): false | Point{
+  // 求线面交点
+  const P1 = Vector3.create(...pointOnPlane)
+  const P = Vector3.create(...pointOnLine)
+  const lineDirVec3 = Vector3.create(...lineDirection)
+  const planeNormalVec3 = Vector3.create(...planeNormalDirection)
+  const D = lineDirVec3
+  const D1 = planeNormalVec3
+  if(Vector3.dot(lineDirVec3, planeNormalVec3) === 1){
+    // 线面平行
+    return false
+  }
+  const m = ((P1[0] - P[0]) * D1[0] +
+                       (P1[1] - P[1]) * D1[1] +
+                       (P1[2] - P[2]) * D1[2]) /
+                      (D1[0] * D[0] + D1[1] * D[1] + D1[2] * D[2]);
+  return [P[0] + D[0] * m, P[1] + D[1] * m, P[2] + D[2] * m]
+}
 
 function enableCamera (
   canvas: HTMLCanvasElement,
@@ -543,12 +803,14 @@ function enableCamera (
       cameraPos = frontCamVec3
       // draw(gl, pInfo)
       updateMVPMatrix(0)
+      const faceid = updateHighlightFaceId()
       twgl.setUniforms(pInfo, {
         u_MvpMatrix: u_matrix,
-        u_CameraPos: cameraPos
+        u_CameraPos: cameraPos,
+        u_PickedFace: -1,
+        u_HighlightFace: faceid
       })
       twgl.drawBufferInfo(gl, bufferInfo)
-
     }else{
       return
     }
@@ -569,6 +831,4 @@ function enableCamera (
 
   document.addEventListener('mousedown', onMousedown)
 }
-
-
 export default main

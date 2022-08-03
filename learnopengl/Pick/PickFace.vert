@@ -5,30 +5,22 @@
   uniform mat4 u_MvpMatrix;
   uniform vec3 u_CameraPos;
   uniform int u_PickedFace;  // Surface number of selected face
+  uniform int u_HighlightFace;  // Surface number of selected face
 
   varying vec4 v_Point;
   varying vec4 v_Color;
 
   void main() {
     v_Point = a_Position;
-    float highlightFace = 0.0;
     vec4 point = u_MvpMatrix * a_Position;
     gl_Position = point;
     int face = int(a_Face);  // Convert to int
-
-    vec3 dirCam = normalize(u_CameraPos);
-    vec3 dirPt = normalize(vec3(a_Position));
-    float cosQ = dot(dirCam, dirPt);
-    vec3 color =  a_Color.rgb;
-
     // vec3 color = (face == u_PickedFace || face == highlightFace) ? vec3(1.0) : a_Color.rgb;
-    if(cosQ == 1.0){
-      highlightFace = a_Face;
-    }
+    vec3 color = a_Color.rgb;
     if(
       face == u_PickedFace
       ||
-      face == int(highlightFace)
+      face == u_HighlightFace
     ){
       color = vec3(1.0);
     }
