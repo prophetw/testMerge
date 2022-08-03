@@ -9,6 +9,7 @@
   varying vec4 v_Point;
   varying vec4 v_Color;
 
+
   void main() {
     v_Point = a_Position;
     vec4 point = u_MvpMatrix * a_Position;
@@ -20,7 +21,7 @@
       ||
       face == u_HighlightFace
     ){
-      color = vec3(1.0);
+      color = vec3(0.17, 0.48, 0.97);
     }
     if(u_PickedFace == 0) {  // In case of 0, insert the face number into alpha
       v_Color = vec4(color, a_Face/255.0);

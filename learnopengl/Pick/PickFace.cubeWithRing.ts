@@ -76,7 +76,6 @@ function main() {
     }
   })
 }
-
 function drawAll(gl: WebGLRenderingContext, cubuPInfo: twgl.ProgramInfo){
   gl.depthMask(false)
   draw(gl, cubuPInfo)

@@ -103,7 +103,7 @@ async function main() {
   var canvas = document.getElementById('webgl') as HTMLCanvasElement;
   // Get the rendering context for WebGL
   var gl = canvas.getContext('webgl',  { antialias: false, preserveDrawingBuffer: true});
-  if (!gl) {
+  if (gl === null) {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
