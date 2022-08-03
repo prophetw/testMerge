@@ -25,6 +25,7 @@
     if(u_PickedFace == 0) {  // In case of 0, insert the face number into alpha
       v_Color = vec4(color, a_Face/255.0);
     }else {
-      v_Color = vec4(color, a_Color.a);
+      // v_Color = vec4(color, a_Color.a);
+      v_Color = vec4(color, 0.5);
     }
   }

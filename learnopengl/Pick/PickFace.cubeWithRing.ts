@@ -49,8 +49,8 @@ function main() {
   console.log(' ringPinfo ==== ', ringPinfo);
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST)
-  // gl.enable(gl.BLEND)
-  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+  gl.enable(gl.BLEND)
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
   // window.spector.startCapture(canvas, 100)
   drawAll(gl, programInfo)
   enableCamera(canvas, gl, programInfo)
@@ -78,8 +78,10 @@ function main() {
 }
 
 function drawAll(gl: WebGLRenderingContext, cubuPInfo: twgl.ProgramInfo){
+  gl.depthMask(false)
   draw(gl, cubuPInfo)
   drawRing(gl)
+  gl.depthMask(true)
 }
 function redrawAll(gl: WebGLRenderingContext, cubePInfo: twgl.ProgramInfo){
   // redraw cube
@@ -132,7 +134,7 @@ function gRingVert(){
 function drawRing(gl: WebGLRenderingContext){
   gl.useProgram(ringPinfo.program)
   const a_Position = gRingVert() // 圆环
-  const a_Color = new Array(1800).fill(0.5)
+  const a_Color = new Array(1800).fill(0.3)
   const a_Face = new Array(1800).fill(100)
   const attr = {
     a_Position: {
@@ -179,6 +181,7 @@ function updateRingMVP(time: number){
 function check(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, x: number, y: number){
   // draw cube
   gl.useProgram(pInfo.program)
+  gl.disable(gl.BLEND)
   twgl.setBuffersAndAttributes(gl, pInfo, bufferInfo)
   twgl.setUniforms(pInfo, {
     u_PickedFace: 0
@@ -199,12 +202,14 @@ function check(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, x: number, y:
   const a_Face = pix[3]
 
   // draw cube
+  gl.enable(gl.BLEND)
   gl.useProgram(pInfo.program)
   twgl.setBuffersAndAttributes(gl, pInfo, bufferInfo)
   twgl.setUniforms(pInfo, {
     u_PickedFace: a_Face
   })
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  gl.depthMask(false)
   twgl.drawBufferInfo(gl, bufferInfo)
 
   // redraw ring
@@ -214,6 +219,7 @@ function check(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, x: number, y:
     u_PickedFace: a_Face
   })
   gl.drawArrays(gl.TRIANGLES, 0, 1800)
+  gl.depthMask(true)
 
   return a_Face
 }
@@ -241,7 +247,7 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
     // len 正方形边长
     let result: Point[] = []
     const [x, y, z] = leftTopPt
-    const step = 0.1
+    const step = 0.15
     let area: XYZArea[] = [] // 9个正方形 从左往右  从上往下 每个正方形的 xyz 的范围
 
     if(whichFace === 'top' || whichFace === 'bottom'){
