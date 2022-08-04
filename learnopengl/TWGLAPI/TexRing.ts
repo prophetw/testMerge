@@ -1,5 +1,5 @@
-import FSHADER_SOURCE from './Primitive.frag'
-import VSHADER_SOURCE from './Primitive.vert'
+import FSHADER_SOURCE from './Tex.frag'
+import VSHADER_SOURCE from './Tex.vert'
 import FSRING from './Ring.frag'
 import VSRING from './Ring.vert'
 import * as twgl from 'twgl.js'
@@ -14,7 +14,6 @@ const dirName = ['E','W' ,'S' , 'N']
 
 let ringBufferInfo: twgl.BufferInfo
 let ringPInfo: twgl.ProgramInfo
-let planeBufferInfo: twgl.BufferInfo
 let dirBufferInfo: {
   [key: string]: {
     bufferInfo?: twgl.BufferInfo,
@@ -161,7 +160,8 @@ async function main() {
 
   ringPInfo = twgl.createProgramInfo(gl, [VSRING, FSRING])
 
-  console.log(' programInfo ==== ', programInfo, ringPInfo);
+  console.log(' tex programInfo ==== ', programInfo);
+  console.log(' ring program info ',  ringPInfo);
 
   // Specify the color for clearing <canvas>
   // window.spector.startCapture(canvas, 200)
@@ -176,20 +176,89 @@ async function main() {
   draw(gl, programInfo)
   enableCamera(canvas, gl, programInfo)
   canvas.addEventListener('click', e=>{
-    // const {offsetX, offsetY, clientX, clientY} = e
-    // const rect  = canvas.getBoundingClientRect()
-    // const x_in_canvas = clientX - rect.left
-    // const y_in_canvas = rect.bottom - clientY
+    const {offsetX, offsetY, clientX, clientY} = e
+    const rect  = canvas.getBoundingClientRect()
+    const x_in_canvas = clientX - rect.left
+    const y_in_canvas = rect.bottom - clientY
     // const pix = new Uint8Array(4)
     // if(gl){
     //   gl.readPixels(x_in_canvas, y_in_canvas, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pix)
     //   console.log(' pix  ', pix);
     // }
+    // if(gl){
+    //   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+    //   redraw(gl, programInfo)
+    // }
     if(gl){
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-      redraw(gl, programInfo)
+      check(gl, programInfo, x_in_canvas, y_in_canvas)
     }
   })
+}
+
+function redrawTex(gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
+  const dirAry: DirName[] = ['E', 'N', 'S', 'W']
+  dirAry.map(dir=>{
+    updateMVPMatrix(dir)
+    const info = dirBufferInfo[dir]
+    twgl.setUniforms(pInfo,{
+      u_matrix,
+    })
+    if(info.texture){
+      twgl.setUniforms(pInfo,{
+        u_texture: info.texture
+      })
+    }
+    if(info.bufferInfo){
+      twgl.setBuffersAndAttributes(gl, pInfo, info.bufferInfo)
+      twgl.drawBufferInfo(gl, info.bufferInfo)
+    }
+  })
+}
+
+function redrawRing(gl: WebGLRenderingContext){
+  twgl.setBuffersAndAttributes(gl, ringPInfo, ringBufferInfo)
+  twgl.drawBufferInfo(gl, ringBufferInfo)
+}
+
+function check(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, x: number, y: number){
+  // redraw tex
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  gl.useProgram(pInfo.program)
+  gl.disable(gl.BLEND)
+  twgl.setUniforms(pInfo, {
+    u_SelectFace: 0
+  })
+  redrawTex(gl, pInfo)
+  // redraw ring
+  gl.useProgram(ringPInfo.program)
+  twgl.setUniforms(ringPInfo, {
+    u_SelectFace: 0
+  })
+  redrawRing(gl)
+
+
+  const pix = new Uint8Array(4)
+  gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pix)
+  const a_Face = pix[3]
+
+  // draw cube
+  gl.enable(gl.BLEND)
+  gl.useProgram(pInfo.program)
+  twgl.setUniforms(pInfo, {
+    u_SelectFace: a_Face
+  })
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  redrawTex(gl, pInfo)
+
+  // redraw ring
+  gl.useProgram(ringPInfo.program)
+  twgl.setUniforms(ringPInfo, {
+    u_SelectFace: a_Face
+  })
+  redrawRing(gl)
+  console.log(a_Face);
+
+  return a_Face
 }
 
 function gRingVert(){
@@ -236,6 +305,10 @@ function drawRing(gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
     position: {
       data: vert,
       size: 3
+    },
+    a_Face: {
+      data: new Array(vert.length).fill(100),
+      size: 1
     }
   }
   ringBufferInfo = twgl.createBufferInfoFromArrays(gl, attr)
@@ -243,7 +316,8 @@ function drawRing(gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
 
   updateRingMVPMatrix()
   const uniforms = {
-    u_matrix: u_ringmatrix
+    u_matrix: u_ringmatrix,
+    u_SelectFace: -1
   }
   twgl.setUniforms(pInfo, uniforms)
   twgl.drawBufferInfo(gl, ringBufferInfo)
@@ -262,11 +336,8 @@ function updateRingMVPMatrix(){
   const viewProj = Matrix4.multiply(projection, viewMatrix)
   u_ringmatrix = Matrix4.multiply(viewProj, modelMatrix)
 }
-
-
 function redraw(gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   gl.useProgram(pInfo.program)
-  twgl.setBuffersAndAttributes(gl, pInfo, planeBufferInfo)
   const dirAry: DirName[] = ['E', 'N', 'S', 'W']
   dirAry.map(dir=>{
     updateMVPMatrix(dir)
@@ -279,7 +350,10 @@ function redraw(gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
         u_texture: info.texture
       })
     }
-    twgl.drawBufferInfo(gl, planeBufferInfo)
+    if(info.bufferInfo){
+      twgl.setBuffersAndAttributes(gl, pInfo, info.bufferInfo)
+      twgl.drawBufferInfo(gl, info.bufferInfo)
+    }
   })
 
   gl.useProgram(ringPInfo.program)
@@ -293,8 +367,7 @@ function redraw(gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
 
 function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   gl.useProgram(pInfo.program)
-  planeBufferInfo = Primitive.createPlaneBufferInfo(gl)
-  twgl.setBuffersAndAttributes(gl, pInfo,  planeBufferInfo)
+
   const imgUrlAry = [
     getImgEleBy(imgAry, 'S'),
     getImgEleBy(imgAry, 'N'),
@@ -319,18 +392,40 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
       throw new Error('twgl.createTextures error ')
     }
     const dirAry: DirName[] = ['S','N','E','W']
-    dirAry.map((dirName: DirName)=>{
+    dirAry.map((dirName: DirName, index)=>{
+      const vert = {
+        position: {
+          data: [
+            -0.5,0,-0.5, -0.5,0,0.5, 0.5,0,0.5,
+            -0.5,0,-0.5, 0.5,0,0.5,  0.5,0,-0.5
+          ],
+          size: 3,
+        },
+        texcoord: {
+          data: [
+            0,0, 0,1, 1,1,
+            0,0, 1,1, 1,0
+          ],
+          size: 2
+        },
+        a_Face: {
+          data: new Array(18).fill(40+index)
+        }
+      }
+      const planeBufferInfo = twgl.createBufferInfoFromArrays(gl, vert)
+      twgl.setBuffersAndAttributes(gl, pInfo,  planeBufferInfo)
       updateMVPMatrix(dirName)
       const unif = {
         u_matrix,
-        u_texture: textures[dirName]
+        u_texture: textures[dirName],
+        u_SelectFace: -1
       }
       dirBufferInfo[dirName].texture = textures[dirName]
+      dirBufferInfo[dirName].bufferInfo = planeBufferInfo
       twgl.setUniforms(pInfo, unif)
       twgl.drawBufferInfo(gl, planeBufferInfo)
     })
   })
-
 }
 
 function updateMVPMatrix(direction: DirName){
@@ -342,12 +437,15 @@ function updateMVPMatrix(direction: DirName){
     break
     case 'W':
     Matrix4.translate(modelMatrix, Vector3.create(0,0,-1), modelMatrix)
+    Matrix4.rotateY(modelMatrix, Math.PI, modelMatrix)
     break
     case 'S':
     Matrix4.translate(modelMatrix, Vector3.create(1,0,0), modelMatrix)
+    Matrix4.rotateY(modelMatrix, Math.PI/2, modelMatrix)
     break
     case 'N':
     Matrix4.translate(modelMatrix, Vector3.create(-1,0,0), modelMatrix)
+    Matrix4.rotateY(modelMatrix, -Math.PI/2, modelMatrix)
     break
     default:
     break;

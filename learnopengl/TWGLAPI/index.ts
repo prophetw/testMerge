@@ -1,5 +1,5 @@
-import TWGLPrimitive from './Primitive'
+import TWGLTexRing from './TexRing'
 
 export {
-  TWGLPrimitive
+  TWGLTexRing
 }
