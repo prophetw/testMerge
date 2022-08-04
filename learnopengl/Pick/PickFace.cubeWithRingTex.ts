@@ -1,5 +1,5 @@
-import FSHADER_SOURCE from './PickFace.frag'
-import VSHADER_SOURCE from './PickFace.vert'
+import FSHADER_SOURCE from './PickFace.cubeWithRingTex.frag'
+import VSHADER_SOURCE from './PickFace.cubeWithRingTex.vert'
 import FSRING from './Circle.frag'
 import VSRING from './Circle.vert'
 import * as twgl from 'twgl.js'
@@ -30,11 +30,113 @@ let u_matrix = Matrix4.identity() // model view project matrix4
 let bufferInfo: twgl.BufferInfo
 let ringBufferInfo: twgl.BufferInfo
 let ringPinfo: twgl.ProgramInfo
+let imgAry: {
+  imgElement: HTMLImageElement;
+  imgUrl: string;
+}[]
 // highlight rect v2  5 pts 简介一点的尝试
 let leftFaceInfo: FaceInfo, rightFaceInfo: FaceInfo, topFaceInfo: FaceInfo, backFaceInfo: FaceInfo, frontFaceInfo: FaceInfo, bottomFaceInfo: FaceInfo;
 let cameraPos = Vector3.create(5, 6, 5)
 
-function main() {
+
+
+const generateFace = (
+  ctx: CanvasRenderingContext2D,
+  faceColor: string,
+  textColor: string,
+  text: string,
+  bgImgSrc?: string
+) => {
+  return new Promise((resolve, reject)=>{
+    const {width, height} = ctx.canvas;
+    if(bgImgSrc){
+      const image = document.createElement('img');
+      image.src = bgImgSrc
+      image.addEventListener('load', (e) => {
+        ctx.drawImage(image, 0, 0, width, height);
+        ctx.font = `${width * 0.5}px sans-serif`;
+        ctx.globalAlpha = 0.7;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = textColor;
+        ctx.fillText(text, width / 2, height / 2);
+        resolve(ctx)
+      });
+    }else{
+      ctx.clearRect(0,0,128,128);
+      ctx.fillStyle = "rgba(100, 100, 100, 0.7)";
+      ctx.globalAlpha = 0.5;
+      ctx.fillRect(0,0,128,128);
+      ctx.font = `${width * 0.5}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = textColor;
+      ctx.fillText(text, width / 2, height / 2);
+      resolve(ctx)
+    }
+  })
+}
+const getImgEle = async (ctx: CanvasRenderingContext2D): Promise<{imgElement: HTMLImageElement
+  imgUrl: string
+}> => {
+  return new Promise((resolve, reject)=>{
+    const imgUrl = ctx.canvas.toDataURL()
+    ctx.canvas.toBlob((blob) => {
+      if(blob){
+        const img = new Image();
+        img.src = URL.createObjectURL(blob);
+        // document.body.appendChild(img); // debug generated img
+        img.onload = ()=>{
+          resolve({
+            imgElement: img,
+            imgUrl: imgUrl
+          })
+        }
+      }
+    });
+  })
+}
+const gImg = async (): Promise<{imgElement: HTMLImageElement, imgUrl: string}[]>=>{
+
+  const faceInfos = [
+    { faceColor: '#F00', textColor: '#FFF', text: '右' },
+    { faceColor: '#FF0', textColor: '#FFF', text: '左' },
+    { faceColor: '#0F0', textColor: '#FFF', text: '上' },
+    { faceColor: '#0FF', textColor: '#FFF', text: '下' },
+    { faceColor: '#00F', textColor: '#FFF', text: '前' },
+    { faceColor: '#F0F', textColor: '#FFF', text: '后' },
+  ];
+  const imgAry: {imgElement: HTMLImageElement, imgUrl: string}[] = []
+  await Promise.all(faceInfos.map(async (faceInfo) => {
+    const ctx = document.createElement("canvas").getContext("2d");
+    if(ctx ===null) return []
+    ctx.canvas.width = 128;
+    ctx.canvas.height = 128;
+    const {faceColor, textColor, text} = faceInfo;
+    // await generateFace(ctx, faceColor, textColor, text, './resources/tex4.jpg');
+    await generateFace(ctx, faceColor, textColor, text);
+    // show the result
+    const img = await getImgEle(ctx)
+    img.imgElement.alt = text
+    imgAry.push(img)
+  }));
+  return imgAry
+}
+
+function getImgEleBy(imgAry: {imgElement: HTMLImageElement, imgUrl: string}[], alt: string){
+  // let targetImg: HTMLImageElement = document.createElement('img')
+  let url = ''
+  imgAry.map(img=>{
+    if(img.imgElement.alt === alt){
+      url = img.imgUrl
+    }
+  })
+  return url
+}
+
+
+
+async function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl') as HTMLCanvasElement;
   // Get the rendering context for WebGL
@@ -43,6 +145,8 @@ function main() {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
+  imgAry = await gImg()
+  console.log(' imgAry ', imgAry);
   const programInfo = twgl.createProgramInfo(gl, [VSHADER_SOURCE, FSHADER_SOURCE])
   ringPinfo = twgl.createProgramInfo(gl, [VSRING, FSRING])
   console.log(' programInfo ==== ', programInfo);
@@ -59,7 +163,6 @@ function main() {
     const rect = canvas.getBoundingClientRect()
     const x_in_canvas = clientX - rect.left
     const y_in_canvas = rect.bottom - clientY
-
     if(gl){
       check(gl, programInfo, x_in_canvas, y_in_canvas)
     }
@@ -77,14 +180,15 @@ function main() {
   })
 }
 function drawAll(gl: WebGLRenderingContext, cubuPInfo: twgl.ProgramInfo){
-  // gl.depthMask(false)
-  draw(gl, cubuPInfo)
-  drawRing(gl)
-  // gl.depthMask(true)
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  draw(gl, cubuPInfo, ()=>{
+    drawRing(gl)
+  })
 }
 function redrawAll(gl: WebGLRenderingContext, cubePInfo: twgl.ProgramInfo){
   // redraw cube
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
   gl.useProgram(cubePInfo.program)
   twgl.setBuffersAndAttributes(gl,cubePInfo, bufferInfo)
   twgl.drawBufferInfo(gl, bufferInfo)
@@ -127,7 +231,6 @@ function gRingVert(){
     result.push(...pt1,...pt3, ...pt4)
     result.push(...pt1,...pt4,...pt2)
   }
-  console.log(result);
   return result
 }
 function drawRing(gl: WebGLRenderingContext){
@@ -140,7 +243,7 @@ function drawRing(gl: WebGLRenderingContext){
       data: a_Position,
       size: 3,
     },
-    a_Color: {
+    a_color: {
       data: a_Color,
       size: 3
     },
@@ -223,7 +326,9 @@ function check(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, x: number, y:
   return a_Face
 }
 
-function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
+function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo, afterDraw=()=>{
+  //
+}){
   gl.useProgram(pInfo.program)
   /**
   //  l0~l15 16 left
@@ -714,22 +819,43 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   bufferInfo = twgl.createBufferInfoFromArrays(gl, attr)
   // console.log(' bufferInfo ', bufferInfo);
   twgl.setBuffersAndAttributes(gl, pInfo,  bufferInfo)
-  updateMVPMatrix(0)
-  const highlightFaceId = updateHighlightFaceId()
-  const unif = {
-    u_MvpMatrix: u_matrix,
-    u_CameraPos: cameraPos,
-    u_PickedFace: -1,
-    u_HighlightFace: highlightFaceId
-  }
-  twgl.setUniforms(pInfo, unif)
-  // const indexBuffer = gl.createBuffer()
-  // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-  // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-  // gl.drawElements(gl.TRIANGLES, 324, gl.UNSIGNED_BYTE,0)
-  twgl.drawBufferInfo(gl, bufferInfo)
+  const imgNewAry = [
+    getImgEleBy(imgAry, '右'),
+    getImgEleBy(imgAry, '左'),
+    getImgEleBy(imgAry, '上'),
+    getImgEleBy(imgAry, '下'),
+    getImgEleBy(imgAry, '前'),
+    getImgEleBy(imgAry, '后'),
+  ]
+  twgl.createTextures(gl, {
+    tex: {
+      target: gl.TEXTURE_CUBE_MAP,
+      src: imgNewAry,
+    },
+  }, (err, textures)=>{
+    if(err){
+      throw new Error('twgl.createTextures error ')
+    }
+    updateMVPMatrix(0)
+    const highlightFaceId = updateHighlightFaceId()
+    const unif = {
+      u_MvpMatrix: u_matrix,
+      u_CameraPos: cameraPos,
+      u_texture: textures.tex,
+      u_PickedFace: -1,
+      u_HighlightFace: highlightFaceId
+    }
+    twgl.setUniforms(pInfo, unif)
+    // const indexBuffer = gl.createBuffer()
+    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+    // gl.drawElements(gl.TRIANGLES, 324, gl.UNSIGNED_BYTE,0)
+    twgl.drawBufferInfo(gl, bufferInfo)
+    afterDraw()
+  })
+
 }
 
 function updateHighlightFaceId(){

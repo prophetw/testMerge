@@ -137,8 +137,8 @@ async function main() {
   // window.spector.startCapture(canvas, 200)
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST)
-  gl.enable(gl.BLEND)
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+  // gl.enable(gl.BLEND)
+  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
 
   draw(gl, programInfo, imgAry)
 
@@ -174,17 +174,17 @@ async function main() {
     }
   })
 
-  canvas.addEventListener('mousemove', (e: MouseEvent)=>{
-    const {clientX, clientY} = e
-    const rect  = canvas.getBoundingClientRect()
-    const x_in_canvas = clientX - rect.left
-    const y_in_canvas = rect.bottom - clientY
-    const pix = new Uint8Array(4)
-    if(gl){
-      gl.readPixels(x_in_canvas, y_in_canvas, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pix)
-      console.log(' pix  ', pix);
-    }
-  })
+  // canvas.addEventListener('mousemove', (e: MouseEvent)=>{
+  //   const {clientX, clientY} = e
+  //   const rect  = canvas.getBoundingClientRect()
+  //   const x_in_canvas = clientX - rect.left
+  //   const y_in_canvas = rect.bottom - clientY
+  //   const pix = new Uint8Array(4)
+  //   if(gl){
+  //     gl.readPixels(x_in_canvas, y_in_canvas, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pix)
+  //     console.log(' pix  ', pix);
+  //   }
+  // })
   // animate cube
   // const render = (time: number)=>{
   //   updateMVPMatrix(time)
