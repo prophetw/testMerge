@@ -77,8 +77,9 @@ import { LOGLAmbient, LOGLDiffuse, LOGLSpecular } from '../learnopengl/BasicLigh
 import { LOGLSpecularMaps } from '../learnopengl/LightMapping'
 import { LOGLDirectionLight, LOGLPointLight, LOGLSpotLight } from '../learnopengl/LightCasters'
 import { LOGLCubuInSkyBox, LOGLSkyBox } from '../learnopengl/SkyBox'
-import { LOGLTexLetter, LOGLTexLetter2 } from '../learnopengl/textures'
+import { LOGLTexLetter, LOGLTexLetter2, LOGLTexRingWithLetter } from '../learnopengl/textures'
 import { LOGLCircle, LOGLPick, LOGLPickCube, LOGLPickCubeRing, LOGLPickCubeRingTex, LOGLPickV2 } from "../learnopengl/Pick"
+import { TWGLPrimitive } from "../learnopengl/TWGLAPI"
 
 
 
@@ -116,7 +117,8 @@ const initSpector = (callback=()=>{
 }
 
 
-const ExampleFn = LOGLPickCubeRingTex
+// const ExampleFn = LOGLTexRingWithLetter
+const ExampleFn = TWGLPrimitive
 
 // const ExampleFn = LOGLTexturesTriangle
 initSpector(ExampleFn)

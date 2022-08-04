@@ -14,12 +14,6 @@ let u_matrix = Matrix4.identity() // model view project matrix4
 // 鼠标移入 高亮部分
 
 
-
-
-
-
-
-
 async function main() {
   // Retrieve <canvas> element
 
