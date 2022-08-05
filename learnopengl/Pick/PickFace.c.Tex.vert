@@ -13,12 +13,11 @@ varying float v_Select;
 void main() {
   gl_Position = u_MvpMatrix * position;
   v_texCoord = texcoord;
-
   vec3 color = vec3(0.0);
   int face = int(a_Face);
   if(face == u_PickedFace || face == u_HighlightFace){
     // highlight
-    color = vec3(0.12, 0.23, 0.92);
+    color = vec3(0.39, 0.54, 1);
   }
   v_Select = float(u_PickedFace);
   if(u_PickedFace == 0){ // 开启选择 face 把 a_Face 传递给像素

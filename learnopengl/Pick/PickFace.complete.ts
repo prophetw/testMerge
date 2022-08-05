@@ -1,5 +1,5 @@
-import FSHADER_SOURCE from './PickFace.cubeWithRingTex.frag'
-import VSHADER_SOURCE from './PickFace.cubeWithRingTex.vert'
+import FSHADER_SOURCE from './PickFace.complete.Tex.frag'
+import VSHADER_SOURCE from './PickFace.complete.Tex.vert'
 import FSRING from './Circle.frag'
 import VSRING from './Circle.vert'
 import FSTEX from './PickFace.c.Tex.frag'
@@ -29,9 +29,6 @@ interface FaceInfo {
   faceArea: XYZArea[]
 }
 
-let cubeBufferInfo: twgl.BufferInfo
-let ringBufferInfo: twgl.BufferInfo
-let ringPinfo: twgl.ProgramInfo
 let imgAry: {
   imgElement: HTMLImageElement;
   imgUrl: string;
@@ -40,8 +37,6 @@ let imgAry: {
 let leftFaceInfo: FaceInfo, rightFaceInfo: FaceInfo, topFaceInfo: FaceInfo, backFaceInfo: FaceInfo, frontFaceInfo: FaceInfo, bottomFaceInfo: FaceInfo;
 const dftPos = Vector3.normalize(Vector3.create(5, 5, 5))
 let cameraPos = Vector3.create(dftPos[0]*5, dftPos[1]*5 , dftPos[2]*5)
-
-
 
 const generateFace = (
   ctx: CanvasRenderingContext2D,
@@ -225,6 +220,7 @@ async function main() {
     u_HighlightFace: highlightFaceId
   })
 
+  console.log(' cubeEngine ', cubeEng);
   const ringVertData = initRingVert()
   const ringEng = new GraphicEngine(gl, ringVertData, VSRING, FSRING, {
     modelMatrix: Matrix4.translate(Matrix4.identity(), Vector3.create(0, -0.7, 0))
@@ -233,7 +229,6 @@ async function main() {
   ringEng.setUniform({
     u_PickedFace: -1,
   })
-  console.log(ringEng);
 
   // 东
   const tex1VertData = initTexVert(1)
@@ -241,8 +236,8 @@ async function main() {
     modelMatrix: Matrix4.scale(
       Matrix4.translate(
         Matrix4.rotateY(Matrix4.identity(), angleToRads(0)),
-        Vector3.create(0,-0.7,0.9)),
-          Vector3.create(0.2, 0.2, 0.2)
+        Vector3.create(0,-0.7,1.0)),
+          Vector3.create(0.3, 0.3, 0.3)
     ),
     textureAry: [texs.East]
   })
@@ -259,8 +254,8 @@ async function main() {
     modelMatrix: Matrix4.scale(
       Matrix4.translate(
         Matrix4.rotateY(Matrix4.identity(), angleToRads(180)),
-        Vector3.create(0,-0.7,0.9)),
-          Vector3.create(0.2, 0.2, 0.2)
+        Vector3.create(0,-0.7,1.0)),
+          Vector3.create(0.3, 0.3, 0.3)
     ),
     textureAry: [texs.West]
   })
@@ -276,8 +271,8 @@ async function main() {
     modelMatrix: Matrix4.scale(
       Matrix4.translate(
         Matrix4.rotateY(Matrix4.identity(), angleToRads(90)),
-        Vector3.create(0,-0.7,0.9)),
-          Vector3.create(0.2, 0.2, 0.2)
+        Vector3.create(0,-0.7,1.0)),
+          Vector3.create(0.3, 0.3, 0.3)
         ),
     textureAry: [texs.South]
   })
@@ -293,8 +288,8 @@ async function main() {
     modelMatrix: Matrix4.scale(
       Matrix4.translate(
         Matrix4.rotateY(Matrix4.identity(), angleToRads(-90)),
-        Vector3.create(0,-0.7,0.9)),
-          Vector3.create(0.2, 0.2, 0.2)
+        Vector3.create(0,-0.7,1.0)),
+          Vector3.create(0.3, 0.3, 0.3)
     ),
     textureAry: [texs.North]
   })
@@ -442,41 +437,6 @@ function initRingVert(){
   // twgl.setUniforms(ringPinfo, unif)
   // gl.drawArrays(gl.TRIANGLES, 0, 1800)
   return attr
-}
-function updateRingMVP(time: number){
-  time *= 0.001
-  let modelMatrix = Matrix4.identity(); // Model matrix
-
-  // modelMatrix = Matrix4.rotateX(modelMatrix, angleToRads(30))
-  // modelMatrix = Matrix4.rotateY(modelMatrix, angleToRads(30))
-  // modelMatrix = Matrix4.rotationY(time)
-  const eye = cameraPos
-  const target = Vector3.create(0, 0, 0)
-  const cameraUp = Vector3.create(0, 1, 0)
-  const camera = Matrix4.lookAt(eye, target, cameraUp);
-  const viewMatrix = Matrix4.inverse(camera)
-  const projection = Matrix4.perspective(angleToRads(30), 1, 1, 100);
-  // Calculate the model view projection matrix
-  const viewProj = Matrix4.multiply(projection, viewMatrix)
-  u_matrix = Matrix4.multiply(viewProj, modelMatrix)
-}
-
-function redrawCubeAndRing(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, faceId: number){
-  // redraw cube
-  gl.useProgram(pInfo.program)
-  twgl.setUniforms(pInfo, {
-    u_PickedFace: faceId
-  })
-  twgl.setBuffersAndAttributes(gl, pInfo, cubeBufferInfo)
-  twgl.drawBufferInfo(gl, cubeBufferInfo)
-
-  // redraw ring
-  gl.useProgram(ringPinfo.program)
-  twgl.setUniforms(ringPinfo, {
-    u_PickedFace: faceId
-  })
-  twgl.setBuffersAndAttributes(gl, ringPinfo, ringBufferInfo)
-  gl.drawArrays(gl.TRIANGLES, 0, 1800)
 }
 
 function initCubeVert (){

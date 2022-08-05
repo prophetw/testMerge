@@ -24,7 +24,7 @@ void main() {
     ||
     face == u_HighlightFace
   ){
-    color = vec3(0.04, 0.29, 0.99);
+    color = vec3(0, 0.18, 0.67);
   }
   v_Select = float(u_PickedFace);
   if(u_PickedFace == 0) {  // In case of 0, insert the face number into alpha
