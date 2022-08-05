@@ -2,8 +2,11 @@ import FSHADER_SOURCE from './PickFace.cubeWithRingTex.frag'
 import VSHADER_SOURCE from './PickFace.cubeWithRingTex.vert'
 import FSRING from './Circle.frag'
 import VSRING from './Circle.vert'
+import FSTEX from './PickFace.c.Tex.frag'
+import VSTEX from './PickFace.c.Tex.vert'
 import * as twgl from 'twgl.js'
 import { angleToRads } from '../../lib/utils'
+import { GraphicEngine } from '../../src/utils/utils'
 
 const Matrix4 = twgl.m4
 const Vector3 = twgl.v3
@@ -26,8 +29,7 @@ interface FaceInfo {
   faceArea: XYZArea[]
 }
 
-let u_matrix = Matrix4.identity() // model view project matrix4
-let bufferInfo: twgl.BufferInfo
+let cubeBufferInfo: twgl.BufferInfo
 let ringBufferInfo: twgl.BufferInfo
 let ringPinfo: twgl.ProgramInfo
 let imgAry: {
@@ -36,7 +38,8 @@ let imgAry: {
 }[]
 // highlight rect v2  5 pts 简介一点的尝试
 let leftFaceInfo: FaceInfo, rightFaceInfo: FaceInfo, topFaceInfo: FaceInfo, backFaceInfo: FaceInfo, frontFaceInfo: FaceInfo, bottomFaceInfo: FaceInfo;
-let cameraPos = Vector3.create(5, 6, 5)
+const dftPos = Vector3.normalize(Vector3.create(5, 5, 5))
+let cameraPos = Vector3.create(dftPos[0]*5, dftPos[1]*5 , dftPos[2]*5)
 
 
 
@@ -64,7 +67,7 @@ const generateFace = (
       });
     }else{
       ctx.clearRect(0,0,128,128);
-      ctx.fillStyle = "rgba(100, 100, 100, 0.7)";
+      ctx.fillStyle = "rgba(100, 100, 100, 0.0)";
       ctx.globalAlpha = 0.5;
       ctx.fillRect(0,0,128,128);
       ctx.font = `${width * 0.5}px sans-serif`;
@@ -105,6 +108,10 @@ const gImg = async (): Promise<{imgElement: HTMLImageElement, imgUrl: string}[]>
     { faceColor: '#0FF', textColor: '#FFF', text: '下' },
     { faceColor: '#00F', textColor: '#FFF', text: '前' },
     { faceColor: '#F0F', textColor: '#FFF', text: '后' },
+    { faceColor: '#F00', textColor: '#FFF', text: '东' },
+    { faceColor: '#FF0', textColor: '#FFF', text: '南' },
+    { faceColor: '#0F0', textColor: '#FFF', text: '西' },
+    { faceColor: '#0FF', textColor: '#FFF', text: '北' },
   ];
   const imgAry: {imgElement: HTMLImageElement, imgUrl: string}[] = []
   await Promise.all(faceInfos.map(async (faceInfo) => {
@@ -134,6 +141,41 @@ function getImgEleBy(imgAry: {imgElement: HTMLImageElement, imgUrl: string}[], a
   return url
 }
 
+async function initTextureImg (
+  gl: WebGLRenderingContext,
+  imgCubeAry: string[],
+  imgDirAry: string[]
+  ): Promise<{
+    [key: string]: WebGLTexture;
+    }>{
+    return new Promise((resolve, reject)=>{
+      twgl.createTextures(gl, {
+        cube: {
+          target: gl.TEXTURE_CUBE_MAP,
+          src: imgCubeAry
+        },
+        East: {
+          src: imgDirAry[0]
+        },
+        South: {
+          src: imgDirAry[1]
+        },
+        West: {
+          src: imgDirAry[2]
+        },
+        North: {
+          src: imgDirAry[3]
+        },
+      }, (err, texs)=>{
+        if(err){
+          console.error(err);
+          reject(' initTextureImg fail')
+        }else{
+          resolve(texs)
+        }
+      })
+    })
+}
 
 
 async function main() {
@@ -147,55 +189,194 @@ async function main() {
   }
   imgAry = await gImg()
   console.log(' imgAry ', imgAry);
-  const programInfo = twgl.createProgramInfo(gl, [VSHADER_SOURCE, FSHADER_SOURCE])
-  ringPinfo = twgl.createProgramInfo(gl, [VSRING, FSRING])
-  console.log(' programInfo ==== ', programInfo);
-  console.log(' ringPinfo ==== ', ringPinfo);
+
+  const imgCubeAry = [
+    getImgEleBy(imgAry, '右'),
+    getImgEleBy(imgAry, '左'),
+    getImgEleBy(imgAry, '上'),
+    getImgEleBy(imgAry, '下'),
+    getImgEleBy(imgAry, '前'),
+    getImgEleBy(imgAry, '后'),
+  ]
+  const imgDirAry = [
+    getImgEleBy(imgAry, '东'),
+    getImgEleBy(imgAry, '南'),
+    getImgEleBy(imgAry, '西'),
+    getImgEleBy(imgAry, '北'),
+  ]
+
+
+  const cameraUp = Vector3.create(0, 1, 0)
+  const camera = Matrix4.lookAt(cameraPos, Vector3.create(0,0,0), cameraUp);
+  const viewMatrix = Matrix4.inverse(camera)
+  const projection = Matrix4.perspective(angleToRads(30), 1, 1, 100);
+
+  const texs = await initTextureImg(gl, imgCubeAry, imgDirAry)
+  console.log(' texs ---- ', texs);
+
+  const cubeVertData = initCubeVert()
+  const cubeEng = new GraphicEngine(gl, cubeVertData, VSHADER_SOURCE, FSHADER_SOURCE)
+  const highlightFaceId = updateHighlightFaceId()
+
+  cubeEng.updateMVP(undefined, viewMatrix, projection)
+  cubeEng.setUniform({
+    u_texture: texs.cube,
+    u_PickedFace: -1,
+    u_HighlightFace: highlightFaceId
+  })
+
+  const ringVertData = initRingVert()
+  const ringEng = new GraphicEngine(gl, ringVertData, VSRING, FSRING, {
+    modelMatrix: Matrix4.translate(Matrix4.identity(), Vector3.create(0, -0.7, 0))
+  })
+  ringEng.updateMVP(undefined, viewMatrix, projection)
+  ringEng.setUniform({
+    u_PickedFace: -1,
+  })
+  console.log(ringEng);
+
+  // 东
+  const tex1VertData = initTexVert(1)
+  const tex1Eng = new GraphicEngine(gl, tex1VertData, VSTEX, FSTEX, {
+    modelMatrix: Matrix4.scale(
+      Matrix4.translate(
+        Matrix4.rotateY(Matrix4.identity(), angleToRads(0)),
+        Vector3.create(0,-0.7,0.9)),
+          Vector3.create(0.2, 0.2, 0.2)
+    ),
+    textureAry: [texs.East]
+  })
+  tex1Eng.updateMVP(undefined, viewMatrix, projection)
+  tex1Eng.setUniform({
+    u_texture: texs.East,
+    u_PickedFace: -1,
+    u_HighlightFace: -1
+  })
+
+  // 西
+  const tex2VertData = initTexVert(2)
+  const tex2Eng = new GraphicEngine(gl, tex2VertData, VSTEX, FSTEX, {
+    modelMatrix: Matrix4.scale(
+      Matrix4.translate(
+        Matrix4.rotateY(Matrix4.identity(), angleToRads(180)),
+        Vector3.create(0,-0.7,0.9)),
+          Vector3.create(0.2, 0.2, 0.2)
+    ),
+    textureAry: [texs.West]
+  })
+  tex2Eng.updateMVP(undefined, viewMatrix, projection)
+  tex2Eng.setUniform({
+    u_texture: texs.West,
+    u_PickedFace: -1,
+    u_HighlightFace: -1
+  })
+  // 南
+  const tex3VertData = initTexVert(3)
+  const tex3Eng = new GraphicEngine(gl, tex3VertData, VSTEX, FSTEX, {
+    modelMatrix: Matrix4.scale(
+      Matrix4.translate(
+        Matrix4.rotateY(Matrix4.identity(), angleToRads(90)),
+        Vector3.create(0,-0.7,0.9)),
+          Vector3.create(0.2, 0.2, 0.2)
+        ),
+    textureAry: [texs.South]
+  })
+  tex3Eng.updateMVP(undefined, viewMatrix, projection)
+  tex3Eng.setUniform({
+    u_PickedFace: -1,
+    u_HighlightFace: -1
+  })
+
+  // 北
+  const tex4VertData = initTexVert(4)
+  const tex4Eng = new GraphicEngine(gl, tex4VertData, VSTEX, FSTEX, {
+    modelMatrix: Matrix4.scale(
+      Matrix4.translate(
+        Matrix4.rotateY(Matrix4.identity(), angleToRads(-90)),
+        Vector3.create(0,-0.7,0.9)),
+          Vector3.create(0.2, 0.2, 0.2)
+    ),
+    textureAry: [texs.North]
+  })
+  tex4Eng.updateMVP(undefined, viewMatrix, projection)
+  tex4Eng.setUniform({
+    u_texture: texs.North,
+    u_PickedFace: -1,
+    u_HighlightFace: -1
+  })
+
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.enable(gl.DEPTH_TEST)
   gl.enable(gl.BLEND)
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
-  // window.spector.startCapture(canvas, 100)
-  drawAll(gl, programInfo)
-  enableCamera(canvas, gl, programInfo)
-  canvas.addEventListener('mousemove', e=>{
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+  const drawAll = ()=>{
+    cubeEng.draw()
+    ringEng.draw()
+    tex1Eng.draw()
+    tex2Eng.draw()
+    tex3Eng.draw()
+    tex4Eng.draw()
+  }
+  drawAll()
+  const updatePickFaceId = (faceid: number)=>{
+    cubeEng.updateUniform({u_PickedFace: faceid})
+    cubeEng.draw()
+    ringEng.updateUniform({u_PickedFace: faceid})
+    ringEng.draw()
+    tex1Eng.updateUniform({u_PickedFace: faceid})
+    tex1Eng.draw()
+    tex2Eng.updateUniform({u_PickedFace: faceid})
+    tex2Eng.draw()
+    tex3Eng.updateUniform({u_PickedFace: faceid})
+    tex3Eng.draw()
+    tex4Eng.updateUniform({u_PickedFace: faceid})
+    tex4Eng.draw()
+  }
+  enableCamera(canvas, gl, (cameraPos, faceid)=>{
+    cubeEng.updateCamera(cameraPos)
+    cubeEng.setUniform({
+      u_PickedFace: -1,
+      u_HighlightFace: faceid
+    })
+    ringEng.updateCamera(cameraPos)
+    tex1Eng.updateCamera(cameraPos)
+    tex2Eng.updateCamera(cameraPos)
+    tex3Eng.updateCamera(cameraPos)
+    tex4Eng.updateCamera(cameraPos)
+    if(gl){
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+    }
+    drawAll()
+  })
+  const onPickFace = (e: MouseEvent)=>{
     const {clientX, clientY} = e
     const rect = canvas.getBoundingClientRect()
     const x_in_canvas = clientX - rect.left
     const y_in_canvas = rect.bottom - clientY
     if(gl){
-      check(gl, programInfo, x_in_canvas, y_in_canvas)
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+      gl.disable(gl.BLEND)
+      updatePickFaceId(0)
+      const pix = new Uint8Array(4)
+      gl.readPixels(x_in_canvas, y_in_canvas, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pix)
+      const a_Face = pix[3]
+
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+      gl.enable(gl.BLEND)
+      updatePickFaceId(a_Face)
+      return a_Face
     }
+  }
+  canvas.addEventListener('mousemove', e=>{
+    onPickFace(e)
   })
 
   canvas.addEventListener('click', e=>{
-    const {clientX, clientY} = e
-    const rect = canvas.getBoundingClientRect()
-    const x_in_canvas = clientX - rect.left
-    const y_in_canvas = rect.bottom - clientY
-    if(gl){
-      const result = check(gl, programInfo, x_in_canvas, y_in_canvas)
-      console.log('FaceId is : ', result);
-    }
+    const pickedFace = onPickFace(e)
+    console.log(' picked face is: ', pickedFace);
   })
-}
-function drawAll(gl: WebGLRenderingContext, cubuPInfo: twgl.ProgramInfo){
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-  draw(gl, cubuPInfo, ()=>{
-    drawRing(gl)
-  })
-}
-function redrawAll(gl: WebGLRenderingContext, cubePInfo: twgl.ProgramInfo){
-  // redraw cube
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-
-  gl.useProgram(cubePInfo.program)
-  twgl.setBuffersAndAttributes(gl,cubePInfo, bufferInfo)
-  twgl.drawBufferInfo(gl, bufferInfo)
-  // redraw ring
-  gl.useProgram(ringPinfo.program)
-  twgl.setBuffersAndAttributes(gl,cubePInfo,ringBufferInfo)
-  gl.drawArrays(gl.TRIANGLES, 0, 1800)
 }
 
 function gRingVert(){
@@ -210,22 +391,22 @@ function gRingVert(){
     const pt2Radius = (i+1) * radius
     const pt1 = [
       r*Math.sin(pt1Radius),
-      -0.7, // y
+      0, // y
       r*Math.cos(pt1Radius),
     ]
     const pt2 = [
       r*Math.sin(pt2Radius),
-      -0.7,
+      0,
       r*Math.cos(pt2Radius),
     ]
     const pt3 = [
       r2*Math.sin(pt1Radius),
-      -0.7,
+      0,
       r2*Math.cos(pt1Radius),
     ]
     const pt4 = [
       r2*Math.sin(pt2Radius),
-      -0.7,
+      0,
       r2*Math.cos(pt2Radius),
     ]
     result.push(...pt1,...pt3, ...pt4)
@@ -233,8 +414,7 @@ function gRingVert(){
   }
   return result
 }
-function drawRing(gl: WebGLRenderingContext){
-  gl.useProgram(ringPinfo.program)
+function initRingVert(){
   const a_Position = gRingVert() // 圆环
   const a_Color = new Array(1800).fill(0.3)
   const a_Face = new Array(1800).fill(100)
@@ -252,15 +432,16 @@ function drawRing(gl: WebGLRenderingContext){
       size: 1,
     }
   }
-  ringBufferInfo = twgl.createBufferInfoFromArrays(gl, attr)
-  twgl.setBuffersAndAttributes(gl, ringPinfo,  ringBufferInfo)
-  updateRingMVP(0)
-  const unif = {
-    u_MvpMatrix: u_matrix,
-    u_PickedFace: -1,
-  }
-  twgl.setUniforms(ringPinfo, unif)
-  gl.drawArrays(gl.TRIANGLES, 0, 1800)
+  // ringBufferInfo = twgl.createBufferInfoFromArrays(gl, attr)
+  // twgl.setBuffersAndAttributes(gl, ringPinfo,  ringBufferInfo)
+  // updateRingMVP(0)
+  // const unif = {
+  //   u_MvpMatrix: u_matrix,
+  //   u_PickedFace: -1,
+  // }
+  // twgl.setUniforms(ringPinfo, unif)
+  // gl.drawArrays(gl.TRIANGLES, 0, 1800)
+  return attr
 }
 function updateRingMVP(time: number){
   time *= 0.001
@@ -280,56 +461,25 @@ function updateRingMVP(time: number){
   u_matrix = Matrix4.multiply(viewProj, modelMatrix)
 }
 
-function check(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, x: number, y: number){
-  // draw cube
+function redrawCubeAndRing(gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, faceId: number){
+  // redraw cube
   gl.useProgram(pInfo.program)
-  gl.disable(gl.BLEND)
-  twgl.setBuffersAndAttributes(gl, pInfo, bufferInfo)
   twgl.setUniforms(pInfo, {
-    u_PickedFace: 0
+    u_PickedFace: faceId
   })
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-  twgl.drawBufferInfo(gl, bufferInfo)
+  twgl.setBuffersAndAttributes(gl, pInfo, cubeBufferInfo)
+  twgl.drawBufferInfo(gl, cubeBufferInfo)
 
   // redraw ring
   gl.useProgram(ringPinfo.program)
   twgl.setUniforms(ringPinfo, {
-    u_PickedFace: 0
+    u_PickedFace: faceId
   })
   twgl.setBuffersAndAttributes(gl, ringPinfo, ringBufferInfo)
   gl.drawArrays(gl.TRIANGLES, 0, 1800)
-
-  const pix = new Uint8Array(4)
-  gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pix)
-  const a_Face = pix[3]
-
-  // draw cube
-  gl.enable(gl.BLEND)
-  gl.useProgram(pInfo.program)
-  twgl.setBuffersAndAttributes(gl, pInfo, bufferInfo)
-  twgl.setUniforms(pInfo, {
-    u_PickedFace: a_Face
-  })
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-  // gl.depthMask(false)
-  twgl.drawBufferInfo(gl, bufferInfo)
-
-  // redraw ring
-  gl.useProgram(ringPinfo.program)
-  twgl.setBuffersAndAttributes(gl, ringPinfo, ringBufferInfo)
-  twgl.setUniforms(ringPinfo, {
-    u_PickedFace: a_Face
-  })
-  gl.drawArrays(gl.TRIANGLES, 0, 1800)
-  // gl.depthMask(true)
-
-  return a_Face
 }
 
-function draw (gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, afterDraw=()=>{
-  //
-}){
-  gl.useProgram(pInfo.program)
+function initCubeVert (){
   /**
   //  l0~l15 16 left
   //  r0~r15 16 right
@@ -798,9 +948,7 @@ function draw (gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, afterDraw=()=
     }
     return result
   }
-  // console.log(gIndices(36));
   let indice = gIndices(216)
-  const indices = new Float32Array(indice)
   const attr = {
     a_Position: {
       data: a_Position,
@@ -816,48 +964,31 @@ function draw (gl: WebGLRenderingContext, pInfo: twgl.ProgramInfo, afterDraw=()=
     },
     indices: indice,
   }
-  bufferInfo = twgl.createBufferInfoFromArrays(gl, attr)
-  // console.log(' bufferInfo ', bufferInfo);
-  twgl.setBuffersAndAttributes(gl, pInfo,  bufferInfo)
-
-  const imgNewAry = [
-    getImgEleBy(imgAry, '右'),
-    getImgEleBy(imgAry, '左'),
-    getImgEleBy(imgAry, '上'),
-    getImgEleBy(imgAry, '下'),
-    getImgEleBy(imgAry, '前'),
-    getImgEleBy(imgAry, '后'),
-  ]
-  twgl.createTextures(gl, {
-    tex: {
-      target: gl.TEXTURE_CUBE_MAP,
-      src: imgNewAry,
-    },
-  }, (err, textures)=>{
-    if(err){
-      throw new Error('twgl.createTextures error ')
-    }
-    updateMVPMatrix(0)
-    const highlightFaceId = updateHighlightFaceId()
-    const unif = {
-      u_MvpMatrix: u_matrix,
-      u_CameraPos: cameraPos,
-      u_texture: textures.tex,
-      u_PickedFace: -1,
-      u_HighlightFace: highlightFaceId
-    }
-    twgl.setUniforms(pInfo, unif)
-    // const indexBuffer = gl.createBuffer()
-    // gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
-
-    // gl.drawElements(gl.TRIANGLES, 324, gl.UNSIGNED_BYTE,0)
-    twgl.drawBufferInfo(gl, bufferInfo)
-    afterDraw()
-  })
-
+  return attr
 }
-
+function initTexVert(index: number){
+  // test
+  const vert = {
+    position: {
+      data: [
+        -0.5,0,-0.5, -0.5,0,0.5, 0.5,0,0.5,
+        -0.5,0,-0.5, 0.5,0,0.5,  0.5,0,-0.5
+      ],
+      size: 3,
+    },
+    texcoord: {
+      data: [
+        0,0, 0,1, 1,1,
+        0,0, 1,1, 1,0
+      ],
+      size: 2
+    },
+    a_Face: {
+      data: new Array(18).fill(40+index)
+    }
+  }
+  return vert
+}
 function updateHighlightFaceId(){
   let faceid = -1
   const face = getFace([cameraPos[0],cameraPos[1],cameraPos[2]], [leftFaceInfo, rightFaceInfo, topFaceInfo, backFaceInfo, frontFaceInfo, bottomFaceInfo])
@@ -954,25 +1085,6 @@ function getArea(pointAry: Point[]): {
   }
 }
 
-function updateMVPMatrix(time: number){
-  time *= 0.001
-  let modelMatrix = Matrix4.identity(); // Model matrix
-
-  // modelMatrix = Matrix4.rotateX(modelMatrix, angleToRads(30))
-  // modelMatrix = Matrix4.rotateY(modelMatrix, angleToRads(30))
-  // modelMatrix = Matrix4.rotationY(time)
-  const target = Vector3.create(0,0,0)
-  const cameraUp = Vector3.create(0, 1, 0)
-  const camera = Matrix4.lookAt(cameraPos, target, cameraUp);
-  const viewMatrix = Matrix4.inverse(camera)
-
-  const projection = Matrix4.perspective(angleToRads(30), 1, 1, 100);
-  // Calculate the model view projection matrix
-  const viewProj = Matrix4.multiply(projection, viewMatrix)
-  u_matrix = Matrix4.multiply(viewProj, modelMatrix)
-}
-
-
 function calcPlaneLineCrossPoint (
   pointOnLine: Point,
   lineDirection: Point,
@@ -999,7 +1111,9 @@ function calcPlaneLineCrossPoint (
 function enableCamera (
   canvas: HTMLCanvasElement,
   gl: WebGLRenderingContext,
-  pInfo: twgl.ProgramInfo
+  callback=(camPos: twgl.v3.Vec3, faceId: number)=>{
+    //
+  }
   ) {
   console.log(' enable came');
   let startMove = false
@@ -1031,30 +1145,10 @@ function enableCamera (
       const frontCamY = Math.sin(angleToRads(pitch)) * 5
       const frontCamZ = Math.sin(angleToRads(yaw)) * Math.cos(angleToRads(pitch)) * 5
 
-      const cameX = Math.cos(angleToRads(pitch)) * 5 * Math.sin(angleToRads(yaw))
-      const cameY = Math.sin(angleToRads(pitch)) * 5
-      const cameZ = Math.cos(angleToRads(pitch)) * 5 * Math.cos(angleToRads(yaw))
-
-      const newCamPosi  = Vector3.create(cameX, cameY, cameZ)
       const frontCamVec3 = Vector3.create(frontCamX, frontCamY, frontCamZ)
-      // const camFront = Vector3.normalize(frontCamVec3)
-      // cameraFront = frontCamVec3
       cameraPos = frontCamVec3
-      // draw(gl, pInfo)
-      updateMVPMatrix(0)
       const faceid = updateHighlightFaceId()
-      gl.useProgram(pInfo.program)
-      twgl.setUniforms(pInfo, {
-        u_MvpMatrix: u_matrix,
-        u_PickedFace: -1,
-        u_HighlightFace: faceid
-      })
-      gl.useProgram(ringPinfo.program)
-      twgl.setUniforms(ringPinfo, {
-        u_MvpMatrix: u_matrix,
-        u_PickedFace: -1,
-      })
-      redrawAll(gl, pInfo)
+      callback(cameraPos, faceid)
     }else{
       return
     }

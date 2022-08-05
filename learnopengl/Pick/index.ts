@@ -4,6 +4,7 @@ import LOGLPickV2 from './PickFace.v2'
 import LOGLPickCube from './PickFace.twglcube'
 import LOGLPickCubeRing from './PickFace.cubeWithRing'
 import LOGLPickCubeRingTex from './PickFace.cubeWithRingTex'
+import LOGLPickComplete from './PickFace.complete'
 
 export {
   LOGLPick,
@@ -11,5 +12,6 @@ export {
   LOGLPickCube,
   LOGLCircle,
   LOGLPickCubeRing,
-  LOGLPickCubeRingTex
+  LOGLPickCubeRingTex,
+  LOGLPickComplete
 }

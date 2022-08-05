@@ -4,13 +4,10 @@ import FSRING from './Ring.frag'
 import VSRING from './Ring.vert'
 import * as twgl from 'twgl.js'
 import { angleToRads } from '../../lib/utils'
-import { DrawArraysInstancedAngle } from 'spectorjs/src/backend/commands/drawArraysInstancedAngle'
 
 const Matrix4 = twgl.m4
 const Vector3 = twgl.v3
-const Primitive = twgl.primitives
 type DirName = 'E' | 'W' | 'S' | 'N'
-const dirName = ['E','W' ,'S' , 'N']
 
 let ringBufferInfo: twgl.BufferInfo
 let ringPInfo: twgl.ProgramInfo
@@ -173,7 +170,7 @@ async function main() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
     // window.spector.startCapture(canvas, 200)
   drawRing(gl, ringPInfo)
-  draw(gl, programInfo)
+  drawTex(gl, programInfo)
   enableCamera(canvas, gl, programInfo)
   canvas.addEventListener('click', e=>{
     const {offsetX, offsetY, clientX, clientY} = e
@@ -198,7 +195,7 @@ async function main() {
 function redrawTex(gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   const dirAry: DirName[] = ['E', 'N', 'S', 'W']
   dirAry.map(dir=>{
-    updateMVPMatrix(dir)
+    updateTexMVPMatrix(dir)
     const info = dirBufferInfo[dir]
     twgl.setUniforms(pInfo,{
       u_matrix,
@@ -340,7 +337,7 @@ function redraw(gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   gl.useProgram(pInfo.program)
   const dirAry: DirName[] = ['E', 'N', 'S', 'W']
   dirAry.map(dir=>{
-    updateMVPMatrix(dir)
+    updateTexMVPMatrix(dir)
     const info = dirBufferInfo[dir]
     twgl.setUniforms(pInfo,{
       u_matrix,
@@ -365,7 +362,7 @@ function redraw(gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   twgl.drawBufferInfo(gl, ringBufferInfo)
 }
 
-function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
+function drawTex (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   gl.useProgram(pInfo.program)
 
   const imgUrlAry = [
@@ -414,7 +411,7 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
       }
       const planeBufferInfo = twgl.createBufferInfoFromArrays(gl, vert)
       twgl.setBuffersAndAttributes(gl, pInfo,  planeBufferInfo)
-      updateMVPMatrix(dirName)
+      updateTexMVPMatrix(dirName)
       const unif = {
         u_matrix,
         u_texture: textures[dirName],
@@ -428,7 +425,7 @@ function draw (gl: WebGLRenderingContext,pInfo: twgl.ProgramInfo){
   })
 }
 
-function updateMVPMatrix(direction: DirName){
+function updateTexMVPMatrix(direction: DirName){
   let modelMatrix = Matrix4.identity(); // Model matrix
   // 正下
   switch (direction){
