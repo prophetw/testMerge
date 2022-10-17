@@ -1,5 +1,6 @@
 import ThreeDoverWeb from './3DoverWeb'
 import BlendedCube from './BlendedCube'
+import BlendedCubeTwgl from './BlendedCube.twgl'
 import Fog from './Fog'
 import Fog_w from './Fog_w'
 import FramebufferObject from './FramebufferObject'
@@ -17,9 +18,10 @@ import Shadow from './Shadow'
 import Shadow_highp from './Shadow_highp'
 import Shadow_highp_sphere from './Shadow_highp_sphere'
 export {
-   ThreeDoverWeb, BlendedCube, Fog,
-   Fog_w, FramebufferObject, HUD, LookAtBlendedTriangles,
-   OBJViewer, PickFace, PickObject, Picking,
-   ProgramObject, RotateObject, RotatingTriangle_contextLost,
-   RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
-  }
+  ThreeDoverWeb, BlendedCube, Fog,
+  Fog_w, FramebufferObject, HUD, LookAtBlendedTriangles,
+  OBJViewer, PickFace, PickObject, Picking,
+  ProgramObject, RotateObject, RotatingTriangle_contextLost,
+  RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere,
+  BlendedCubeTwgl,
+}

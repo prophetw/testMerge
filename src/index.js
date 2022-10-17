@@ -38,7 +38,7 @@ import {
   Fog_w, FramebufferObject, HUD, LookAtBlendedTriangles,
    OBJViewer, PickFace, PickObject, Picking,
    ProgramObject, RotateObject, RotatingTriangle_contextLost,
-   RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere
+   RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere, BlendedCubeTwgl
 } from '../ch10'
 import { CoordinateSystem } from '../Appendix'
 
@@ -117,7 +117,11 @@ const initSpector = (callback=()=>{
 }
 
 
-const ExampleFn = LOGLPickComplete
+// const ExampleFn = LOGLPickComplete
+// const ExampleFn = BlendedCube
+const ExampleFn = BlendedCubeTwgl
+
+// const ExampleFn = FramebufferObject
 // const ExampleFn = TWGLTexRing
 
 // const ExampleFn = LOGLTexturesTriangle

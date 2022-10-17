@@ -36,7 +36,7 @@ let imgAry: {
 // highlight rect v2  5 pts 简介一点的尝试
 let leftFaceInfo: FaceInfo, rightFaceInfo: FaceInfo, topFaceInfo: FaceInfo, backFaceInfo: FaceInfo, frontFaceInfo: FaceInfo, bottomFaceInfo: FaceInfo;
 const dftPos = Vector3.normalize(Vector3.create(5, 5, 5))
-let cameraPos = Vector3.create(dftPos[0]*5, dftPos[1]*5 , dftPos[2]*5)
+let cameraPos = Vector3.create(dftPos[0] * 5, dftPos[1] * 5, dftPos[2] * 5)
 
 const generateFace = (
   ctx: CanvasRenderingContext2D,
@@ -45,9 +45,9 @@ const generateFace = (
   text: string,
   bgImgSrc?: string
 ) => {
-  return new Promise((resolve, reject)=>{
-    const {width, height} = ctx.canvas;
-    if(bgImgSrc){
+  return new Promise((resolve, reject) => {
+    const { width, height } = ctx.canvas;
+    if (bgImgSrc) {
       const image = document.createElement('img');
       image.src = bgImgSrc
       image.addEventListener('load', (e) => {
@@ -60,11 +60,11 @@ const generateFace = (
         ctx.fillText(text, width / 2, height / 2);
         resolve(ctx)
       });
-    }else{
-      ctx.clearRect(0,0,128,128);
+    } else {
+      ctx.clearRect(0, 0, 128, 128);
       ctx.fillStyle = "rgba(100, 100, 100, 0.0)";
       ctx.globalAlpha = 0.5;
-      ctx.fillRect(0,0,128,128);
+      ctx.fillRect(0, 0, 128, 128);
       ctx.font = `${width * 0.5}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
@@ -74,17 +74,18 @@ const generateFace = (
     }
   })
 }
-const getImgEle = async (ctx: CanvasRenderingContext2D): Promise<{imgElement: HTMLImageElement
+const getImgEle = async (ctx: CanvasRenderingContext2D): Promise<{
+  imgElement: HTMLImageElement
   imgUrl: string
 }> => {
-  return new Promise((resolve, reject)=>{
+  return new Promise((resolve, reject) => {
     const imgUrl = ctx.canvas.toDataURL()
     ctx.canvas.toBlob((blob) => {
-      if(blob){
+      if (blob) {
         const img = new Image();
         img.src = URL.createObjectURL(blob);
         // document.body.appendChild(img); // debug generated img
-        img.onload = ()=>{
+        img.onload = () => {
           resolve({
             imgElement: img,
             imgUrl: imgUrl
@@ -94,7 +95,7 @@ const getImgEle = async (ctx: CanvasRenderingContext2D): Promise<{imgElement: HT
     });
   })
 }
-const gImg = async (): Promise<{imgElement: HTMLImageElement, imgUrl: string}[]>=>{
+const gImg = async (): Promise<{ imgElement: HTMLImageElement, imgUrl: string }[]> => {
 
   const faceInfos = [
     { faceColor: '#F00', textColor: '#FFF', text: '右' },
@@ -108,13 +109,13 @@ const gImg = async (): Promise<{imgElement: HTMLImageElement, imgUrl: string}[]>
     { faceColor: '#0F0', textColor: '#FFF', text: '西' },
     { faceColor: '#0FF', textColor: '#FFF', text: '北' },
   ];
-  const imgAry: {imgElement: HTMLImageElement, imgUrl: string}[] = []
+  const imgAry: { imgElement: HTMLImageElement, imgUrl: string }[] = []
   await Promise.all(faceInfos.map(async (faceInfo) => {
     const ctx = document.createElement("canvas").getContext("2d");
-    if(ctx ===null) return []
+    if (ctx === null) return []
     ctx.canvas.width = 128;
     ctx.canvas.height = 128;
-    const {faceColor, textColor, text} = faceInfo;
+    const { faceColor, textColor, text } = faceInfo;
     // await generateFace(ctx, faceColor, textColor, text, './resources/tex4.jpg');
     await generateFace(ctx, faceColor, textColor, text);
     // show the result
@@ -125,51 +126,51 @@ const gImg = async (): Promise<{imgElement: HTMLImageElement, imgUrl: string}[]>
   return imgAry
 }
 
-function getImgEleBy(imgAry: {imgElement: HTMLImageElement, imgUrl: string}[], alt: string){
+function getImgEleBy(imgAry: { imgElement: HTMLImageElement, imgUrl: string }[], alt: string) {
   // let targetImg: HTMLImageElement = document.createElement('img')
   let url = ''
-  imgAry.map(img=>{
-    if(img.imgElement.alt === alt){
+  imgAry.map(img => {
+    if (img.imgElement.alt === alt) {
       url = img.imgUrl
     }
   })
   return url
 }
 
-async function initTextureImg (
+async function initTextureImg(
   gl: WebGLRenderingContext,
   imgCubeAry: string[],
   imgDirAry: string[]
-  ): Promise<{
-    [key: string]: WebGLTexture;
-    }>{
-    return new Promise((resolve, reject)=>{
-      twgl.createTextures(gl, {
-        cube: {
-          target: gl.TEXTURE_CUBE_MAP,
-          src: imgCubeAry
-        },
-        East: {
-          src: imgDirAry[0]
-        },
-        South: {
-          src: imgDirAry[1]
-        },
-        West: {
-          src: imgDirAry[2]
-        },
-        North: {
-          src: imgDirAry[3]
-        },
-      }, (err, texs)=>{
-        if(err){
-          console.error(err);
-          reject(' initTextureImg fail')
-        }else{
-          resolve(texs)
-        }
-      })
+): Promise<{
+  [key: string]: WebGLTexture;
+}> {
+  return new Promise((resolve, reject) => {
+    twgl.createTextures(gl, {
+      cube: {
+        target: gl.TEXTURE_CUBE_MAP,
+        src: imgCubeAry
+      },
+      East: {
+        src: imgDirAry[0]
+      },
+      South: {
+        src: imgDirAry[1]
+      },
+      West: {
+        src: imgDirAry[2]
+      },
+      North: {
+        src: imgDirAry[3]
+      },
+    }, (err, texs) => {
+      if (err) {
+        console.error(err);
+        reject(' initTextureImg fail')
+      } else {
+        resolve(texs)
+      }
     })
+  })
 }
 
 
@@ -177,7 +178,12 @@ async function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl') as HTMLCanvasElement;
   // Get the rendering context for WebGL
-  var gl = canvas.getContext('webgl',  { antialias: false, preserveDrawingBuffer: true});
+  // var gl = canvas.getContext('webgl',  { antialias: false, preserveDrawingBuffer: true});
+  var gl = canvas.getContext('webgl', {
+    alpha: true,
+    // powerPreference: "high-performance",
+    // stencil: true
+  })
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
@@ -194,17 +200,18 @@ async function main() {
     getImgEleBy(imgAry, '后'),
   ]
   const imgDirAry = [
-    getImgEleBy(imgAry, '东'),
     getImgEleBy(imgAry, '南'),
-    getImgEleBy(imgAry, '西'),
+    getImgEleBy(imgAry, '东'),
     getImgEleBy(imgAry, '北'),
+    getImgEleBy(imgAry, '西'),
   ]
 
 
   const cameraUp = Vector3.create(0, 1, 0)
-  const camera = Matrix4.lookAt(cameraPos, Vector3.create(0,0,0), cameraUp);
+  const camera = Matrix4.lookAt(cameraPos, Vector3.create(0, 0, 0), cameraUp);
   const viewMatrix = Matrix4.inverse(camera)
-  const projection = Matrix4.perspective(angleToRads(30), 1, 1, 100);
+  // const projection = Matrix4.perspective(angleToRads(30), 1, 1, 100);
+  const projection = Matrix4.ortho(-1.0, 1.0, -1.0, 1.0, 1, 100);
 
   const texs = await initTextureImg(gl, imgCubeAry, imgDirAry)
   console.log(' texs ---- ', texs);
@@ -236,8 +243,8 @@ async function main() {
     modelMatrix: Matrix4.scale(
       Matrix4.translate(
         Matrix4.rotateY(Matrix4.identity(), angleToRads(0)),
-        Vector3.create(0,-0.7,1.0)),
-          Vector3.create(0.3, 0.3, 0.3)
+        Vector3.create(0, -0.7, 1.0)),
+      Vector3.create(0.3, 0.3, 0.3)
     ),
     textureAry: [texs.East]
   })
@@ -254,8 +261,8 @@ async function main() {
     modelMatrix: Matrix4.scale(
       Matrix4.translate(
         Matrix4.rotateY(Matrix4.identity(), angleToRads(180)),
-        Vector3.create(0,-0.7,1.0)),
-          Vector3.create(0.3, 0.3, 0.3)
+        Vector3.create(0, -0.7, 1.0)),
+      Vector3.create(0.3, 0.3, 0.3)
     ),
     textureAry: [texs.West]
   })
@@ -271,9 +278,9 @@ async function main() {
     modelMatrix: Matrix4.scale(
       Matrix4.translate(
         Matrix4.rotateY(Matrix4.identity(), angleToRads(90)),
-        Vector3.create(0,-0.7,1.0)),
-          Vector3.create(0.3, 0.3, 0.3)
-        ),
+        Vector3.create(0, -0.7, 1.0)),
+      Vector3.create(0.3, 0.3, 0.3)
+    ),
     textureAry: [texs.South]
   })
   tex3Eng.updateMVP(undefined, viewMatrix, projection)
@@ -288,8 +295,8 @@ async function main() {
     modelMatrix: Matrix4.scale(
       Matrix4.translate(
         Matrix4.rotateY(Matrix4.identity(), angleToRads(-90)),
-        Vector3.create(0,-0.7,1.0)),
-          Vector3.create(0.3, 0.3, 0.3)
+        Vector3.create(0, -0.7, 1.0)),
+      Vector3.create(0.3, 0.3, 0.3)
     ),
     textureAry: [texs.North]
   })
@@ -300,13 +307,14 @@ async function main() {
     u_HighlightFace: -1
   })
 
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor(1.0, 0.0, 1.0, 1.0);
   gl.enable(gl.DEPTH_TEST)
   gl.enable(gl.BLEND)
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+  // gl.clear(gl.COLOR_BUFFER_BIT )
 
-  const drawAll = ()=>{
+  const drawAll = () => {
     cubeEng.draw()
     ringEng.draw()
     tex1Eng.draw()
@@ -314,22 +322,22 @@ async function main() {
     tex3Eng.draw()
     tex4Eng.draw()
   }
-  drawAll()
-  const updatePickFaceId = (faceid: number)=>{
-    cubeEng.updateUniform({u_PickedFace: faceid})
+  // drawAll()
+  const updatePickFaceId = (faceid: number) => {
+    cubeEng.updateUniform({ u_PickedFace: faceid })
     cubeEng.draw()
-    ringEng.updateUniform({u_PickedFace: faceid})
+    ringEng.updateUniform({ u_PickedFace: faceid })
     ringEng.draw()
-    tex1Eng.updateUniform({u_PickedFace: faceid})
+    tex1Eng.updateUniform({ u_PickedFace: faceid })
     tex1Eng.draw()
-    tex2Eng.updateUniform({u_PickedFace: faceid})
+    tex2Eng.updateUniform({ u_PickedFace: faceid })
     tex2Eng.draw()
-    tex3Eng.updateUniform({u_PickedFace: faceid})
+    tex3Eng.updateUniform({ u_PickedFace: faceid })
     tex3Eng.draw()
-    tex4Eng.updateUniform({u_PickedFace: faceid})
+    tex4Eng.updateUniform({ u_PickedFace: faceid })
     tex4Eng.draw()
   }
-  enableCamera(canvas, gl, (cameraPos, faceid)=>{
+  enableCamera(canvas, gl, (cameraPos, faceid) => {
     cubeEng.updateCamera(cameraPos)
     cubeEng.setUniform({
       u_PickedFace: -1,
@@ -340,17 +348,17 @@ async function main() {
     tex2Eng.updateCamera(cameraPos)
     tex3Eng.updateCamera(cameraPos)
     tex4Eng.updateCamera(cameraPos)
-    if(gl){
+    if (gl) {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
     }
     drawAll()
   })
-  const onPickFace = (e: MouseEvent)=>{
-    const {clientX, clientY} = e
+  const onPickFace = (e: MouseEvent) => {
+    const { clientX, clientY } = e
     const rect = canvas.getBoundingClientRect()
     const x_in_canvas = clientX - rect.left
     const y_in_canvas = rect.bottom - clientY
-    if(gl){
+    if (gl) {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
       gl.disable(gl.BLEND)
       updatePickFaceId(0)
@@ -364,52 +372,52 @@ async function main() {
       return a_Face
     }
   }
-  canvas.addEventListener('mousemove', e=>{
+  canvas.addEventListener('mousemove', e => {
     onPickFace(e)
   })
 
-  canvas.addEventListener('click', e=>{
+  canvas.addEventListener('click', e => {
     const pickedFace = onPickFace(e)
     console.log(' picked face is: ', pickedFace);
   })
 }
 
-function gRingVert(){
+function gRingVert() {
   // 圆环
   const r = 0.8
   const r2 = 0.85
   const n = 100
-  const radius = angleToRads(360/n)
+  const radius = angleToRads(360 / n)
   const result = []
-  for(let i=0;i<n;i++){
+  for (let i = 0; i < n; i++) {
     const pt1Radius = i * radius
-    const pt2Radius = (i+1) * radius
+    const pt2Radius = (i + 1) * radius
     const pt1 = [
-      r*Math.sin(pt1Radius),
+      r * Math.sin(pt1Radius),
       0, // y
-      r*Math.cos(pt1Radius),
+      r * Math.cos(pt1Radius),
     ]
     const pt2 = [
-      r*Math.sin(pt2Radius),
+      r * Math.sin(pt2Radius),
       0,
-      r*Math.cos(pt2Radius),
+      r * Math.cos(pt2Radius),
     ]
     const pt3 = [
-      r2*Math.sin(pt1Radius),
+      r2 * Math.sin(pt1Radius),
       0,
-      r2*Math.cos(pt1Radius),
+      r2 * Math.cos(pt1Radius),
     ]
     const pt4 = [
-      r2*Math.sin(pt2Radius),
+      r2 * Math.sin(pt2Radius),
       0,
-      r2*Math.cos(pt2Radius),
+      r2 * Math.cos(pt2Radius),
     ]
-    result.push(...pt1,...pt3, ...pt4)
-    result.push(...pt1,...pt4,...pt2)
+    result.push(...pt1, ...pt3, ...pt4)
+    result.push(...pt1, ...pt4, ...pt2)
   }
   return result
 }
-function initRingVert(){
+function initRingVert() {
   const a_Position = gRingVert() // 圆环
   const a_Color = new Array(1800).fill(0.3)
   const a_Face = new Array(1800).fill(100)
@@ -439,7 +447,7 @@ function initRingVert(){
   return attr
 }
 
-function initCubeVert (){
+function initCubeVert() {
   /**
   //  l0~l15 16 left
   //  r0~r15 16 right
@@ -457,143 +465,143 @@ function initCubeVert (){
       |_|_________|_|
       9 10       13 14
    */
-  function gVertex(leftTopPt: Point, len: number, whichFace: FaceType){
+  function gVertex(leftTopPt: Point, len: number, whichFace: FaceType) {
     // len 正方形边长
     let result: Point[] = []
     const [x, y, z] = leftTopPt
-    const step = 0.15
+    const step = 0.18
     let area: XYZArea[] = [] // 9个正方形 从左往右  从上往下 每个正方形的 xyz 的范围
 
-    if(whichFace === 'top' || whichFace === 'bottom'){
+    if (whichFace === 'top' || whichFace === 'bottom') {
       // y 坐标固定
       // 位于 xz 面  top   那么就从 立方体上方 观察这个面  向右 x+ 下 z+
       // 位于 xz 面  bottom   那么就从 立方体下方 观察这个面 向右 x+ 下 z-
-      if(whichFace === 'top'){
+      if (whichFace === 'top') {
         const r0: Point = [x, y, z]
-        const r1: Point = [x, y, z+step]
-        const r2: Point = [x+step, y, z+step]
-        const r3: Point = [x+step, y, z]
-        const r14: Point = [x+len, y, z+len]
-        const r13: Point = [x+len-step, y, z+len]
-        const r15: Point = [x+len, y, z+len-step]
-        const r12: Point = [x+len-step, y, z+len-step]
-        const r9: Point = [x, y, z+len]
-        const r8: Point = [x, y, z+len-step]
-        const r10: Point = [x+step, y, z+len]
-        const r11: Point = [x+step, y, z+len-step]
-        const r7: Point = [x+len, y, z]
-        const r4: Point = [x+len-step, y, z]
-        const r6: Point = [x+len, y, z+step]
-        const r5: Point = [x+len-step, y, z+step]
-        result = [r0, r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15]
+        const r1: Point = [x, y, z + step]
+        const r2: Point = [x + step, y, z + step]
+        const r3: Point = [x + step, y, z]
+        const r14: Point = [x + len, y, z + len]
+        const r13: Point = [x + len - step, y, z + len]
+        const r15: Point = [x + len, y, z + len - step]
+        const r12: Point = [x + len - step, y, z + len - step]
+        const r9: Point = [x, y, z + len]
+        const r8: Point = [x, y, z + len - step]
+        const r10: Point = [x + step, y, z + len]
+        const r11: Point = [x + step, y, z + len - step]
+        const r7: Point = [x + len, y, z]
+        const r4: Point = [x + len - step, y, z]
+        const r6: Point = [x + len, y, z + step]
+        const r5: Point = [x + len - step, y, z + step]
+        result = [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15]
       }
-      if(whichFace === 'bottom'){
+      if (whichFace === 'bottom') {
         const r0: Point = [x, y, z]
-        const r1: Point = [x, y, z-step]
-        const r2: Point = [x+step, y, z-step]
-        const r3: Point = [x+step, y, z]
-        const r14: Point = [x+len, y, z-len]
-        const r13: Point = [x+len-step, y, z-len]
-        const r15: Point = [x+len, y, z-len+step]
-        const r12: Point = [x+len-step, y, z-len+step]
-        const r9: Point = [x, y, z-len]
-        const r8: Point = [x, y, z-len+step]
-        const r10: Point = [x+step, y, z-len]
-        const r11: Point = [x+step, y, z-len+step]
-        const r7: Point = [x+len, y, z]
-        const r4: Point = [x+len-step, y, z]
-        const r6: Point = [x+len, y, z-step]
-        const r5: Point = [x+len-step, y, z-step]
-        result = [r0, r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15]
+        const r1: Point = [x, y, z - step]
+        const r2: Point = [x + step, y, z - step]
+        const r3: Point = [x + step, y, z]
+        const r14: Point = [x + len, y, z - len]
+        const r13: Point = [x + len - step, y, z - len]
+        const r15: Point = [x + len, y, z - len + step]
+        const r12: Point = [x + len - step, y, z - len + step]
+        const r9: Point = [x, y, z - len]
+        const r8: Point = [x, y, z - len + step]
+        const r10: Point = [x + step, y, z - len]
+        const r11: Point = [x + step, y, z - len + step]
+        const r7: Point = [x + len, y, z]
+        const r4: Point = [x + len - step, y, z]
+        const r6: Point = [x + len, y, z - step]
+        const r5: Point = [x + len - step, y, z - step]
+        result = [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15]
       }
     }
 
-    if(whichFace === 'front' || whichFace === 'back'){
+    if (whichFace === 'front' || whichFace === 'back') {
       // z 坐标固定
       // 位于 xy 面  front   那么就从 立方体前侧 观察这个面  向右 x+ 下 y-
       // 位于 xy 面  back   那么就从 立方体右侧 观察这个面 向右 x- 下 y-
-      if(whichFace === 'front'){
+      if (whichFace === 'front') {
         const r0: Point = [x, y, z]
-        const r1: Point = [x, y-step, z]
-        const r2: Point = [x+step, y-step, z]
-        const r3: Point = [x+step, y, z]
-        const r14: Point = [x+len, y-len, z]
-        const r13: Point = [x+len-step, y-len, z]
-        const r15: Point = [x+len, y-len+step, z]
-        const r12: Point = [x+len-step, y-len+step, z]
-        const r9: Point = [x, y-len, z]
-        const r8: Point = [x, y-len+step, z]
-        const r10: Point = [x+step, y-len, z]
-        const r11: Point = [x+step, y-len+step, z]
-        const r7: Point = [x+len, y, z]
-        const r4: Point = [x+len-step, y, z]
-        const r6: Point = [x+len, y-step, z]
-        const r5: Point = [x+len-step, y-step, z]
-        result = [r0, r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15]
+        const r1: Point = [x, y - step, z]
+        const r2: Point = [x + step, y - step, z]
+        const r3: Point = [x + step, y, z]
+        const r14: Point = [x + len, y - len, z]
+        const r13: Point = [x + len - step, y - len, z]
+        const r15: Point = [x + len, y - len + step, z]
+        const r12: Point = [x + len - step, y - len + step, z]
+        const r9: Point = [x, y - len, z]
+        const r8: Point = [x, y - len + step, z]
+        const r10: Point = [x + step, y - len, z]
+        const r11: Point = [x + step, y - len + step, z]
+        const r7: Point = [x + len, y, z]
+        const r4: Point = [x + len - step, y, z]
+        const r6: Point = [x + len, y - step, z]
+        const r5: Point = [x + len - step, y - step, z]
+        result = [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15]
       }
-      if(whichFace === 'back'){
+      if (whichFace === 'back') {
         const r0: Point = [x, y, z]
-        const r1: Point = [x, y-step, z]
-        const r2: Point = [x-step, y-step, z]
-        const r3: Point = [x-step, y, z]
-        const r14: Point = [x-len, y-len, z]
-        const r13: Point = [x-len+step, y-len, z]
-        const r15: Point = [x-len, y-len+step, z]
-        const r12: Point = [x-len+step, y-len+step, z]
-        const r9: Point = [x, y-len, z]
-        const r8: Point = [x, y-len+step, z]
-        const r10: Point = [x-step, y-len, z]
-        const r11: Point = [x-step, y-len+step, z]
-        const r7: Point = [x-len, y, z]
-        const r4: Point = [x-len+step, y, z]
-        const r6: Point = [x-len, y-step, z]
-        const r5: Point = [x-len+step, y-step, z]
-        result = [r0, r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15]
+        const r1: Point = [x, y - step, z]
+        const r2: Point = [x - step, y - step, z]
+        const r3: Point = [x - step, y, z]
+        const r14: Point = [x - len, y - len, z]
+        const r13: Point = [x - len + step, y - len, z]
+        const r15: Point = [x - len, y - len + step, z]
+        const r12: Point = [x - len + step, y - len + step, z]
+        const r9: Point = [x, y - len, z]
+        const r8: Point = [x, y - len + step, z]
+        const r10: Point = [x - step, y - len, z]
+        const r11: Point = [x - step, y - len + step, z]
+        const r7: Point = [x - len, y, z]
+        const r4: Point = [x - len + step, y, z]
+        const r6: Point = [x - len, y - step, z]
+        const r5: Point = [x - len + step, y - step, z]
+        result = [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15]
       }
     }
 
 
-    if(whichFace === 'left' || whichFace === 'right'){
+    if (whichFace === 'left' || whichFace === 'right') {
       // x 坐标固定
       // 位于 yz 面  left   那么就从 立方体左侧 观察这个面  向右 z+ 下 y-
       // 位于 yz 面  right   那么就从 立方体右侧 观察这个面 向右 z- 下 y-
-      if(whichFace === 'right'){
+      if (whichFace === 'right') {
         const r0: Point = [x, y, z]
-        const r1: Point = [x, y-step, z]
-        const r2: Point = [x, y-step, z-step]
-        const r3: Point = [x, y, z-step]
-        const r14: Point = [x, y-len, z-len]
-        const r13: Point = [x, y-len, z-len+step]
-        const r15: Point = [x, y-len+step, z-len]
-        const r12: Point = [x, y-len+step, z-len+step]
-        const r9: Point = [x, y-len, z]
-        const r8: Point = [x, y-len+step, z]
-        const r10: Point = [x, y-len, z-step]
-        const r11: Point = [x, y-len+step, z-step]
-        const r7: Point = [x, y, z-len]
-        const r4: Point = [x, y, z-len+step]
-        const r6: Point = [x, y-step, z-len]
-        const r5: Point = [x, y-step, z-len+step]
-        result = [r0, r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15]
+        const r1: Point = [x, y - step, z]
+        const r2: Point = [x, y - step, z - step]
+        const r3: Point = [x, y, z - step]
+        const r14: Point = [x, y - len, z - len]
+        const r13: Point = [x, y - len, z - len + step]
+        const r15: Point = [x, y - len + step, z - len]
+        const r12: Point = [x, y - len + step, z - len + step]
+        const r9: Point = [x, y - len, z]
+        const r8: Point = [x, y - len + step, z]
+        const r10: Point = [x, y - len, z - step]
+        const r11: Point = [x, y - len + step, z - step]
+        const r7: Point = [x, y, z - len]
+        const r4: Point = [x, y, z - len + step]
+        const r6: Point = [x, y - step, z - len]
+        const r5: Point = [x, y - step, z - len + step]
+        result = [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15]
       }
-      if(whichFace === 'left'){
+      if (whichFace === 'left') {
         const r0: Point = [x, y, z]
-        const r1: Point = [x, y-step, z]
-        const r2: Point = [x, y-step, z+step]
-        const r3: Point = [x, y, z+step]
-        const r14: Point = [x, y-len, z+len]
-        const r13: Point = [x, y-len, z+len-step]
-        const r15: Point = [x, y-len+step, z+len]
-        const r12: Point = [x, y-len+step, z+len-step]
-        const r9: Point = [x, y-len, z]
-        const r8: Point = [x, y-len+step, z]
-        const r10: Point = [x, y-len, z+step]
-        const r11: Point = [x, y-len+step, z+step]
-        const r7: Point = [x, y, z+len]
-        const r4: Point = [x, y, z+len-step]
-        const r6: Point = [x, y-step, z+len]
-        const r5: Point = [x, y-step, z+len-step]
-        result = [r0, r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15]
+        const r1: Point = [x, y - step, z]
+        const r2: Point = [x, y - step, z + step]
+        const r3: Point = [x, y, z + step]
+        const r14: Point = [x, y - len, z + len]
+        const r13: Point = [x, y - len, z + len - step]
+        const r15: Point = [x, y - len + step, z + len]
+        const r12: Point = [x, y - len + step, z + len - step]
+        const r9: Point = [x, y - len, z]
+        const r8: Point = [x, y - len + step, z]
+        const r10: Point = [x, y - len, z + step]
+        const r11: Point = [x, y - len + step, z + step]
+        const r7: Point = [x, y, z + len]
+        const r4: Point = [x, y, z + len - step]
+        const r6: Point = [x, y - step, z + len]
+        const r5: Point = [x, y - step, z + len - step]
+        result = [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15]
       }
     }
 
@@ -618,41 +626,41 @@ function initCubeVert (){
     }
   }
 
-  const lfaceInfo = gVertex([-0.5, 0.5, -0.5], 1 , 'left')
-  const rfaceInfo = gVertex([0.5, 0.5, 0.5], 1 , 'right')
-  const bfaceInfo = gVertex([0.5, 0.5, -0.5], 1 , 'back')
-  const ffaceInfo = gVertex([-0.5, 0.5, 0.5], 1 , 'front')
-  const tfaceInfo = gVertex([-0.5, 0.5, -0.5], 1 , 'top')
-  const btmfaceInfo = gVertex([-0.5, -0.5, 0.5], 1 , 'bottom')
+  const lfaceInfo = gVertex([-0.5, 0.5, -0.5], 1, 'left')
+  const rfaceInfo = gVertex([0.5, 0.5, 0.5], 1, 'right')
+  const bfaceInfo = gVertex([0.5, 0.5, -0.5], 1, 'back')
+  const ffaceInfo = gVertex([-0.5, 0.5, 0.5], 1, 'front')
+  const tfaceInfo = gVertex([-0.5, 0.5, -0.5], 1, 'top')
+  const btmfaceInfo = gVertex([-0.5, -0.5, 0.5], 1, 'bottom')
 
-  const [l0,l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l13,l14,l15] = lfaceInfo.result
-  const [r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15] = rfaceInfo.result
-  const [b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15] = bfaceInfo.result
-  const [f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15] = ffaceInfo.result
-  const [t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15] = tfaceInfo.result
-  const [d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15] = btmfaceInfo.result
+  const [l0, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15] = lfaceInfo.result
+  const [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15] = rfaceInfo.result
+  const [b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15] = bfaceInfo.result
+  const [f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15] = ffaceInfo.result
+  const [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15] = tfaceInfo.result
+  const [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15] = btmfaceInfo.result
 
-  const lFaceVert = [l0,l1,l2,l3,l4,l5,l6,l7,l8,l9,l10,l11,l12,l13,l14,l15]
-  const rFaceVert = [r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15]
-  const backFaceVert = [b0,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15]
-  const frontFaceVert = [f0,f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13,f14,f15]
-  const topFaceVert = [t0,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15]
-  const bottomFaceVert = [d0,d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12,d13,d14,d15]
+  const lFaceVert = [l0, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11, l12, l13, l14, l15]
+  const rFaceVert = [r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15]
+  const backFaceVert = [b0, b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11, b12, b13, b14, b15]
+  const frontFaceVert = [f0, f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15]
+  const topFaceVert = [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15]
+  const bottomFaceVert = [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15]
 
-/**
- 正方体某一个面的 图形结构
-      0 3         4  7
-       ______________
-     1|_|2_______5|_|6
-      | |         | |
-      | |         | |
-     8|_| 11____12|_| 15
-      |_|_________|_|
-      9 10       13 14
+  /**
+   正方体某一个面的 图形结构
+        0 3         4  7
+         ______________
+       1|_|2_______5|_|6
+        | |         | |
+        | |         | |
+       8|_| 11____12|_| 15
+        |_|_________|_|
+        9 10       13 14
 
 
 
- */
+   */
 
   const a_Position = [
     ...l0, ...l1, ...l2, ...l3, // l0-l5-l4-l6
@@ -717,20 +725,20 @@ function initCubeVert (){
     ...d12, ...d13, ...d14, ...d15,
   ]
 
-/**
- 正方体某一个面的 图形结构
+  /**
+   正方体某一个面的 图形结构
 
-       1      2     3
-       4      5     6
-       7      8     9
-       ______________
-      |_|_________|_|
-      | |         | |
-      | |         | |    中心正放心 总共6个   记作31~36
-      |_|_________|_|
-      |_|_________|_|    角落正方形总共24个 3个面一组 8组   记作 21~28
-          中边正方形总共 24个 相邻为一组  12组  记作1~12
- */
+         1      2     3
+         4      5     6
+         7      8     9
+         ______________
+        |_|_________|_|
+        | |         | |
+        | |         | |    中心正放心 总共6个   记作31~36
+        |_|_________|_|
+        |_|_________|_|    角落正方形总共24个 3个面一组 8组   记作 21~28
+            中边正方形总共 24个 相邻为一组  12组  记作1~12
+   */
 
   const mid1 = 31
   const mid2 = 32
@@ -758,15 +766,15 @@ function initCubeVert (){
   const midcorner10 = 10
   const midcorner11 = 11
   const midcorner12 = 12
-  leftFaceInfo  = {
+  leftFaceInfo = {
     vertex: lFaceVert,
     faceIdAry: [
-      corner1,midcorner1,corner3,
-      midcorner12,mid1,midcorner9,
-      corner7,midcorner6,corner5,
+      corner1, midcorner1, corner3,
+      midcorner12, mid1, midcorner9,
+      corner7, midcorner6, corner5,
     ],
-    normal: [-1,0,0],
-    pointOnPlane: [-0.5,0,0], // pointOnPlane
+    normal: [-1, 0, 0],
+    pointOnPlane: [-0.5, 0, 0], // pointOnPlane
     name: 'left',
     area: getArea(lFaceVert),
     faceArea: lfaceInfo.faceArea
@@ -774,12 +782,12 @@ function initCubeVert (){
   rightFaceInfo = {
     vertex: rFaceVert,
     faceIdAry: [
-      corner4,midcorner4, corner2,
-      midcorner10, mid2,midcorner11,
-      corner6,midcorner7,corner8,
+      corner4, midcorner4, corner2,
+      midcorner10, mid2, midcorner11,
+      corner6, midcorner7, corner8,
     ],
-    normal: [1,0,0],
-    pointOnPlane: [0.5,0,0],
+    normal: [1, 0, 0],
+    pointOnPlane: [0.5, 0, 0],
     name: 'right',
     area: getArea(rFaceVert),
     faceArea: rfaceInfo.faceArea
@@ -787,12 +795,12 @@ function initCubeVert (){
   topFaceInfo = {
     vertex: topFaceVert,
     faceIdAry: [
-      corner1,midcorner3,corner2,
-      midcorner1,mid5,midcorner4,
-      corner3,midcorner2,corner4,
+      corner1, midcorner3, corner2,
+      midcorner1, mid5, midcorner4,
+      corner3, midcorner2, corner4,
     ],
-    normal: [0,1,0],
-    pointOnPlane: [0,0.5,0],
+    normal: [0, 1, 0],
+    pointOnPlane: [0, 0.5, 0],
     name: 'top',
     area: getArea(topFaceVert),
     faceArea: tfaceInfo.faceArea
@@ -800,12 +808,12 @@ function initCubeVert (){
   bottomFaceInfo = {
     vertex: bottomFaceVert,
     faceIdAry: [
-      corner5,midcorner5,corner6,
-      midcorner6,mid6,midcorner7,
-      corner7,midcorner8,corner8,
+      corner5, midcorner5, corner6,
+      midcorner6, mid6, midcorner7,
+      corner7, midcorner8, corner8,
     ],
-    normal: [0,-1,0],
-    pointOnPlane: [0,-0.5,0],
+    normal: [0, -1, 0],
+    pointOnPlane: [0, -0.5, 0],
     name: 'bottom',
     area: getArea(bottomFaceVert),
     faceArea: btmfaceInfo.faceArea
@@ -817,8 +825,8 @@ function initCubeVert (){
       midcorner9, mid3, midcorner10,
       corner5, midcorner5, corner6
     ],
-    normal: [0,0,1],
-    pointOnPlane: [0,0,0.5],
+    normal: [0, 0, 1],
+    pointOnPlane: [0, 0, 0.5],
     name: 'front',
     area: getArea(frontFaceVert),
     faceArea: ffaceInfo.faceArea
@@ -830,8 +838,8 @@ function initCubeVert (){
       midcorner11, mid4, midcorner12,
       corner8, midcorner8, corner7
     ],
-    normal: [0,0,-1],
-    pointOnPlane: [0,0,-0.5],
+    normal: [0, 0, -1],
+    pointOnPlane: [0, 0, -0.5],
     name: 'back',
     area: getArea(backFaceVert),
     faceArea: bfaceInfo.faceArea
@@ -840,40 +848,40 @@ function initCubeVert (){
     21, 21, 21, 21,   // left
     1, 1, 1, 1,
     23, 23, 23, 23,
-    12,12,12,12,
-    31,31,31,31,
+    12, 12, 12, 12,
+    31, 31, 31, 31,
     9, 9, 9, 9,
     27, 27, 27, 27,
     6, 6, 6, 6,
-    25,25,25,25,
+    25, 25, 25, 25,
 
-    24, 24,24,24,   // right
-    4,4,4,4,
+    24, 24, 24, 24,   // right
+    4, 4, 4, 4,
     22, 22, 22, 22,
-    10, 10,10,10,
-    32,32,32,32,
-    11,11,11,11,
-    26,26,26,26,
+    10, 10, 10, 10,
+    32, 32, 32, 32,
+    11, 11, 11, 11,
+    26, 26, 26, 26,
     7, 7, 7, 7,
     28, 28, 28, 28,
 
 
     23, 23, 23, 23,   // front
     2, 2, 2, 2,
-    24, 24,24,24,
+    24, 24, 24, 24,
     9, 9, 9, 9,
-    33,33,33,33,
-    10, 10,10,10,
-    25,25,25,25,
+    33, 33, 33, 33,
+    10, 10, 10, 10,
+    25, 25, 25, 25,
     5, 5, 5, 5,
-    26,26,26,26,
+    26, 26, 26, 26,
 
     22, 22, 22, 22,   // back
     3, 3, 3, 3,
     21, 21, 21, 21,
-    11,11,11,11,
-    34,34,34,34,
-    12,12,12,12,
+    11, 11, 11, 11,
+    34, 34, 34, 34,
+    12, 12, 12, 12,
     28, 28, 28, 28,
     8, 8, 8, 8,
     27, 27, 27, 27,
@@ -882,29 +890,29 @@ function initCubeVert (){
     3, 3, 3, 3,
     22, 22, 22, 22,
     1, 1, 1, 1,
-    35, 35,35,35,
-    4,4,4,4,
+    35, 35, 35, 35,
+    4, 4, 4, 4,
     23, 23, 23, 23,
     2, 2, 2, 2,
-    24, 24,24,24,
+    24, 24, 24, 24,
 
-    25,25,25,25,   // bottom
+    25, 25, 25, 25,   // bottom
     5, 5, 5, 5,
-    26,26,26,26,
+    26, 26, 26, 26,
     6, 6, 6, 6,
-    36, 36,36,36,
+    36, 36, 36, 36,
     7, 7, 7, 7,
     27, 27, 27, 27,
     8, 8, 8, 8,
     28, 28, 28, 28,
   ]
-  const a_Color = new Array(216*3).fill(0.2)
-  const gIndices = (pointCount: number): number[]=>{
+  const a_Color = new Array(216 * 3).fill(0.2)
+  const gIndices = (pointCount: number): number[] => {
     const result = []
     const rectNum = pointCount / 4
-    for(let i=0; i< rectNum; i++){
-      const firstIdx = i*4
-      result.push(firstIdx, firstIdx+1, firstIdx+2, firstIdx,firstIdx+2, firstIdx+3)
+    for (let i = 0; i < rectNum; i++) {
+      const firstIdx = i * 4
+      result.push(firstIdx, firstIdx + 1, firstIdx + 2, firstIdx, firstIdx + 2, firstIdx + 3)
     }
     return result
   }
@@ -926,37 +934,37 @@ function initCubeVert (){
   }
   return attr
 }
-function initTexVert(index: number){
+function initTexVert(index: number) {
   // test
   const vert = {
     position: {
       data: [
-        -0.5,0,-0.5, -0.5,0,0.5, 0.5,0,0.5,
-        -0.5,0,-0.5, 0.5,0,0.5,  0.5,0,-0.5
+        -0.5, 0, -0.5, -0.5, 0, 0.5, 0.5, 0, 0.5,
+        -0.5, 0, -0.5, 0.5, 0, 0.5, 0.5, 0, -0.5
       ],
       size: 3,
     },
     texcoord: {
       data: [
-        0,0, 0,1, 1,1,
-        0,0, 1,1, 1,0
+        0, 0, 0, 1, 1, 1,
+        0, 0, 1, 1, 1, 0
       ],
       size: 2
     },
     a_Face: {
-      data: new Array(18).fill(40+index)
+      data: new Array(18).fill(40 + index)
     }
   }
   return vert
 }
-function updateHighlightFaceId(){
+function updateHighlightFaceId() {
   let faceid = -1
-  const face = getFace([cameraPos[0],cameraPos[1],cameraPos[2]], [leftFaceInfo, rightFaceInfo, topFaceInfo, backFaceInfo, frontFaceInfo, bottomFaceInfo])
-  if(face){
+  const face = getFace([cameraPos[0], cameraPos[1], cameraPos[2]], [leftFaceInfo, rightFaceInfo, topFaceInfo, backFaceInfo, frontFaceInfo, bottomFaceInfo])
+  if (face) {
     const crossPt = calcPlaneLineCrossPoint(
-    [cameraPos[0],cameraPos[1],cameraPos[2]],
-    [cameraPos[0],cameraPos[1],cameraPos[2]], face.pointOnPlane, face.normal)
-    if(crossPt){
+      [cameraPos[0], cameraPos[1], cameraPos[2]],
+      [cameraPos[0], cameraPos[1], cameraPos[2]], face.pointOnPlane, face.normal)
+    if (crossPt) {
       const faceIndex = getFaceId(crossPt, face)
       const faceId = face.faceIdAry[faceIndex]
       faceid = faceId
@@ -980,38 +988,38 @@ function updateHighlightFaceId(){
       |_|_________|_|    角落正方形总共24个 3个面一组 8组   记作 21~28
           中边正方形总共 24个 相邻为一组  12组  记作1~12
  */
-function getFaceId (crossPtOnFace: Point, faceInfo: FaceInfo): number{
+function getFaceId(crossPtOnFace: Point, faceInfo: FaceInfo): number {
   let result = -1
-  const [x,y,z] = crossPtOnFace
-  faceInfo.faceArea.map((area: XYZArea, index: number)=>{
-    if(
-      (area.x[0]<=x && x<=area.x[1]) &&
-      (area.y[0]<=y && y<=area.y[1]) &&
-      (area.z[0]<=z && z<=area.z[1])
-      ){
-        result = index
-      }
+  const [x, y, z] = crossPtOnFace
+  faceInfo.faceArea.map((area: XYZArea, index: number) => {
+    if (
+      (area.x[0] <= x && x <= area.x[1]) &&
+      (area.y[0] <= y && y <= area.y[1]) &&
+      (area.z[0] <= z && z <= area.z[1])
+    ) {
+      result = index
+    }
   })
 
   return result
 }
 
-function getFace(position: Point, faceInfoAry: FaceInfo[]): FaceInfo | undefined{
+function getFace(position: Point, faceInfoAry: FaceInfo[]): FaceInfo | undefined {
   let face = undefined
-  faceInfoAry.map((faceInfo)=>{
+  faceInfoAry.map((faceInfo) => {
     const crosPt = calcPlaneLineCrossPoint(position, position, faceInfo.pointOnPlane, faceInfo.normal)
-    if(crosPt){
+    if (crosPt) {
       const [x1, y1, z1] = position
-      const [x,y,z] = crosPt
-      if(x1*x>=0 && y1*y>=0&&z1*z>=0){
+      const [x, y, z] = crosPt
+      if (x1 * x >= 0 && y1 * y >= 0 && z1 * z >= 0) {
         const area = faceInfo.area
-        if(
-          (area.x[0]<=x && x<=area.x[1]) &&
-          (area.y[0]<=y && y<=area.y[1]) &&
-          (area.z[0]<=z && z<=area.z[1])
-          ){
-            face = faceInfo
-          }
+        if (
+          (area.x[0] <= x && x <= area.x[1]) &&
+          (area.y[0] <= y && y <= area.y[1]) &&
+          (area.z[0] <= z && z <= area.z[1])
+        ) {
+          face = faceInfo
+        }
       }
     }
   })
@@ -1022,15 +1030,15 @@ function getArea(pointAry: Point[]): {
   x: AreaType
   y: AreaType
   z: AreaType
-}{
+} {
   let minX = +Infinity
   let maxX = -Infinity
   let minY = +Infinity
   let maxY = -Infinity
   let minZ = +Infinity
   let maxZ = -Infinity
-  pointAry.map(pt=>{
-    const [x,y,z] = pt
+  pointAry.map(pt => {
+    const [x, y, z] = pt
     minX = Math.min(x, minX)
     maxX = Math.max(x, maxX)
     minY = Math.min(y, minY)
@@ -1045,11 +1053,11 @@ function getArea(pointAry: Point[]): {
   }
 }
 
-function calcPlaneLineCrossPoint (
+function calcPlaneLineCrossPoint(
   pointOnLine: Point,
   lineDirection: Point,
   pointOnPlane: Point,
-  planeNormalDirection: Point): false | Point{
+  planeNormalDirection: Point): false | Point {
   // 求线面交点
   const P1 = Vector3.create(...pointOnPlane)
   const P = Vector3.create(...pointOnLine)
@@ -1057,51 +1065,54 @@ function calcPlaneLineCrossPoint (
   const planeNormalVec3 = Vector3.create(...planeNormalDirection)
   const D = lineDirVec3
   const D1 = planeNormalVec3
-  if(Vector3.dot(lineDirVec3, planeNormalVec3) === 1){
+  if (Vector3.dot(lineDirVec3, planeNormalVec3) === 1) {
     // 线面平行
     return false
   }
   const m = ((P1[0] - P[0]) * D1[0] +
-                       (P1[1] - P[1]) * D1[1] +
-                       (P1[2] - P[2]) * D1[2]) /
-                      (D1[0] * D[0] + D1[1] * D[1] + D1[2] * D[2]);
+    (P1[1] - P[1]) * D1[1] +
+    (P1[2] - P[2]) * D1[2]) /
+    (D1[0] * D[0] + D1[1] * D[1] + D1[2] * D[2]);
   return [P[0] + D[0] * m, P[1] + D[1] * m, P[2] + D[2] * m]
 }
 
-function enableCamera (
+function enableCamera(
   canvas: HTMLCanvasElement,
   gl: WebGLRenderingContext,
-  callback=(camPos: twgl.v3.Vec3, faceId: number)=>{
+  callback = (camPos: twgl.v3.Vec3, faceId: number) => {
     //
   }
-  ) {
+) {
   console.log(' enable came');
   let startMove = false
   let lastX: number
   let lastY: number
   let yaw = -90
-  let pitch = 0
+  let pitch = -45
 
-  const onMousemove = (e: MouseEvent)=>{
-    if(startMove){
+  const onMousemove = (e: MouseEvent) => {
+    if (startMove) {
       const sensitivity = 0.5
-      const {offsetX, offsetY} = e
-      const offsetXx = offsetX - lastX
-      const offsetYy = -(offsetY - lastY) // 往上是正
+      const { offsetX, offsetY } = e
+      const offsetXx = (offsetX - lastX)
+      const offsetYy = (offsetY - lastY) // 往上是正
       lastX = offsetX
       lastY = offsetY
       const xoffset = offsetXx * sensitivity
       const yoffset = offsetYy * sensitivity
-      yaw   += xoffset;
+      yaw += xoffset;
       pitch += yoffset;
+      // NOTE: 仅绕圆环平面旋转
+      // pitch += 0;
 
-      if(pitch > 89)
-          pitch = 89;
-      if(pitch < -89)
-          pitch = -89;
+      if (pitch > 89)
+        pitch = 89;
+      if (pitch < -89)
+        pitch = -89;
 
       //  绕圆心
-      const frontCamX = Math.cos(angleToRads(yaw)) * Math.cos(angleToRads(pitch)) *5
+      console.log(' newPitch ', pitch);
+      const frontCamX = Math.cos(angleToRads(yaw)) * Math.cos(angleToRads(pitch)) * 5
       const frontCamY = Math.sin(angleToRads(pitch)) * 5
       const frontCamZ = Math.sin(angleToRads(yaw)) * Math.cos(angleToRads(pitch)) * 5
 
@@ -1109,18 +1120,18 @@ function enableCamera (
       cameraPos = frontCamVec3
       const faceid = updateHighlightFaceId()
       callback(cameraPos, faceid)
-    }else{
+    } else {
       return
     }
   }
-  const onMouseUp = (e: MouseEvent)=>{
+  const onMouseUp = (e: MouseEvent) => {
     startMove = false
     document.removeEventListener('mousemove', onMousemove)
     document.removeEventListener('mouseup', onMouseUp)
   }
-  const onMousedown = (e: MouseEvent)=>{
+  const onMousedown = (e: MouseEvent) => {
     startMove = true
-    const {offsetX, offsetY} = e
+    const { offsetX, offsetY } = e
     lastX = offsetX
     lastY = offsetY
     document.addEventListener('mousemove', onMousemove)

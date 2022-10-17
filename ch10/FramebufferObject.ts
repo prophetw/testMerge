@@ -1,27 +1,6 @@
+// @ts-ignore
 import FSHADER_SOURCE from './FramebufferObject.frag.glsl'
 import VSHADER_SOURCE from './FramebufferObject.vert.glsl'
-// FramebufferObject.js (c) matsuda and kanda
-// Vertex shader program
-// var VSHADER_SOURCE =
-//   'attribute vec4 a_Position;\n' +
-//   'attribute vec2 a_TexCoord;\n' +
-//   'uniform mat4 u_MvpMatrix;\n' +
-//   'varying vec2 v_TexCoord;\n' +
-//   'void main() {\n' +
-//   '  gl_Position = u_MvpMatrix * a_Position;\n' +
-//   '  v_TexCoord = a_TexCoord;\n' +
-//   '}\n';
-
-// // Fragment shader program
-// var FSHADER_SOURCE =
-//   '#ifdef GL_ES\n' +
-//   'precision mediump float;\n' +
-//   '#endif\n' +
-//   'uniform sampler2D u_Sampler;\n' +
-//   'varying vec2 v_TexCoord;\n' +
-//   'void main() {\n' +
-//   '  gl_FragColor = texture2D(u_Sampler, v_TexCoord);\n' +
-//   '}\n';
 
 // Size of off screen
 var OFFSCREEN_WIDTH = 256;
@@ -62,7 +41,7 @@ function main() {
     return;
   }
 
-  // Set texture
+  // Set texture sky image
   var texture = initTextures(gl);
   if (!texture) {
     console.log('Failed to intialize the texture.');
@@ -138,9 +117,9 @@ function initVertexBuffersForCube(gl: WebGLRenderingContext) {
   ])
 
   var o = new Object() as {
-    vertexBuffer: WebGLBuffer
-    texCoordBuffer: WebGLBuffer
-    indexBuffer: WebGLBuffer
+    vertexBuffer: WebGLBuffer | null
+    texCoordBuffer: WebGLBuffer| null
+    indexBuffer: WebGLBuffer| null
     numIndices: number
   };  // Create the "Object" object to return multiple objects.
 
@@ -159,7 +138,7 @@ function initVertexBuffersForCube(gl: WebGLRenderingContext) {
   return o;
 }
 
-function initVertexBuffersForPlane(gl) {
+function initVertexBuffersForPlane(gl: WebGLRenderingContext) {
   // Create face
   //  v1------v0
   //  |        |
@@ -218,7 +197,7 @@ function initArrayBufferForLaterUse(gl: WebGLRenderingContext, data, num, type) 
   return buffer;
 }
 
-function initElementArrayBufferForLaterUse(gl: WebGLRenderingContext, data, type) {
+function initElementArrayBufferForLaterUse(gl: WebGLRenderingContext, data: BufferSource | null, type) {
   // Create a buffer object
   var buffer = gl.createBuffer();
   if (!buffer) {
@@ -337,12 +316,12 @@ function draw(gl, canvas, fbo, plane, cube, angle, texture, viewProjMatrix, view
   gl.clearColor(0.2, 0.2, 0.4, 1.0); // Set clear color (the color is slightly changed)
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);  // Clear FBO
 
-  drawTexturedCube(gl, gl.program, cube, angle, texture, viewProjMatrixFBO);   // Draw the cube
+  drawTexturedCube(gl, gl.program, cube, angle, texture, viewProjMatrixFBO);   // Draw the cube in frameBuffer
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);        // Change the drawing destination to color buffer
   gl.viewport(0, 0, canvas.width, canvas.height);  // Set the size of viewport back to that of <canvas>
 
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor(0.0, 0.0, 0.0, 0.5);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // Clear the color buffer
 
   drawTexturedPlane(gl, gl.program, plane, angle, fbo.texture, viewProjMatrix);  // Draw the plane
