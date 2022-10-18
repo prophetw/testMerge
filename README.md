@@ -25,8 +25,6 @@ yarn link 'spectorjs'
 window.spector.startCapture(document.getElementById('canvasId'), commandCount)
 ```
 
-```
-
 ##  webgl programming guide source code 
 ##  base on https://github.com/liujingjie/WebGLexamples.git
 
