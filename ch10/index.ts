@@ -1,6 +1,7 @@
 import ThreeDoverWeb from './3DoverWeb'
 import BlendedCube from './BlendedCube'
 import BlendedCubeTwgl from './BlendedCube.twgl'
+import BlendedRectTwgl from './BlendedRect.twgl'
 import Fog from './Fog'
 import Fog_w from './Fog_w'
 import FramebufferObject from './FramebufferObject'
@@ -23,5 +24,5 @@ export {
   OBJViewer, PickFace, PickObject, Picking,
   ProgramObject, RotateObject, RotatingTriangle_contextLost,
   RoundedPoints, Shadow, Shadow_highp, Shadow_highp_sphere,
-  BlendedCubeTwgl,
+  BlendedCubeTwgl, BlendedRectTwgl
 }

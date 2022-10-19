@@ -7,7 +7,25 @@ function main() {
   const canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
-  var gl = window.getWebGLContext(canvas);
+  // var gl = window.getWebGLContext(canvas);
+  // var gl = canvas.getContext('webgl')
+
+  var gl = null
+  // gl = canvas.getContext('webgl', {
+  //   alpha: false,
+  //   // powerPreference: "high-performance",
+  //   // stencil: true
+  // })
+  var gl2 = canvas.getContext('webgl', {
+    alpha: false,
+    // powerPreference: "high-performance",
+    // stencil: true
+  })
+
+  gl = canvas.getContext('webgl', {
+    alpha: true
+  })
+  console.log("gl === gl2", gl === gl2);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
@@ -27,15 +45,16 @@ function main() {
     console.log('Failed to set the vertex information');
     return;
   }
+  console.log(' here ');
 
   // Set the clear color and enable the depth test
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor(0.0, 0.0, 0.0, 0.3);
   gl.enable(gl.DEPTH_TEST);
-  // Enable alpha blending
+  // // Enable alpha blending
   gl.enable(gl.BLEND);
-  // Set blending function
+  // // Set blending function
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-  // gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 
   // Get the storage location of u_MvpMatrix
   var u_MvpMatrix = gl.getUniformLocation(gl.program, 'u_MvpMatrix');
@@ -54,10 +73,12 @@ function main() {
 
   // Clear color and depth buffer
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  // gl.clear(gl.COLOR_BUFFER_BIT);
 
   // lock depth
   gl.depthMask(false)
   // Draw the cube
+  // window.spector.startCapture(canvas, 100)
   gl.drawElements(gl.TRIANGLES, n, gl.UNSIGNED_BYTE, 0);
   gl.depthMask(true)
 }
@@ -68,26 +89,26 @@ function initVertexBuffers(gl: WebGLRenderingContext) {
   //   /|      /|
   //  v1------v0|
   //  | |     | |
-  //  | |v7---|-|v4
+  //  | |v7---|-|v40.4
   //  |/      |/
   //  v2------v3
 
   var vertices = new Float32Array([   // Vertex coordinates
-    1.0, 1.0, 1.0,      -1.0, 1.0, 1.0,     -1.0, -1.0, 1.0,      1.0, -1.0, 1.0,    // v0-v1-v2-v3 front
-    1.0, 1.0, 1.0,      1.0, -1.0, 1.0,     1.0, -1.0, -1.0,      1.0, 1.0, -1.0,    // v0-v3-v4-v5 right
-    1.0, 1.0, 1.0,      1.0, 1.0, -1.0,     -1.0, 1.0, -1.0,      -1.0, 1.0, 1.0,    // v0-v5-v6-v1 up
-    -1.0, 1.0, 1.0,     -1.0, 1.0, -1.0,    -1.0, -1.0, -1.0,     -1.0, -1.0, 1.0,    // v1-v6-v7-v2 left
-    -1.0, -1.0, -1.0,   1.0, -1.0, -1.0,    1.0, -1.0, 1.0,       -1.0, -1.0, 1.0,    // v7-v4-v3-v2 down
-    1.0, -1.0, -1.0,    -1.0, -1.0, -1.0,   -1.0, 1.0, -1.0,      1.0, 1.0, -1.0     // v4-v7-v6-v5 back
+    1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0, 1.0,    // v0-v1-v2-v3 front
+    1.0, 1.0, 1.0, 1.0, -1.0, 1.0, 1.0, -1.0, -1.0, 1.0, 1.0, -1.0,    // v0-v3-v4-v5 right
+    1.0, 1.0, 1.0, 1.0, 1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,    // v0-v5-v6-v1 up
+    -1.0, 1.0, 1.0, -1.0, 1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0,    // v1-v6-v7-v2 left
+    -1.0, -1.0, -1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, -1.0, -1.0, 1.0,    // v7-v4-v3-v2 down
+    1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, -1.0     // v4-v7-v6-v5 back
   ]);
 
   var colors = new Float32Array([     // Colors
-    0.5, 0.5, 1.0, 0.4,  0.5, 0.5, 1.0, 0.4,  0.5, 0.5, 1.0, 0.4,  0.5, 0.5, 1.0, 0.4,  // v0-v1-v2-v3 front(blue)
-    0.5, 1.0, 0.5, 0.4,  0.5, 1.0, 0.5, 0.4,  0.5, 1.0, 0.5, 0.4,  0.5, 1.0, 0.5, 0.4,  // v0-v3-v4-v5 right(green)
-    1.0, 0.5, 0.5, 0.4,  1.0, 0.5, 0.5, 0.4,  1.0, 0.5, 0.5, 0.4,  1.0, 0.5, 0.5, 0.4,  // v0-v5-v6-v1 up(red)
-    1.0, 1.0, 0.5, 0.4,  1.0, 1.0, 0.5, 0.4,  1.0, 1.0, 0.5, 0.4,  1.0, 1.0, 0.5, 0.4,  // v1-v6-v7-v2 left
-    1.0, 1.0, 1.0, 0.4,  1.0, 1.0, 1.0, 0.4,  1.0, 1.0, 1.0, 0.4,  1.0, 1.0, 1.0, 0.4,  // v7-v4-v3-v2 down
-    0.5, 1.0, 1.0, 0.4,  0.5, 1.0, 1.0, 0.4,  0.5, 1.0, 1.0, 0.4,  0.5, 1.0, 1.0, 0.4   // v4-v7-v6-v5 back
+    0.5, 0.5, 1.0, 0.4, 0.5, 0.5, 1.0, 0.4, 0.5, 0.5, 1.0, 0.4, 0.5, 0.5, 1.0, 0.4,  // v0-v1-v2-v3 front(blue)
+    0.5, 1.0, 0.5, 0.4, 0.5, 1.0, 0.5, 0.4, 0.5, 1.0, 0.5, 0.4, 0.5, 1.0, 0.5, 0.4,  // v0-v3-v4-v5 right(green)
+    1.0, 0.5, 0.5, 0.4, 1.0, 0.5, 0.5, 0.4, 1.0, 0.5, 0.5, 0.4, 1.0, 0.5, 0.5, 0.4,  // v0-v5-v6-v1 up(red)
+    1.0, 1.0, 0.5, 0.4, 1.0, 1.0, 0.5, 0.4, 1.0, 1.0, 0.5, 0.4, 1.0, 1.0, 0.5, 0.4,  // v1-v6-v7-v2 left yellow
+    1.0, 1.0, 1.0, 0.4, 1.0, 1.0, 1.0, 0.4, 1.0, 1.0, 1.0, 0.4, 1.0, 1.0, 1.0, 0.4,  // v7-v4-v3-v2 down white
+    0.5, 1.0, 1.0, 0.4, 0.5, 1.0, 1.0, 0.4, 0.5, 1.0, 1.0, 0.4, 0.5, 1.0, 1.0, 0.4,   // v4-v7-v6-v5 back cyan
   ]);
 
   var indices = new Uint8Array([       // Indices of the vertices

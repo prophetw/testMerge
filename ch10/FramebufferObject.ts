@@ -66,6 +66,8 @@ function main() {
   viewProjMatrixFBO.setPerspective(30.0, OFFSCREEN_WIDTH / OFFSCREEN_HEIGHT, 1.0, 100.0);
   viewProjMatrixFBO.lookAt(0.0, 2.0, 7.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
+  window.spector.startCapture(canvas, 1000)
+  // draw(gl, canvas, fbo, plane, cube, 30.0, texture, viewProjMatrix, viewProjMatrixFBO);
   // Start drawing
   var currentAngle = 0.0; // Current rotation angle (degrees)
   var tick = function () {
@@ -75,6 +77,7 @@ function main() {
   };
   tick();
 }
+
 
 function initVertexBuffersForCube(gl: WebGLRenderingContext) {
   // Create a cube
@@ -158,9 +161,9 @@ function initVertexBuffersForPlane(gl: WebGLRenderingContext) {
   var indices = new Uint8Array([0, 1, 2, 0, 2, 3]);
 
   var o = new Object() as {
-    vertexBuffer: WebGLBuffer
-    texCoordBuffer: WebGLBuffer
-    indexBuffer: WebGLBuffer
+    vertexBuffer: WebGLBuffer | null
+    texCoordBuffer: WebGLBuffer | null
+    indexBuffer: WebGLBuffer | null
     numIndices: number
   } // Create the "Object" object to return multiple objects.
 
