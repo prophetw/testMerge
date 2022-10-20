@@ -223,11 +223,15 @@ class Camera {
     }
     return this.getView()
   }
-  calcPV(){
+  calcPV(modelMat4?: twgl.m4.Mat4){
     // frag final pos = perspective * view * model * position
     const view = this.getView()
     if(this.frustum!==undefined){
       const pv = Matrix4.multiply(this.frustum, view)
+      if(modelMat4!==undefined){
+        const pvm = Matrix4.multiply(pv, modelMat4)
+        return pvm
+      }
       return pv
     }else{
       throw new Error("frustum can not be undefined")

@@ -45,14 +45,14 @@ function main() {
   const MRTDrawpInfo = twgl.createProgramInfo(gl, [VSMRTDraw, FSMRTDraw]);
   console.log(' MRT ', MRTInfo);
   console.log(" draw ", MRTDrawpInfo);
-  window.spector.startCapture(canvas, 1000)
+  // window.spector.startCapture(canvas, 1000)
   const arrays = twgl.primitives.createPlaneVertices()
   console.log('plane vertics ', arrays);
 
 
   const perspective = new Frustum(30, 0.01, 100, 1).getVal()
   const cameraObj = new Camera({
-    eye: [1, 1, 1], target: [0, 0, 0], cameraUp: [0, 1, 0]
+    eye: [-2, -2, 0], target: [0, 0, 0], cameraUp: [0, 1, 0]
   }, canvas)
 
   cameraObj.enableMove(() => {
@@ -76,76 +76,91 @@ function main() {
     }
   })
   const bInfo = twgl.createBufferInfoFromArrays(gl, arrays)
-  twgl.createTextures(gl, {
-    face: { src: 'https://th.bing.com/th/id/OIP.Russj_ScHRzeGEodKscxEgHaEo?pid=ImgDet&rs=1' }
-  }, (err, data) => {
-    console.log(' data ', data);
 
-    //===============
-    // draw in framebuffer
-    //===============
-    const { RGBA, UNSIGNED_BYTE, LINEAR,NEAREST, DEPTH_STENCIL, CLAMP_TO_EDGE } = gl
-    const attachments = [
-      { format: gl.RGBA, type: UNSIGNED_BYTE, min: NEAREST, wrap: gl.CLAMP_TO_EDGE },
-      { format: RGBA, type: UNSIGNED_BYTE, min: NEAREST, wrap: CLAMP_TO_EDGE },
-      { format: RGBA, type: UNSIGNED_BYTE, min: NEAREST, wrap: CLAMP_TO_EDGE },
-      { format: RGBA, type: UNSIGNED_BYTE, min: NEAREST, wrap: CLAMP_TO_EDGE },
-      { format: DEPTH_STENCIL, },
-    ];
-    const fbi = twgl.createFramebufferInfo(gl, attachments);
-    // 写入到 fragshader gl_FragData[0,1,2,3]
-    gl.drawBuffers([
+  const { RGBA, UNSIGNED_BYTE, LINEAR,NEAREST, DEPTH_STENCIL, CLAMP_TO_EDGE } = gl
+  const attachments = [
+    { format: gl.RGBA, type: UNSIGNED_BYTE, min: NEAREST, wrap: gl.CLAMP_TO_EDGE },
+    { format: RGBA, type: UNSIGNED_BYTE, min: NEAREST, wrap: CLAMP_TO_EDGE },
+    { format: RGBA, type: UNSIGNED_BYTE, min: NEAREST, wrap: CLAMP_TO_EDGE },
+    { format: RGBA, type: UNSIGNED_BYTE, min: NEAREST, wrap: CLAMP_TO_EDGE },
+    { format: DEPTH_STENCIL, },
+  ];
+  const fbi = twgl.createFramebufferInfo(gl, attachments);
+  gl.drawBuffers([
       gl.COLOR_ATTACHMENT0,
       gl.COLOR_ATTACHMENT1,
       gl.COLOR_ATTACHMENT2,
       gl.COLOR_ATTACHMENT3,
-    ]);
+  ]);
+  gl.clearColor(0.0, 0.0, 0.0, 1.0)
+  gl.activeTexture(gl.TEXTURE1)
+  gl.bindTexture(gl.TEXTURE_2D, fbi.attachments[0]); // frameBuffer COLOR_ATTACHMENT0)
+  gl.activeTexture(gl.TEXTURE2)
+  gl.bindTexture(gl.TEXTURE_2D, fbi.attachments[1]); // frameBuffer COLOR_ATTACHMENT0)
+  gl.activeTexture(gl.TEXTURE3)
+  gl.bindTexture(gl.TEXTURE_2D, fbi.attachments[2]); // frameBuffer COLOR_ATTACHMENT0)
+  gl.activeTexture(gl.TEXTURE4)
+  gl.bindTexture(gl.TEXTURE_2D, fbi.attachments[3]); // frameBuffer COLOR_ATTACHMENT0)
+
+  uniforms.tex0 = fbi.attachments[0]
+  uniforms.tex1 = fbi.attachments[1]
+  uniforms.tex2 = fbi.attachments[2]
+  uniforms.tex3 = fbi.attachments[3]
+
+  const render = ()=>{
+
+    //////////////////////
+    // draw in framebuffer
+    //////////////////////
+
+
+    // 写入到 fragshader gl_FragData[0,1,2,3]
+    twgl.bindFramebufferInfo(gl, fbi)
     twgl.resizeCanvasToDisplaySize(canvas)
     console.log(' fbi ', fbi);
-    gl.clearColor(0.0, 0.0, 0.0, 1.0)
-    twgl.setBuffersAndAttributes(gl, MRTInfo, bInfo)
     gl.useProgram(MRTInfo.program)
-    uniforms.texture0 = data.face
+
+    twgl.setBuffersAndAttributes(gl, MRTInfo, bInfo)
     twgl.setUniforms(MRTInfo, uniforms)
     gl.clear(gl.COLOR_BUFFER_BIT)
     twgl.drawBufferInfo(gl, bInfo, gl.TRIANGLES, bInfo.numElements, undefined, 1)
-    // gl.drawBuffers([
 
-    // ])
-
-
-    //===============
+    /////////////////
     // draw in canvas
-    //===============
-    const vertexArrayInfo = twgl.createVertexArrayInfo(gl, MRTDrawpInfo, bInfo);
-    console.log('vertexArrayInfo', vertexArrayInfo);
-
+    /////////////////
+    // const vertexArrayInfo = twgl.createVertexArrayInfo(gl, MRTDrawpInfo, bInfo);
+    // console.log('vertexArrayInfo', vertexArrayInfo);
     twgl.bindFramebufferInfo(gl, null)
     twgl.resizeCanvasToDisplaySize(canvas)
-
-    gl.clearColor(0.0, 0.0, 0.0, 1.0)
-    gl.enable(gl.DEPTH_TEST)
-
-    gl.activeTexture(gl.TEXTURE1)
-    gl.bindTexture(gl.TEXTURE_2D, fbi.attachments[0]); // frameBuffer COLOR_ATTACHMENT0)
-    gl.activeTexture(gl.TEXTURE2)
-    gl.bindTexture(gl.TEXTURE_2D, fbi.attachments[1]); // frameBuffer COLOR_ATTACHMENT0)
-    gl.activeTexture(gl.TEXTURE3)
-    gl.bindTexture(gl.TEXTURE_2D, fbi.attachments[2]); // frameBuffer COLOR_ATTACHMENT0)
-    gl.activeTexture(gl.TEXTURE4)
-    gl.bindTexture(gl.TEXTURE_2D, fbi.attachments[3]); // frameBuffer COLOR_ATTACHMENT0)
-
-    uniforms.tex0 = fbi.attachments[0]
-    uniforms.tex1 = fbi.attachments[1]
-    // uniforms.tex2 = fbi.attachments[2]
-    // uniforms.tex3 = fbi.attachments[3]
-    // gl.useProgram(MRTDrawpInfo.program)
-    twgl.setBuffersAndAttributes(gl, MRTDrawpInfo, bInfo)
     gl.useProgram(MRTDrawpInfo.program)
+    twgl.setBuffersAndAttributes(gl, MRTDrawpInfo, bInfo)
     twgl.setUniforms(MRTDrawpInfo, uniforms)
     gl.clear(gl.COLOR_BUFFER_BIT)
-    twgl.drawBufferInfo(gl, vertexArrayInfo, gl.TRIANGLES, vertexArrayInfo.numElements, undefined, 1)
+    twgl.drawBufferInfo(gl, bInfo, gl.TRIANGLES, bInfo.numElements, undefined, 1)
 
+  }
+
+  window.spector.startCapture(canvas, 1000)
+  twgl.createTextures(gl, {
+    face: {
+      src: 'https://th.bing.com/th/id/OIP.Russj_ScHRzeGEodKscxEgHaEo?pid=ImgDet&rs=1',
+      flipY: 1,
+      min: gl.NEAREST,
+      mag: gl.NEAREST,
+      wrapS: gl.CLAMP_TO_EDGE,
+      wrapT: gl.CLAMP_TO_EDGE,
+      // level: 1,
+    }
+  }, (err, data) => {
+    console.log(' data ', data);
+    const tex = data.face
+    uniforms.texture0 = tex
+    render()
+    cameraObj.enableMove(()=>{
+      const mvp = cameraObj.calcPV(Matrix4.identity())
+      uniforms.u_MvpMatrix = mvp
+      render()
+    })
   })
   // const vertBufferInf = twgl.createBu
 
