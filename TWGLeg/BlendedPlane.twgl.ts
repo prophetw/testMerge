@@ -179,13 +179,14 @@ function main() {
     const camera = m4.lookAt(eye, target, up);
     const view = m4.inverse(camera);
     uniforms.u_viewProjection = m4.multiply(projection, view);
+    console.log(' uniforms ' , uniforms);
     uniforms.u_viewInverse = camera;
 
     gl.useProgram(programInfo.program);
     twgl.setBuffersAndAttributes(gl, programInfo, vertexArrayInfo);
     twgl.setUniforms(programInfo, uniforms);
     gl.depthMask(false)
-    twgl.drawBufferInfo(gl, vertexArrayInfo, gl.TRIANGLES, vertexArrayInfo.numelements, 0, numInstances);
+    twgl.drawBufferInfo(gl, vertexArrayInfo, gl.TRIANGLES, vertexArrayInfo.numElements, 0, numInstances);
     gl.depthMask(true)
 
     // do it with drawObjectList (not you'd probably make/update the list outside the render loop
@@ -202,14 +203,14 @@ function main() {
   }
   // requestAnimationFrame(render);
   window.spector.startCapture(canvas, 1000)
-  renderOpa(1)
+  // renderOpa(1)
   render(1)
-  enableCamera(canvas, gl, ()=>{
+  // enableCamera(canvas, gl, ()=>{
     // 先不透明
-    renderOpa(1)
+    // renderOpa(1)
     // 后透明
     render(1)
-  })
+  // })
 }
 
 function updateCam() {

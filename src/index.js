@@ -80,7 +80,7 @@ import { LOGLCubuInSkyBox, LOGLSkyBox } from '../learnopengl/SkyBox'
 import { LOGLTexLetter, LOGLTexLetter2, LOGLTexRingWithLetter } from '../learnopengl/textures'
 import { LOGLCircle, LOGLPick, LOGLPickComplete, LOGLPickCube, LOGLPickCubeRing, LOGLPickCubeRingTex, LOGLPickV2 } from "../learnopengl/Pick"
 import { TWGLPrimitive, TWGLTexRing } from "../learnopengl/TWGLAPI"
-import { TWGLBlendedPlane, TWGLBlendedPlane2, Primitives } from "../TWGLeg"
+import { TWGLBlendedPlane, TWGLBlendedPlane2, Primitives, MRT } from "../TWGLeg"
 import {TWGLOIT} from '../OIT'
 
 
@@ -131,8 +131,9 @@ ExampleFn = TWGLTexRing
 ExampleFn = TWGLBlendedPlane2
 ExampleFn = TWGLBlendedPlane
 // ExampleFn = FramebufferObject
-ExampleFn = TWGLOIT
-ExampleFn = Primitives
+// ExampleFn = TWGLOIT
+// ExampleFn = Primitives
+ExampleFn = MRT
 
 // const ExampleFn = LOGLTexturesTriangle
 initSpector(ExampleFn)

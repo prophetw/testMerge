@@ -1,7 +1,7 @@
 {
   "include": ["./**/*.ts", "typings.d.ts"],
   "compilerOptions": {
-    "target": "es2021",
+    "target": "esnext",
     "strict": true,
     "allowJs": true,
     "checkJs": false,

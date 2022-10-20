@@ -151,7 +151,6 @@ function enableCamera(
     //
   }
 ) {
-  console.log(' enable came');
   let startMove = false
   let lastX: number
   let lastY: number
