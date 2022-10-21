@@ -77,7 +77,22 @@ function main() {
   })
   const bInfo = twgl.createBufferInfoFromArrays(gl, arrays)
 
-  const { RGBA, UNSIGNED_BYTE, LINEAR,NEAREST, DEPTH_STENCIL, CLAMP_TO_EDGE } = gl
+  const dftAry = {
+    position: {
+      data: [
+        -1, 1,
+        -1, -1,
+        1, -1,
+        -1, 1,
+        1, -1,
+        1, 1,
+      ],
+      size: 2,
+    }
+  }
+  const aBufInfo = twgl.createBufferInfoFromArrays(gl, dftAry)
+
+  const { RGBA, UNSIGNED_BYTE, LINEAR, NEAREST, DEPTH_STENCIL, CLAMP_TO_EDGE } = gl
   const attachments = [
     { format: gl.RGBA, type: UNSIGNED_BYTE, min: NEAREST, wrap: gl.CLAMP_TO_EDGE },
     { format: RGBA, type: UNSIGNED_BYTE, min: NEAREST, wrap: CLAMP_TO_EDGE },
@@ -87,10 +102,10 @@ function main() {
   ];
   const fbi = twgl.createFramebufferInfo(gl, attachments);
   gl.drawBuffers([
-      gl.COLOR_ATTACHMENT0,
-      gl.COLOR_ATTACHMENT1,
-      gl.COLOR_ATTACHMENT2,
-      gl.COLOR_ATTACHMENT3,
+    gl.COLOR_ATTACHMENT0,
+    gl.COLOR_ATTACHMENT1,
+    gl.COLOR_ATTACHMENT2,
+    gl.COLOR_ATTACHMENT3,
   ]);
   gl.clearColor(0.0, 0.0, 0.0, 1.0)
   gl.activeTexture(gl.TEXTURE1)
@@ -107,7 +122,7 @@ function main() {
   uniforms.tex2 = fbi.attachments[2]
   uniforms.tex3 = fbi.attachments[3]
 
-  const render = ()=>{
+  const render = () => {
 
     //////////////////////
     // draw in framebuffer
@@ -133,10 +148,10 @@ function main() {
     twgl.bindFramebufferInfo(gl, null)
     twgl.resizeCanvasToDisplaySize(canvas)
     gl.useProgram(MRTDrawpInfo.program)
-    twgl.setBuffersAndAttributes(gl, MRTDrawpInfo, bInfo)
+    twgl.setBuffersAndAttributes(gl, MRTDrawpInfo, aBufInfo )
     twgl.setUniforms(MRTDrawpInfo, uniforms)
     gl.clear(gl.COLOR_BUFFER_BIT)
-    twgl.drawBufferInfo(gl, bInfo, gl.TRIANGLES, bInfo.numElements, undefined, 1)
+    twgl.drawBufferInfo(gl, aBufInfo , gl.TRIANGLES, aBufInfo.numElements, undefined, 1)
 
   }
 
@@ -156,7 +171,7 @@ function main() {
     const tex = data.face
     uniforms.texture0 = tex
     render()
-    cameraObj.enableMove(()=>{
+    cameraObj.enableMove(() => {
       const mvp = cameraObj.calcPV(Matrix4.identity())
       uniforms.u_MvpMatrix = mvp
       render()

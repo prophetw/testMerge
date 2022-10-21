@@ -3,7 +3,7 @@ import * as twgl from 'twgl.js'
 import FSPeeling from './peeling.frag'
 import VSPeeling from './peeling.vert'
 import FSFinal from './final.frag'
-import FSBLENDBACK from './final.frag'
+import FSBLENDBACK from './blendBack.frag'
 import VSDRAW from './draw.vert'
 import * as utils from '../src/utils/utils'
 
@@ -60,14 +60,20 @@ function main() {
   ///////////////////////////////
   // DUAL DEPTH PEELING PROGRAM
   //////////////////////////////
-  var dualDepthPeelingProgram = twgl.createProgramInfo(gl, [VSPeeling, FSPeeling]).program
 
+  const dualDepthPeelingProgramInfo = twgl.createProgramInfo(gl, [VSPeeling, FSPeeling])
+  var dualDepthPeelingProgram = dualDepthPeelingProgramInfo.program
   ////////////////////////////
   // FULL SCREEN QUAD PROGRAMS
   ////////////////////////////
+  var finalProgramInf = twgl.createProgramInfo(gl, [VSDRAW, FSFinal])
+  const finalProgram = finalProgramInf.program
+  var blendBackProgramInfo = twgl.createProgramInfo(gl, [VSDRAW, FSBLENDBACK])
+  var blendBackProgram = blendBackProgramInfo.program
 
-  var finalProgram = twgl.createProgramInfo(gl, [VSDRAW, FSFinal]).program
-  var blendBackProgram = twgl.createProgramInfo(gl, [VSDRAW, FSBLENDBACK]).program
+  console.log(' --- dualDepthPeelingProgramInfo' ,dualDepthPeelingProgramInfo);
+  console.log(' --- finalProgramInf ' ,finalProgramInf );
+  console.log(' --- blendBackProgramInfo ' ,blendBackProgramInfo );
 
   /////////////////////////
   // GET UNIFORM LOCATIONS
@@ -94,12 +100,12 @@ function main() {
   // COLOR_ATTACHMENT0 - depth
   // COLOR_ATTACHMENT1 - front color
   // COLOR_ATTACHMENT2 - back color
-  var allBuffers = [gl.createFramebuffer(), gl.createFramebuffer()];
+  var allBuffers = [gl.createFramebuffer(), gl.createFramebuffer()];  // Frame buffer 0 1
   // 2 for ping-pong
   // COLOR_ATTACHMENT0 - front color
   // COLOR_ATTACHMENT1 - back color
-  var colorBuffers = [gl.createFramebuffer(), gl.createFramebuffer()];
-  var blendBackBuffer = gl.createFramebuffer();
+  var colorBuffers = [gl.createFramebuffer(), gl.createFramebuffer()]; // Frame buffer 2 3
+  var blendBackBuffer = gl.createFramebuffer(); // Frame buffer 4
 
   for (let i = 0; i < 2; i++) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, allBuffers[i]);
@@ -258,7 +264,7 @@ function main() {
 
   var image = new Image();
 
-  // window.spector.startCapture(canvas, 1000)
+  window.spector.startCapture(canvas, 1000)
   image.onload = function () {
     console.log('image load succ ' );
 
@@ -306,8 +312,8 @@ function main() {
       gl.clear(gl.COLOR_BUFFER_BIT);
 
       gl.bindFramebuffer(gl.FRAMEBUFFER, allBuffers[0]);
-      gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
-      gl.clearColor(DEPTH_CLEAR_VALUE, DEPTH_CLEAR_VALUE, 0, 0);
+      gl.drawBuffers([gl.COLOR_ATTACHMENT0]); // 后面的draw操作影响的区域
+      gl.clearColor(DEPTH_CLEAR_VALUE, DEPTH_CLEAR_VALUE, 0, 0); // 初始化 深度
       gl.clear(gl.COLOR_BUFFER_BIT);
 
       gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, allBuffers[1]);
@@ -328,7 +334,7 @@ function main() {
       gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
       gl.blendEquation(gl.MAX);
 
-      gl.useProgram(dualDepthPeelingProgram);
+      gl.useProgram(dualDepthPeelingProgram); // spector program 0
       gl.uniform1i(dualDepthPeelingDepthLocation, 3);
       gl.uniform1i(dualDepthPeelingFrontColorLocation, 4);
       gl.bindVertexArray(sphereArray);
