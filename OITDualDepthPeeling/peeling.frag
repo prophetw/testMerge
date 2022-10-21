@@ -22,9 +22,13 @@ in vec2 vUV;
 in vec3 vNormal;
 flat in vec4 vColor;
 
-layout(location = 0) out vec4 depth;  // RG32F, R - negative front depth, G - back depth
-layout(location = 1) out vec4 frontColor;
-layout(location = 2) out vec4 backColor;
+// 2组
+// allFBO   COLOR_ATTACHMENT0 COLOR_ATTACHMENT1 COLOR_ATTACHMENT2
+// colorFBO                   COLOR_ATTACHMENT0 COLOR_ATTACHMENT1
+
+layout(location = 0) out vec4 depth;  //     allFBO.COLOR_ATTACHMENT0 RG32F, R - negative front depth, G - back depth
+layout(location = 1) out vec4 frontColor; // allFBO.COLOR_ATTACHMENT1 colorFBO.COLOR_ATTACHMENT0
+layout(location = 2) out vec4 backColor; //  allFBO.COLOR_ATTACHMENT2 colorFBO.COLOR_ATTACHMENT1
 
 void main() {
 
@@ -32,9 +36,10 @@ void main() {
             // dual depth peeling
             // -------------------------
 
+  // current frag depth
   float fragDepth = gl_FragCoord.z;   // 0 - 1
-
   ivec2 fragCoord = ivec2(gl_FragCoord.xy);
+
   vec2 lastDepth = texelFetch(uDepth, fragCoord, 0).rg;
   vec4 lastFrontColor = texelFetch(uFrontColor, fragCoord, 0);
 
@@ -51,7 +56,7 @@ void main() {
 
   float nearestDepth = -lastDepth.x;
   float furthestDepth = lastDepth.y;
-  float alphaMultiplier = 1.0 - lastFrontColor.a;
+  float alphaMultiplier = 1.0 - lastFrontColor.a; // alpha 乘数    resColor = Csrc * Ca + Cdes * (1-Ca)
 
   if(fragDepth < nearestDepth || fragDepth > furthestDepth) {
                 // Skip this depth since it's been peeled.

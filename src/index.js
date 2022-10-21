@@ -135,9 +135,9 @@ ExampleFn = TWGLBlendedPlane
 ExampleFn = FramebufferObject
 ExampleFn = Primitives
 ExampleFn = Defer
+ExampleFn = MRT
 ExampleFn = TWGLOIT
 ExampleFn = TWGLOITDDP
-ExampleFn = MRT
 
 
 // const ExampleFn = LOGLTexturesTriangle

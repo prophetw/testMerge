@@ -106,12 +106,16 @@ function main() {
   // COLOR_ATTACHMENT1 - back color
   var colorBuffers = [gl.createFramebuffer(), gl.createFramebuffer()]; // Frame buffer 2 3
   var blendBackBuffer = gl.createFramebuffer(); // Frame buffer 4
+  blendBackBuffer.__SPECTOR_Metadata = {name: 'blendBackBuffer'}
 
   for (let i = 0; i < 2; i++) {
+    const allBuf = allBuffers[i]
+    allBuf.__SPECTOR_Metadata = {name: 'allBuffer' + i}
     gl.bindFramebuffer(gl.FRAMEBUFFER, allBuffers[i]);
     let o = i * 3;
 
     let depthTarget = gl.createTexture();
+    depthTarget.__SPECTOR_Metadata = {name: 'depthTexture'+(0+o)}
     gl.activeTexture(gl.TEXTURE0 + o);
     gl.bindTexture(gl.TEXTURE_2D, depthTarget);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -122,6 +126,7 @@ function main() {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, depthTarget, 0);
 
     let frontColorTarget = gl.createTexture();
+    frontColorTarget.__SPECTOR_Metadata = {name: 'frontColorTexture'+(1+o)}
     gl.activeTexture(gl.TEXTURE1 + o);
     gl.bindTexture(gl.TEXTURE_2D, frontColorTarget);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -132,6 +137,7 @@ function main() {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, frontColorTarget, 0);
 
     let backColorTarget = gl.createTexture();
+    backColorTarget.__SPECTOR_Metadata = {name: 'backColorTexture'+(2+o)}
     gl.activeTexture(gl.TEXTURE2 + o);
     gl.bindTexture(gl.TEXTURE_2D, backColorTarget);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -141,6 +147,8 @@ function main() {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA16F, gl.drawingBufferWidth, gl.drawingBufferHeight, 0, gl.RGBA, gl.HALF_FLOAT, null);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT2, gl.TEXTURE_2D, backColorTarget, 0);
 
+    const colorBuf = colorBuffers[i]
+    colorBuf.__SPECTOR_Metadata = {name: 'colorBuffer' + i}
     gl.bindFramebuffer(gl.FRAMEBUFFER, colorBuffers[i]);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, frontColorTarget, 0);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, backColorTarget, 0);
@@ -149,6 +157,7 @@ function main() {
   gl.bindFramebuffer(gl.FRAMEBUFFER, blendBackBuffer);
 
   var blendBackTarget = gl.createTexture();
+  blendBackTarget.__SPECTOR_Metadata = {name: 'blendBackTexture'}
   gl.activeTexture(gl.TEXTURE6);
   gl.bindTexture(gl.TEXTURE_2D, blendBackTarget);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -273,6 +282,7 @@ function main() {
     ///////////////////////
 
     var texture = gl.createTexture();
+    texture.__SPECTOR_Metadata = {name: "imageTexture "}
     gl.activeTexture(gl.TEXTURE9);
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
