@@ -170,7 +170,7 @@ function main() {
 
   // var box = twgl.primitives.createCubeVertices();
   var box = createBox()
-  console.log(box);
+  console.log(' ---- box --- vertex ', box);
 
   var positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -197,6 +197,7 @@ function main() {
 
   // var sphere = twgl.primitives.createSphereVertices(1, 100, 100)
   var sphere = createSphere()
+  console.log(' sphere --- vertex', sphere);
 
   positionBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -230,15 +231,15 @@ function main() {
       scale: [1, 1, 1],
       rotate: [0, 0, 0],
       translate: [0, 0, 0],
-      modelMatrix: mat4.create(),
-      mvpMatrix: mat4.create(),
+      modelMatrix: mat4.identity(),
+      mvpMatrix: mat4.identity(),
     },
     {
       scale: [0.1, 0.1, 0.1],
       rotate: [0, 0, Math.PI / 3],
       translate: [0.8, 0.8, 0.4],
-      modelMatrix: mat4.create(),
-      mvpMatrix: mat4.create(),
+      modelMatrix: mat4.identity(),
+      mvpMatrix: mat4.identity(),
     }
   ];
 
@@ -290,6 +291,7 @@ function main() {
 
   var image = new Image();
 
+  window.spector.startCapture(canvas, 1000)
   image.onload = function () {
     var colorTexture = gl.createTexture();
 
@@ -306,7 +308,6 @@ function main() {
     console.log(' --- levels --- ', levels);
     gl.texStorage2D(gl.TEXTURE_2D, levels, gl.RGBA8, image.width, image.height);
     gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, image.width, image.height, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    gl.generateMipmap(gl.TEXTURE_2D);
     gl.generateMipmap(gl.TEXTURE_2D);
 
     //////////////////
