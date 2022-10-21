@@ -52,7 +52,7 @@ function main() {
 
   const perspective = new Frustum(30, 0.01, 100, 1).getVal()
   const cameraObj = new Camera({
-    eye: [-2, -2, 0], target: [0, 0, 0], cameraUp: [0, 1, 0]
+    eye: [1, 1, 0], target: [0, 0, 0], cameraUp: [0, 1, 0]
   }, canvas)
 
   cameraObj.enableMove(() => {
@@ -77,7 +77,7 @@ function main() {
   })
   const bInfo = twgl.createBufferInfoFromArrays(gl, arrays)
 
-  const dftAry = {
+  const screenAry = { // 这个是 canvas的
     position: {
       data: [
         -1, 1,
@@ -88,9 +88,20 @@ function main() {
         1, 1,
       ],
       size: 2,
+    },
+    uv: {
+      data: [
+        0, 1,
+        0,0,
+        1,0,
+        0,1,
+        1,0,
+        1, 1
+      ],
+      size: 2,
     }
   }
-  const aBufInfo = twgl.createBufferInfoFromArrays(gl, dftAry)
+  const aBufInfo = twgl.createBufferInfoFromArrays(gl, screenAry)
 
   const { RGBA, UNSIGNED_BYTE, LINEAR, NEAREST, DEPTH_STENCIL, CLAMP_TO_EDGE } = gl
   const attachments = [
