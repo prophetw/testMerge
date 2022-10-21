@@ -581,7 +581,84 @@ const createSphere = (options?: {
   };
 }
 
+class DisplayFBOTexture {
+  // show FBO for debug
+  canvas: HTMLCanvasElement
+  gl: WebGL2RenderingContext | WebGLRenderingContext
+  programInfo: twgl.ProgramInfo
+  bufferInfo: twgl.BufferInfo
+  constructor(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext | WebGLRenderingContext) {
+    const VShaderSource = `
+      attribute vec4 position;
+      attribute vec2 uv;
 
+      varying vec2 v_UV;
+      void main() {
+        gl_Position = position;
+        v_UV = uv;
+      }
+    `
+    const FShaderSource = `
+      precision mediump float;
+      uniform sampler2D tex0;
+      varying vec2 v_UV;
+      void main() {
+        vec4 color = texture2D(tex0, v_UV);
+        gl_FragColor = color;
+      }
+    `
+    this.canvas = canvas
+    this.gl = gl
+    // @ts-ignore
+    this.programInfo = twgl.createProgramInfo(gl, [VShaderSource, FShaderSource])
+    this.bufferInfo = this.initVertex()
+    console.log(this);
+  }
+  initVertex() {
+    const sceneAry = {
+      position: {
+        data: [ // 屏幕右上角 1/8
+          0.25, 1,
+          0.25, 0.25,
+          1, 0.25,
+          0.25, 1,
+          1, 0.25,
+          1, 1,
+        ],
+        size: 2,
+      },
+      uv: {
+        data: [
+          0, 1,
+          0, 0,
+          1, 0,
+          0, 1,
+          1, 0,
+          1, 1
+        ],
+        size: 2,
+      }
+    }
+    // @ts-ignore
+    const bufferInfo = twgl.createBufferInfoFromArrays(this.gl, sceneAry)
+    return bufferInfo
+  }
+  display(texture: WebGLTexture | null){
+      if(!texture) return 
+      this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null)
+      this.gl.useProgram(this.programInfo.program)
+      this.gl.activeTexture(this.gl.TEXTURE11)
+      this.gl.bindTexture(this.gl.TEXTURE_2D, texture)
+      const uniforms = {
+        tex0: texture
+      }
+      // @ts-ignore
+      twgl.setBuffersAndAttributes(this.gl, this.programInfo, this.bufferInfo)
+      twgl.setUniforms(this.programInfo, uniforms)
+      // @ts-ignore
+      twgl.drawBufferInfo(this.gl, this.bufferInfo)
+  }
+}
 
 export {
   GraphicEngine,
@@ -589,5 +666,6 @@ export {
   Frustum,
   xformMatrix,
   createBox,
-  createSphere
+  createSphere,
+  DisplayFBOTexture
 }

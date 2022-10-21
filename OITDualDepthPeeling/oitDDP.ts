@@ -15,6 +15,8 @@ function main() {
 
   // Get the rendering context for WebGL
   const gl = canvas.getContext('webgl2') as WebGL2RenderingContext;
+  const debugFBO = new utils.DisplayFBOTexture(canvas, gl)
+  console.log('  --- debgFBO ', debugFBO);
 
   gl.enable(gl.BLEND);
   gl.depthMask(false);
@@ -96,6 +98,7 @@ function main() {
   //  SET UP FRAMEBUFFERS
   ////////////////////////////////
 
+  const texAry: WebGLTexture[] = []
   // 2 for ping-pong
   // COLOR_ATTACHMENT0 - depth
   // COLOR_ATTACHMENT1 - front color
@@ -115,6 +118,9 @@ function main() {
     let o = i * 3;
 
     let depthTarget = gl.createTexture();
+    if(depthTarget){
+      texAry.push(depthTarget)
+    }
     depthTarget.__SPECTOR_Metadata = {name: 'depthTexture'+(0+o)}
     gl.activeTexture(gl.TEXTURE0 + o);
     gl.bindTexture(gl.TEXTURE_2D, depthTarget);
@@ -126,6 +132,9 @@ function main() {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, depthTarget, 0);
 
     let frontColorTarget = gl.createTexture();
+    if(frontColorTarget ){
+      texAry.push(frontColorTarget )
+    }
     frontColorTarget.__SPECTOR_Metadata = {name: 'frontColorTexture'+(1+o)}
     gl.activeTexture(gl.TEXTURE1 + o);
     gl.bindTexture(gl.TEXTURE_2D, frontColorTarget);
@@ -137,6 +146,9 @@ function main() {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, frontColorTarget, 0);
 
     let backColorTarget = gl.createTexture();
+    if(backColorTarget  ){
+      texAry.push(backColorTarget  )
+    }
     backColorTarget.__SPECTOR_Metadata = {name: 'backColorTexture'+(2+o)}
     gl.activeTexture(gl.TEXTURE2 + o);
     gl.bindTexture(gl.TEXTURE_2D, backColorTarget);
@@ -157,6 +169,9 @@ function main() {
   gl.bindFramebuffer(gl.FRAMEBUFFER, blendBackBuffer);
 
   var blendBackTarget = gl.createTexture();
+    if(blendBackTarget){
+      texAry.push(blendBackTarget)
+    }
   blendBackTarget.__SPECTOR_Metadata = {name: 'blendBackTexture'}
   gl.activeTexture(gl.TEXTURE6);
   gl.bindTexture(gl.TEXTURE_2D, blendBackTarget);
@@ -423,6 +438,7 @@ function main() {
 
       gl.bindVertexArray(quadArray);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
+      // debugFBO.display(texAry[6])
 
       requestAnimationFrame(draw);
     }

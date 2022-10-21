@@ -12,5 +12,7 @@ void main() {
   vec4 backColor = texelFetch(uBackColor, fragCoord, 0);
   float alphaMultiplier = 1.0 - frontColor.a;
 
-  fragColor = vec4(frontColor.rgb + alphaMultiplier * backColor.rgb, frontColor.a + backColor.a);
+  fragColor = vec4(
+    frontColor.rgb + alphaMultiplier * backColor.rgb, 
+    frontColor.a + backColor.a);
 }

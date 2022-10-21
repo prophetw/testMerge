@@ -20,9 +20,7 @@ function main() {
   const canvas = document.getElementById('webgl') as HTMLCanvasElement;
 
   // Get the rendering context for WebGL
-  const gl = twgl.getContext(canvas, {
-    alpha: false,
-  });
+  const gl = canvas.getContext('webgl') as WebGLRenderingContext
   const ext = gl.getExtension("ANGLE_instanced_arrays");
   const m4 = twgl.m4;
   twgl.addExtensionsToContext(gl);
@@ -80,11 +78,11 @@ function main() {
   const screenAry = { // 这个是 canvas的
     position: {
       data: [
-        -1, 1,
-        -1, -1,
-        1, -1,
-        -1, 1,
-        1, -1,
+        0.25, 1,
+        0.25, 0.25,
+        1, 0.25,
+        0.25, 1,
+        1, 0.25,
         1, 1,
       ],
       size: 2,
