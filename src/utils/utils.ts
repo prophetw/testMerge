@@ -581,6 +581,86 @@ const createSphere = (options?: {
   };
 }
 
+class DebugFrameBuffer {
+  gl: WebGLRenderingContext
+  canvas: HTMLCanvasElement
+  programInfo: twgl.ProgramInfo
+  bufferInfo: twgl.BufferInfo
+  uniforms: {
+    [key: string]: any
+  }
+  constructor(canvas?: HTMLCanvasElement, gl?: WebGL2RenderingContext | WebGLRenderingContext) {
+    const VShader = `
+attribute vec4 position;
+attribute vec2 uv;
+
+varying vec2 v_UV;
+void main() {
+  gl_Position = position;
+  v_UV = uv;
+}
+    `
+    const FShader = `
+precision mediump float;
+uniform sampler2D tex0;
+varying vec2 v_UV;
+void main() {
+  vec2 v_Texcoord = v_UV;
+  vec4 color = texture2D(tex0, v_Texcoord);
+  gl_FragColor = color;
+  // gl_FragColor = vec4(v_UV, 0.0, 1.0);
+}
+    `
+    const vertAry = {
+      position: {
+        data: [ // canvans 的完整区域
+          0.5, 1,
+          0.5, 0.5,
+          1, 0.5,
+          0.5, 1,
+          1, 0.5,
+          1, 1,
+        ],
+        size: 2,
+      },
+      uv: {
+        data: [
+          0, 1,
+          0, 0,
+          1, 0,
+          0, 1,
+          1, 0,
+          1, 1
+        ],
+        size: 2,
+      }
+    }
+    if (canvas && gl) {
+      this.canvas = canvas
+      this.gl = gl as WebGLRenderingContext
+    } else {
+      this.canvas = document.createElement('canvas')
+      this.canvas.width = 800
+      this.canvas.height = 800
+      document.body.appendChild(this.canvas)
+      this.gl = this.canvas.getContext('webgl') as WebGLRenderingContext
+    }
+    this.programInfo = twgl.createProgramInfo(this.gl, [VShader, FShader])
+    this.bufferInfo = twgl.createBufferInfoFromArrays(this.gl, vertAry)
+    this.uniforms = {}
+  }
+  drawFramebuffer(tex: WebGLTexture) {
+    const gl = this.gl
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    // this.gl.clear(this.gl.COLOR_BUFFER_BIT)
+    this.gl.useProgram(this.programInfo.program)
+    twgl.setBuffersAndAttributes(this.gl, this.programInfo, this.bufferInfo)
+    twgl.setUniforms(this.programInfo, {
+      tex0: tex
+    })
+    twgl.drawBufferInfo(this.gl, this.bufferInfo)
+  }
+}
 
 
 export {
@@ -589,5 +669,6 @@ export {
   Frustum,
   xformMatrix,
   createBox,
-  createSphere
+  createSphere,
+  DebugFrameBuffer
 }

@@ -15,6 +15,7 @@ function main() {
 
   // Get the rendering context for WebGL
   const gl = canvas.getContext('webgl2') as WebGL2RenderingContext;
+  const debugFBO = new utils.DebugFrameBuffer(canvas, gl)
 
   gl.enable(gl.BLEND);
   gl.depthMask(false);
@@ -71,10 +72,11 @@ function main() {
   var blendBackProgramInfo = twgl.createProgramInfo(gl, [VSDRAW, FSBLENDBACK])
   var blendBackProgram = blendBackProgramInfo.program
 
-  console.log(' --- dualDepthPeelingProgramInfo' ,dualDepthPeelingProgramInfo);
-  console.log(' --- finalProgramInf ' ,finalProgramInf );
-  console.log(' --- blendBackProgramInfo ' ,blendBackProgramInfo );
+  console.log(' --- dualDepthPeelingProgramInfo', dualDepthPeelingProgramInfo);
+  console.log(' --- finalProgramInf ', finalProgramInf);
+  console.log(' --- blendBackProgramInfo ', blendBackProgramInfo);
 
+  console.log(' =======debugFBO======= ', debugFBO);
   /////////////////////////
   // GET UNIFORM LOCATIONS
   /////////////////////////
@@ -100,22 +102,24 @@ function main() {
   // COLOR_ATTACHMENT0 - depth
   // COLOR_ATTACHMENT1 - front color
   // COLOR_ATTACHMENT2 - back color
+  const allTextureAry: WebGLTexture[] = []
   var allBuffers = [gl.createFramebuffer(), gl.createFramebuffer()];  // Frame buffer 0 1
   // 2 for ping-pong
   // COLOR_ATTACHMENT0 - front color
   // COLOR_ATTACHMENT1 - back color
   var colorBuffers = [gl.createFramebuffer(), gl.createFramebuffer()]; // Frame buffer 2 3
   var blendBackBuffer = gl.createFramebuffer(); // Frame buffer 4
-  blendBackBuffer.__SPECTOR_Metadata = {name: 'blendBackBuffer'}
+  blendBackBuffer.__SPECTOR_Metadata = { name: 'blendBackBuffer' }
 
   for (let i = 0; i < 2; i++) {
     const allBuf = allBuffers[i]
-    allBuf.__SPECTOR_Metadata = {name: 'allBuffer' + i}
+    allBuf.__SPECTOR_Metadata = { name: 'allBuffer' + i }
     gl.bindFramebuffer(gl.FRAMEBUFFER, allBuffers[i]);
     let o = i * 3;
 
     let depthTarget = gl.createTexture();
-    depthTarget.__SPECTOR_Metadata = {name: 'depthTexture'+(0+o)}
+    depthTarget.__SPECTOR_Metadata = { name: 'depthTexture' + (0 + o) }
+    depthTarget && allTextureAry.push(depthTarget)
     gl.activeTexture(gl.TEXTURE0 + o);
     gl.bindTexture(gl.TEXTURE_2D, depthTarget);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -126,7 +130,8 @@ function main() {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, depthTarget, 0);
 
     let frontColorTarget = gl.createTexture();
-    frontColorTarget.__SPECTOR_Metadata = {name: 'frontColorTexture'+(1+o)}
+    frontColorTarget.__SPECTOR_Metadata = { name: 'frontColorTexture' + (1 + o) }
+    frontColorTarget && allTextureAry.push(frontColorTarget)
     gl.activeTexture(gl.TEXTURE1 + o);
     gl.bindTexture(gl.TEXTURE_2D, frontColorTarget);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -137,7 +142,8 @@ function main() {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, frontColorTarget, 0);
 
     let backColorTarget = gl.createTexture();
-    backColorTarget.__SPECTOR_Metadata = {name: 'backColorTexture'+(2+o)}
+    backColorTarget.__SPECTOR_Metadata = { name: 'backColorTexture' + (2 + o) }
+    backColorTarget && allTextureAry.push(backColorTarget)
     gl.activeTexture(gl.TEXTURE2 + o);
     gl.bindTexture(gl.TEXTURE_2D, backColorTarget);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -148,7 +154,7 @@ function main() {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT2, gl.TEXTURE_2D, backColorTarget, 0);
 
     const colorBuf = colorBuffers[i]
-    colorBuf.__SPECTOR_Metadata = {name: 'colorBuffer' + i}
+    colorBuf.__SPECTOR_Metadata = { name: 'colorBuffer' + i }
     gl.bindFramebuffer(gl.FRAMEBUFFER, colorBuffers[i]);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, frontColorTarget, 0);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_2D, backColorTarget, 0);
@@ -157,7 +163,8 @@ function main() {
   gl.bindFramebuffer(gl.FRAMEBUFFER, blendBackBuffer);
 
   var blendBackTarget = gl.createTexture();
-  blendBackTarget.__SPECTOR_Metadata = {name: 'blendBackTexture'}
+  blendBackTarget.__SPECTOR_Metadata = { name: 'blendBackTexture' }
+  blendBackTarget && allTextureAry.push(blendBackTarget)
   gl.activeTexture(gl.TEXTURE6);
   gl.bindTexture(gl.TEXTURE_2D, blendBackTarget);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -273,16 +280,17 @@ function main() {
 
   var image = new Image();
 
-  window.spector.startCapture(canvas, 1000)
+  // window.spector.startCapture(canvas, 1000)
   image.onload = function () {
-    console.log('image load succ ' );
+    console.log('image load succ ');
 
     ///////////////////////
     // BIND TEXTURES
     ///////////////////////
 
     var texture = gl.createTexture();
-    texture.__SPECTOR_Metadata = {name: "imageTexture "}
+    texture.__SPECTOR_Metadata = { name: "imageTexture " }
+    texture && allTextureAry.push(texture)
     gl.activeTexture(gl.TEXTURE9);
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
@@ -291,11 +299,13 @@ function main() {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);// Flip the image's y-axis
     // @ts-ignore
     var levels = levels = Math.floor(Math.log2(Math.max(this.width, this.height))) + 1;
     gl.texStorage2D(gl.TEXTURE_2D, levels, gl.RGBA8, image.width, image.height);
     gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, image.width, image.height, gl.RGBA, gl.UNSIGNED_BYTE, image);
     gl.generateMipmap(gl.TEXTURE_2D);
+    // window.spector.startCapture(canvas, 1000)
 
     gl.useProgram(finalProgram);
     gl.uniform1i(finalBackColorLocation, 6);
@@ -310,6 +320,7 @@ function main() {
     var MIN_DEPTH = 0.0;
 
     var NUM_PASS = 4;   // maximum rendered layer number = NUM_PASS * 2
+    window.spector.startCapture(canvas, 1000)
 
     function draw() {
 
@@ -321,32 +332,39 @@ function main() {
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
 
+      // init depth allBuf0  tex0
       gl.bindFramebuffer(gl.FRAMEBUFFER, allBuffers[0]);
-      gl.drawBuffers([gl.COLOR_ATTACHMENT0]); // 后面的draw操作影响的区域
-      gl.clearColor(DEPTH_CLEAR_VALUE, DEPTH_CLEAR_VALUE, 0, 0); // 初始化 深度
+      gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
+      gl.clearColor(DEPTH_CLEAR_VALUE, DEPTH_CLEAR_VALUE, 0, 0); // allbuf0 depth 初始化
       gl.clear(gl.COLOR_BUFFER_BIT);
 
-      gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, allBuffers[1]);
-      gl.clearColor(-MIN_DEPTH, MAX_DEPTH, 0, 0);
+      // init depth  allBuf1  tex3
+      gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, allBuffers[1]); // depth gl.RG32F 只有 RG 通道
+      // 未使用 drawBuffers 指定通道 默认就是通道0 ？ allBuffers1 通道0是  depth gl.RG32F
+      gl.clearColor(-MIN_DEPTH, MAX_DEPTH, 1, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
 
+      // init frontColor backColor colorBuf0  tex1 tex2
       gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, colorBuffers[0]);
       gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
 
+      // init frontColor colorBuf1  tex4
       gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, colorBuffers[1]);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
 
-      // draw depth for first pass to peel
+
+      // set depth to allBuf0 start
+      //  draw depth for first pass to peel tex0 接下来的绘制会保存图形的深度信息
       gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, allBuffers[0]);
       gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
       gl.blendEquation(gl.MAX);
 
       gl.useProgram(dualDepthPeelingProgram); // spector program 0
-      gl.uniform1i(dualDepthPeelingDepthLocation, 3);
-      gl.uniform1i(dualDepthPeelingFrontColorLocation, 4);
+      gl.uniform1i(dualDepthPeelingDepthLocation, 3);  // allBuf1 tex3 depth  初始化 gl.RG32F (0,1) 绿色
+      gl.uniform1i(dualDepthPeelingFrontColorLocation, 4); // colorBuf1 tex4 backColor
       gl.bindVertexArray(sphereArray);
 
       for (var i = 0, len = spheres.length; i < len; ++i) {
@@ -363,6 +381,7 @@ function main() {
       gl.bufferSubData(gl.ARRAY_BUFFER, 0, modelMatrixData);
 
       gl.drawElementsInstanced(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0, spheres.length);
+      // set depth to allBuf0 end
 
       ////////////////////////////////////
       // 2. Dual Depth Peeling Ping-Pong
@@ -374,29 +393,36 @@ function main() {
         readId = pass % 2;
         writeId = 1 - readId;  // ping-pong: 0 or 1
 
+        // NOTE: init 深度值到 depth 通道
         gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, allBuffers[writeId]);
         gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
         gl.clearColor(DEPTH_CLEAR_VALUE, DEPTH_CLEAR_VALUE, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
+        // NOTE: 清空 frontcolor backcolor 通道
         gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, colorBuffers[writeId]);
         gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
+        // NOTE: 开启绘制 到 depth frontColor backColor 通道  start
         gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, allBuffers[writeId]);
         gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1, gl.COLOR_ATTACHMENT2]);
         gl.blendEquation(gl.MAX);
 
         // update texture uniform
         offsetRead = readId * 3;
-        gl.useProgram(dualDepthPeelingProgram);
-        gl.uniform1i(dualDepthPeelingDepthLocation, offsetRead);
-        gl.uniform1i(dualDepthPeelingFrontColorLocation, offsetRead + 1);
+        gl.useProgram(dualDepthPeelingProgram); // ddpProgram 从 allBuf depth frontColor 通道 读取texture
+        gl.uniform1i(dualDepthPeelingDepthLocation, offsetRead); //offsetRead 3 => allBuf1 depth      0 => allBuf0 depth
+        gl.uniform1i(dualDepthPeelingFrontColorLocation, offsetRead + 1); // offsetRead 4 => allBuf1 frontColor    1=> allBuf0 frontColor
 
-        // draw geometry
+        // draw geometry 第一次 writeId = 1   readId=0
         gl.bindVertexArray(sphereArray);
         gl.drawElementsInstanced(gl.TRIANGLES, sphere.indices.length, gl.UNSIGNED_SHORT, 0, spheres.length);
+        debugFBO.drawFramebuffer(allTextureAry[5])
+        return
+        //                      偶数次  / 奇数次                  偶数次  / 奇数次
+        // NOTE: 开启绘制 out => tex345 / tex012 通道  end   in => tex01 / tex34
 
         // blend back color separately
         offsetBack = writeId * 3;
@@ -414,20 +440,20 @@ function main() {
       // 3. Final
       //////////////////////////
 
-      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-      gl.clearColor(0, 0, 0, 1);
-      gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      gl.useProgram(finalProgram);
-      gl.uniform1i(finalFrontColorLocation, offsetBack + 1);
+      // gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      // gl.clearColor(0, 0, 0, 1);
+      // gl.clear(gl.COLOR_BUFFER_BIT);
+      // gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      // gl.useProgram(finalProgram);
+      // gl.uniform1i(finalFrontColorLocation, offsetBack + 1);
 
-      gl.bindVertexArray(quadArray);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      // gl.bindVertexArray(quadArray);
+      // gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-      requestAnimationFrame(draw);
+      // requestAnimationFrame(draw);
     }
-
-    requestAnimationFrame(draw);
+    draw()
+    // requestAnimationFrame(draw);
 
   }
   image.src = "./resources/khronos_webgl.png";

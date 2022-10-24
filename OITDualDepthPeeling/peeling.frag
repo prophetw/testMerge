@@ -35,11 +35,12 @@ void main() {
             // -------------------------
             // dual depth peeling
             // -------------------------
-
+  // z 从 NDC坐标（-1,1）转换成窗口坐标范围  (0,1)
   // current frag depth
   float fragDepth = gl_FragCoord.z;   // 0 - 1
   ivec2 fragCoord = ivec2(gl_FragCoord.xy);
 
+  // fetch from current background     first uDepth (-0,1)  first uFrontColor (0,0,0,0)
   vec2 lastDepth = texelFetch(uDepth, fragCoord, 0).rg;
   vec4 lastFrontColor = texelFetch(uFrontColor, fragCoord, 0);
 
