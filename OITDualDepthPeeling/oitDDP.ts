@@ -16,6 +16,7 @@ function main() {
   // Get the rendering context for WebGL
   const gl = canvas.getContext('webgl2') as WebGL2RenderingContext;
   const debugFBO = new utils.DebugFrameBuffer(canvas, gl)
+  console.log('  --- debgFBO ', debugFBO);
 
   gl.enable(gl.BLEND);
   gl.depthMask(false);
@@ -98,6 +99,7 @@ function main() {
   //  SET UP FRAMEBUFFERS
   ////////////////////////////////
 
+  const texAry: WebGLTexture[] = []
   // 2 for ping-pong
   // COLOR_ATTACHMENT0 - depth
   // COLOR_ATTACHMENT1 - front color
@@ -118,8 +120,8 @@ function main() {
     let o = i * 3;
 
     let depthTarget = gl.createTexture();
-    depthTarget.__SPECTOR_Metadata = { name: 'depthTexture' + (0 + o) }
     depthTarget && allTextureAry.push(depthTarget)
+    depthTarget.__SPECTOR_Metadata = {name: 'depthTexture'+(0+o)}
     gl.activeTexture(gl.TEXTURE0 + o);
     gl.bindTexture(gl.TEXTURE_2D, depthTarget);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -130,7 +132,7 @@ function main() {
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, depthTarget, 0);
 
     let frontColorTarget = gl.createTexture();
-    frontColorTarget.__SPECTOR_Metadata = { name: 'frontColorTexture' + (1 + o) }
+    frontColorTarget.__SPECTOR_Metadata = {name: 'frontColorTexture'+(1+o)}
     frontColorTarget && allTextureAry.push(frontColorTarget)
     gl.activeTexture(gl.TEXTURE1 + o);
     gl.bindTexture(gl.TEXTURE_2D, frontColorTarget);
