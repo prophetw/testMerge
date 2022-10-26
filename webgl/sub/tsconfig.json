@@ -1,0 +1,14 @@
+{
+  "include": ["./**/*.ts", "typings.d.ts"],
+  "compilerOptions": {
+    "target": "esnext",
+    "strict": true,
+    "allowJs": true,
+    "checkJs": false,
+    "moduleResolution": "Node",
+    "importHelpers": true,
+    "jsx": "react",
+    "esModuleInterop": true,
+    "sourceMap": true,
+  },
+}
